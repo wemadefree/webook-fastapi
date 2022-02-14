@@ -14,3 +14,15 @@ b - <a name="step-1">Reccomended installation (windows powershell install instru
 ```bash
 (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
 ```
+
+2 - Create virtual environment
+
+```bash
+poetry env use /full/path/to/python
+```
+
+or (if python is in default path)
+
+```bash
+ poetry env use python
+```
