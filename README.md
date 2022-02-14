@@ -3,7 +3,7 @@ REST backend solution in FastAPI for WeBook project
 
 ### Quick setup
 
-1 - Install Python 3.9
+1 - Install Python 3.9 (https://www.python.org/downloads/release/python-397/)
 
 2 - Install Poetry (Poetry is a tool for dependency management and packaging in Python)
 
