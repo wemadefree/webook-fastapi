@@ -16,6 +16,23 @@
 
 The only dependencies for this project should be docker and docker-compose.
 
+Change into your project directory and run:
+
+```bash
+chmod +x scripts/build.sh
+./scripts/build.sh
+```
+
+This will build and run the docker containers, run the alembic migrations, and
+load the initial data (a test user).
+
+It may take a while to build the first time it's run since it needs to fetch all
+the docker images.
+
+Once you've built the images once, you can simply use regular `docker-compose`
+commands to manage your development environment, for example to start your
+containers:
+
 ### Quick Start
 
 Starting the project with hot-reloading enabled
