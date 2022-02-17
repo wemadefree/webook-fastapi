@@ -1,28 +1,10 @@
-from typing import List, Optional
+from typing import List
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
-from app.db.session import get_db
-
-
-class LocationBase(SQLModel):
-    name: str = Field(index=True)
-
-
-class Location(LocationBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-
-
-class LocationCreate(LocationBase):
-    pass
-
-
-class LocationRead(LocationBase):
-    id: int
-
-
-class LocationUpdate(SQLModel):
-    name: Optional[str] = None
+from app.core.session import get_db
+from app.arrangment.models import Location
+from app.arrangment.schemas import LocationRead, LocationCreate, LocationUpdate
 
 
 location_router = loc = APIRouter()

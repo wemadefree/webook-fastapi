@@ -6,8 +6,8 @@ from fastapi.testclient import TestClient
 import typing as t
 
 from app.core import config, security
-from app.db.session import Base, get_db
-from app.db import models
+from app.core.session import Base, get_db
+from app.users import models
 from app.main import app
 
 

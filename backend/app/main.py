@@ -2,12 +2,12 @@ from fastapi import FastAPI, Depends
 from starlette.requests import Request
 import uvicorn
 
-from app.api.api_v1.routers.users import users_router
-from app.api.api_v1.routers.auth import auth_router
-from api.api_v1.routers.location import location_router
+from app.api.api_v1.endpoints.users import users_router
+from app.api.api_v1.endpoints.auth import auth_router
+from api.api_v1.endpoints.location import location_router
 
 from app.core import config
-from app.db.session import SessionLocal
+from app.core.session import SessionLocal
 from app.core.auth import get_current_active_user
 
 
