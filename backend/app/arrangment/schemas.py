@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import List, Optional
 from sqlmodel import Field, SQLModel
-from .models import LocationBase, Location
+from .models import LocationBase, RoomBase
 
 
 class LocationCreate(LocationBase):
@@ -13,3 +13,23 @@ class LocationRead(LocationBase):
 
 class LocationUpdate(SQLModel):
     name: Optional[str] = None
+
+
+class RoomCreate(RoomBase):
+    pass
+
+
+class RoomRead(RoomBase):
+    id: int
+
+
+class RoomUpdate(SQLModel):
+    name: Optional[str] = None
+
+
+class RoomReadWithLocation(RoomRead):
+    location: Optional[LocationRead] = None
+
+
+class LocationReadWithRoom(LocationRead):
+    rooms: List[RoomRead] = []
