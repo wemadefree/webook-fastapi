@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "sample-project-backend"
+version = "0.1.0"
+description = ""
+authors = []
+
+[tool.poetry.dependencies]
+python = "^3.7"
+fastapi = "^0.68.2"
+uvicorn = "^0.15.0"
+pydantic = "^1.8.2"
+requests = "^2.26.0"
+alembic = "^1.7.4"
+psycopg2-binary = "^2.9.3"
+asyncpg = "^0.24.0"
+sqlmodel = "^0.0.6"
+Authlib = "^0.15.5"
+bcrypt = "^3.2.0"
+PyJWT = "^2.3.0"
+passlib = "^1.7.4"
+python-multipart = "^0.0.5"
+python-dateutil = "^2.8.2"
+
+[tool.poetry.dev-dependencies]
+black = "^22.1"
+pytest = "^6.2.4"
+ipython = "^7.29.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
