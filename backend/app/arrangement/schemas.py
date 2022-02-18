@@ -1,6 +1,6 @@
 from typing import List, Optional
 from sqlmodel import Field, SQLModel
-from .models import LocationBase, RoomBase
+from app.arrangement.models import LocationBase, RoomBase
 
 
 class LocationCreate(LocationBase):

@@ -3,9 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 from app.core.session import get_db
-from app.arrangment.models import Location, Room
-from app.arrangment.schemas import LocationRead, LocationCreate, LocationUpdate, LocationReadWithRoom
-from app.arrangment.schemas import RoomRead, RoomCreate, RoomReadWithLocation, RoomUpdate
+from app.arrangement.models import Location, Room
+from app.arrangement.schemas import LocationRead, LocationCreate, LocationUpdate, LocationReadWithRoom
+from app.arrangement.schemas import RoomRead, RoomCreate, RoomReadWithLocation, RoomUpdate
 
 
 location_router = loc = APIRouter()

@@ -20,6 +20,9 @@ PyJWT = "^2.3.0"
 passlib = "^1.7.4"
 python-multipart = "^0.0.5"
 python-dateutil = "^2.8.2"
+pyhumps = "^3.5.3"
+Jinja2 = "^3.0.3"
+aiofiles = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1"
