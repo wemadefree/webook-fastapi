@@ -1,8 +1,10 @@
 from typing import List, Optional
-from sqlmodel import SQLModel
-
-from app.arrangement.models import LocationBase, RoomBase
+from sqlmodel import Field, SQLModel
 from app.core.mixins import CamelCaseMixin
+
+
+class LocationBase(SQLModel, CamelCaseMixin):
+    name: str = Field(index=True)
 
 
 class LocationCreate(LocationBase):
@@ -15,6 +17,12 @@ class LocationRead(LocationBase):
 
 class LocationUpdate(SQLModel):
     name: Optional[str] = None
+
+
+class RoomBase(SQLModel, CamelCaseMixin):
+    name: str = Field(index=True)
+    max_capacity: int = Field(alias="maxCapacity")
+    location_id: Optional[int] = Field(default=None, foreign_key="location.id")
 
 
 class RoomCreate(RoomBase):

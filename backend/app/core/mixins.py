@@ -9,7 +9,7 @@ from app.core.utils import to_camel
 class TimeStampMixin(BaseModel):
     """Provides last created/modified timestamps"""
 
-    created_at: Optional[datetime] = Field(
+    created: Optional[datetime] = Field(
         sa_column=Column(
             DateTime,
             default=datetime.utcnow,
@@ -17,7 +17,7 @@ class TimeStampMixin(BaseModel):
         )
     )
 
-    updated_at: Optional[datetime] = Field(
+    modified: Optional[datetime] = Field(
         sa_column=Column(
             DateTime,
             default=datetime.utcnow,
