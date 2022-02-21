@@ -82,7 +82,7 @@ def create_room(*, session: Session = Depends(get_db), room: RoomCreate):
 
 
 @loc.patch("/room/{room_id}", response_model=RoomRead)
-def update_location(*, session: Session = Depends(get_db), room_id: int, room: RoomUpdate):
+def update_room(*, session: Session = Depends(get_db), room_id: int, room: RoomUpdate):
     db_room = session.get(Room, room_id)
     if not db_room:
         raise HTTPException(status_code=404, detail="Room not found")
