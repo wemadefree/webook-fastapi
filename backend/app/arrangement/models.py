@@ -7,7 +7,135 @@ from pydantic import EmailStr
 from app.core.mixins import CamelCaseMixin, TimeStampMixin
 
 
-class Location(SQLModel, TimeStampMixin, CamelCaseMixin,  table=True):
+class ArrangementOwnersLink(SQLModel, table=True):
+    __tablename__ = "arrangement_owners"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    arrangement_id: Optional[int] = Field(foreign_key="arrangement.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class ArrangementPeopleParticipantsLink(SQLModel, table=True):
+    __tablename__ = "arrangement_people_participants"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    arrangement_id: Optional[int] = Field(foreign_key="arrangement.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class PersonNotesLink(SQLModel, table=True):
+    __tablename__ = "person_notes"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class ArrangementOrganizationParticipantsLink(SQLModel, table=True):
+    __tablename__ = "arrangement_organization_participants"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    arrangement_id: Optional[int] = Field(foreign_key="arrangement.id", nullable=False)
+    organization_id: Optional[int] = Field(foreign_key="organization.id", nullable=False)
+
+
+class ArrangementTimelineEventsLink(SQLModel, table=True):
+    __tablename__ = "arrangement_timeline_events"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    arrangement_id: Optional[int] = Field(foreign_key="arrangement.id", nullable=False)
+    timelineevent_id: Optional[int] = Field(foreign_key="timelineevent.id", nullable=False)
+
+
+class CalendarPeopleLink(SQLModel, table=True):
+    __tablename__ = "calendar_people_resources"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    calendar_id: Optional[int] = Field(foreign_key="calendar.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class CalendarRoomLink(SQLModel, table=True):
+    __tablename__ = "calendar_room_resources"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    calendar_id: Optional[int] = Field(foreign_key="calendar.id", nullable=False)
+    room_id: Optional[int] = Field(foreign_key="room.id", nullable=False)
+
+
+class EventArticlesLink(SQLModel, table=True):
+    __tablename__ = "event_articles"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    event_id: Optional[int] = Field(foreign_key="event.id", nullable=False)
+    article_id: Optional[int] = Field(foreign_key="article.id", nullable=False)
+
+
+class EventNotesLink(SQLModel, table=True):
+    __tablename__ = "event_notes"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    event_id: Optional[int] = Field(foreign_key="event.id", nullable=False)
+    note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
+
+
+class EventPeopleLink(SQLModel, table=True):
+    __tablename__ = "event_people"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    event_id: Optional[int] = Field(foreign_key="event.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class EventRoomLink(SQLModel, table=True):
+    __tablename__ = "event_rooms"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    event_id: Optional[int] = Field(foreign_key="event.id", nullable=False)
+    room_id: Optional[int] = Field(foreign_key="room.id", nullable=False)
+
+
+class EventServicePeopleLink(SQLModel, table=True):
+    __tablename__ = "eventservice_associated_people"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    eventservice_id: Optional[int] = Field(foreign_key="eventservice.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class EventServiceNotesLink(SQLModel, table=True):
+    __tablename__ = "eventservice_notes"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    eventservice_id: Optional[int] = Field(foreign_key="eventservice.id", nullable=False)
+    note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
+
+
+class OrganizationMembersLink(SQLModel, table=True):
+    __tablename__ = "organization_members"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    organization_id: Optional[int] = Field(foreign_key="organization.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class OrganizationNotesLink(SQLModel, table=True):
+    __tablename__ = "organization_notes"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    organization_id: Optional[int] = Field(foreign_key="organization.id", nullable=False)
+    note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
+
+
+class EventLooseServiceRequisitionLink(SQLModel, table=True):
+    __tablename__ = "event_looseservicerequisition"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    event_id: Optional[int] = Field(foreign_key="event.id", nullable=False)
+    looseservicerequisition_id: Optional[int] = Field(foreign_key="looseservicerequisition.id", nullable=False)
+
+
+class Location(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
     rooms: List["Room"] = Relationship(back_populates="location")
@@ -25,7 +153,7 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 class Audience(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(..., max_length=255)
-    icon_class: Optional[str] = Field(default='',  max_length=255)
+    icon_class: Optional[str] = Field(default='', max_length=255)
 
 
 class Article(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
@@ -67,6 +195,8 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 
     business_hour: Optional[BusinessHour] = Relationship(back_populates="businesshours")
 
+    notes: List["Note"] = Relationship(back_populates="persons", link_model=PersonNotesLink)
+
 
 class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -80,6 +210,19 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     audience: Optional[Audience] = Relationship(back_populates="arrangements")
     responsible: Optional[Person] = Relationship(back_populates="arrangements")
 
+    timeline_events: List["TimeLineEvent"] = Relationship(back_populates="arrangements",
+                                                          link_model=ArrangementTimelineEventsLink)
+
+    notes: List["Note"] = Relationship(back_populates="arrangements", link_model=PersonNotesLink)
+
+    owners: List["Person"] = Relationship(back_populates="arrangements", link_model=ArrangementOwnersLink)
+
+    people_participants: List["Person"] = Relationship(back_populates="arrangements",
+                                                       link_model=ArrangementPeopleParticipantsLink)
+
+    organization_participants: List["Organization"] = Relationship(back_populates="arrangements",
+                                                                   link_model=ArrangementOrganizationParticipantsLink)
+
 
 class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -89,6 +232,10 @@ class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     owner_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
 
     owner: Optional[Person] = Relationship(back_populates="calendars")
+
+    people_resources: List["Person"] = Relationship(back_populates="calendars", link_model=CalendarPeopleLink)
+
+    room_resources: List["Room"] = Relationship(back_populates="calendars", link_model=CalendarRoomLink)
 
 
 class ConfirmationReceipt(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
@@ -126,6 +273,10 @@ class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 
     organization_type: Optional[OrganizationType] = Relationship(back_populates="organizations")
 
+    notes: List["Note"] = Relationship(back_populates="organizations", link_model=OrganizationNotesLink)
+
+    members: List["Person"] = Relationship(back_populates="organizations", link_model=OrganizationMembersLink)
+
 
 class ServiceProvider(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -160,6 +311,12 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     serie: Optional[EventSerie] = Relationship(back_populates="events")
     arrangement: Optional[Arrangement] = Relationship(back_populates="events")
 
+    people: List["Person"] = Relationship(back_populates="events", link_model=EventPeopleLink)
+    rooms: List["Room"] = Relationship(back_populates="events", link_model=EventRoomLink)
+    loose_requisitions: List["LooseServiceRequisition"] = Relationship(back_populates="events", link_model=EventLooseServiceRequisitionLink)
+    articles: List["Article"] = Relationship(back_populates="events", link_model=EventArticlesLink)
+    notes: List["Note"] = Relationship(back_populates="events", link_model=EventNotesLink)
+
 
 class EventService(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -171,6 +328,9 @@ class EventService(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     receipt: Optional[ConfirmationReceipt] = Relationship(back_populates="eventservices")
     event: Optional[Event] = Relationship(back_populates="eventservices")
     service_provider: Optional[ServiceProvider] = Relationship(back_populates="eventservices")
+
+    notes: List["Note"] = Relationship(back_populates="eventservices", link_model=EventServiceNotesLink)
+    associated_people: List["Person"] = Relationship(back_populates="eventservices", link_model=EventServicePeopleLink)
 
 
 class LooseServiceRequisition(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
