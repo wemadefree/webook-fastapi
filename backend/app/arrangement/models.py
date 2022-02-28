@@ -1,6 +1,7 @@
-import datetime
+import datetime, enum
 from typing import List, Optional
 from sqlalchemy import UniqueConstraint
+from sqlalchemy.dialects.postgresql import ENUM
 from sqlmodel import Column, Field, Relationship, SQLModel, VARCHAR
 from pydantic import EmailStr
 
@@ -20,14 +21,6 @@ class ArrangementPeopleParticipantsLink(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     arrangement_id: Optional[int] = Field(foreign_key="arrangement.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
-
-
-class PersonNotesLink(SQLModel, table=True):
-    __tablename__ = "person_notes"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
     person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
 
 
@@ -150,12 +143,6 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     location: Optional[Location] = Relationship(back_populates="rooms")
 
 
-class Audience(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(..., max_length=255)
-    icon_class: Optional[str] = Field(default='', max_length=255)
-
-
 class Article(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
@@ -165,11 +152,15 @@ class OrganizationType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
 
+    organizations: List["Organization"] = Relationship(back_populates="organization_type")
+
 
 class TimeLineEvent(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     content: str = Field(max_length=1024)
     stamp: datetime.datetime = Field(nullable=False)
+
+    arrangements: List["Arrangement"] = Relationship(back_populates="timeline_events", link_model=ArrangementTimelineEventsLink)
 
 
 class ServiceType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
@@ -177,10 +168,36 @@ class ServiceType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     name: str = Field(max_length=255)
 
 
+class PersonNotesLink(SQLModel, table=True):
+    __tablename__ = "person_notes"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
+class ArrangementNotesLink(SQLModel, table=True):
+    __tablename__ = "arrangement_notes"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
+    arrangement_id: Optional[int] = Field(foreign_key="arrangement.id", nullable=False)
+
+
+class PersonBusinessHoursLink(SQLModel, table=True):
+    __tablename__ = "person_business_hour"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    businesshour_id: Optional[int] = Field(foreign_key="businesshour.id", nullable=False)
+    person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+
+
 class BusinessHour(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     start_of_business_hours: datetime.time
     end_of_business_hours: datetime.time
+
+    persons: List["Person"] = Relationship(back_populates="businesshours", link_model=PersonBusinessHoursLink)
 
 
 class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
@@ -191,16 +208,67 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     last_name: str = Field(max_length=255)
     birth_date: datetime.date = Field(nullable=True)
 
-    business_hour_id: Optional[int] = Field(default=None, foreign_key="businesshour.id", nullable=True)
-
-    business_hour: Optional[BusinessHour] = Relationship(back_populates="businesshours")
-
+    businesshours: List["BusinessHour"] = Relationship(back_populates="persons", link_model=PersonBusinessHoursLink)
     notes: List["Note"] = Relationship(back_populates="persons", link_model=PersonNotesLink)
+    confirmationreceipts: List["ConfirmationReceipt"] = Relationship(back_populates="requested_by")
+    arrangements: List["Arrangement"] = Relationship(back_populates="responsible")
+    arrangement_planners: List["Arrangement"] = Relationship(back_populates="planners", link_model=ArrangementOwnersLink)
+    arrangement_participants: List["Arrangement"] = Relationship(back_populates="people_participants",
+                                                       link_model=ArrangementPeopleParticipantsLink)
+
+    organization_members: List["Organization"] = Relationship(back_populates="members",link_model=OrganizationMembersLink)
+
+
+class ConfirmationReceipt(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    __table_args__ = (UniqueConstraint("guid"),)
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    guid: str = Field(max_length=68, index=True)
+    sent_to: str = Field(max_length=255)
+    confirmed: bool = Field(default=False)
+    sent_when: datetime.datetime = Field(default=None, nullable=True)
+    confirmed_when: datetime.datetime = Field(default=None, nullable=True)
+    requested_by_id: Optional[int] = Field(default=None, foreign_key="person.id")
+
+    requested_by: Optional[Person] = Relationship(back_populates="confirmationreceipts")
+    notes: List["Note"] = Relationship(back_populates="confirmation")
+
+
+class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    content: str = Field(max_length=1024)
+
+    author_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+    confirmation_id: Optional[int] = Field(default=None, foreign_key="confirmationreceipt.id", nullable=True)
+
+    confirmation: Optional[ConfirmationReceipt] = Relationship(back_populates="notes")
+    author: Optional[Person] = Relationship(back_populates="notes")
+
+    persons: List["Person"] = Relationship(back_populates="notes", link_model=PersonNotesLink)
+    arrangement_notes: List["Arrangement"] = Relationship(back_populates="notes", link_model=ArrangementNotesLink)
+
+    organization_notes: List["Organization"] = Relationship(back_populates="notes", link_model=OrganizationNotesLink)
+
+
+class Audience(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(..., max_length=255)
+    icon_class: Optional[str] = Field(default='', max_length=255)
+
+    arrangements: List["Arrangement"] = Relationship(back_populates="audience")
+
+
+class StageChoices(str, enum.Enum):
+    PLANNING = 'planning'
+    REQUISITIONING = 'requisitioning'
+    READY_TO_LAUNCH = 'ready_to_launch'
+    IN_PRODUCTION = 'in_production'
 
 
 class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
+    stages: StageChoices = Field(sa_column=Column(ENUM(StageChoices)), default=StageChoices.PLANNING)
     starts: datetime.date
     ends: datetime.date
 
@@ -210,20 +278,36 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     audience: Optional[Audience] = Relationship(back_populates="arrangements")
     responsible: Optional[Person] = Relationship(back_populates="arrangements")
 
-    timeline_events: List["TimeLineEvent"] = Relationship(back_populates="arrangements",
-                                                          link_model=ArrangementTimelineEventsLink)
+    timeline_events: List["TimeLineEvent"] = Relationship(back_populates="arrangements", link_model=ArrangementTimelineEventsLink)
+    notes: List["Note"] = Relationship(back_populates="arrangement_notes", link_model=ArrangementNotesLink)
+    planners: List["Person"] = Relationship(back_populates="arrangement_planners", link_model=ArrangementOwnersLink)
+    people_participants: List["Person"] = Relationship(back_populates="arrangement_participants", link_model=ArrangementPeopleParticipantsLink)
+    organization_participants: List["Organization"] = Relationship(back_populates="arrangement_participants", link_model=ArrangementOrganizationParticipantsLink)
 
-    notes: List["Note"] = Relationship(back_populates="arrangements", link_model=PersonNotesLink)
 
-    owners: List["Person"] = Relationship(back_populates="arrangements", link_model=ArrangementOwnersLink)
+class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    organization_number: int = Field(default=None, nullable=True)
+    name: str = Field(max_length=255)
 
-    people_participants: List["Person"] = Relationship(back_populates="arrangements",
-                                                       link_model=ArrangementPeopleParticipantsLink)
+    organization_type_id: Optional[int] = Field(foreign_key="organizationtype.id")
 
-    organization_participants: List["Organization"] = Relationship(back_populates="arrangements",
+    organization_type: Optional[OrganizationType] = Relationship(back_populates="organizations")
+
+    arrangement_participants: List["Arrangement"] = Relationship(back_populates="organization_participants",
                                                                    link_model=ArrangementOrganizationParticipantsLink)
 
+    members: List["Person"] = Relationship(back_populates="organization_members",
+                                                                 link_model=OrganizationMembersLink)
 
+    notes: List["Note"] = Relationship(back_populates="organization_notes",
+                                                                 link_model=OrganizationNotesLink)
+
+# notes: List["Note"] = Relationship(back_populates="organizations", link_model=OrganizationNotesLink)
+
+   #members: List["Person"] = Relationship(back_populates="organizations", link_model=OrganizationMembersLink)
+
+"""
 class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
@@ -236,46 +320,6 @@ class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     people_resources: List["Person"] = Relationship(back_populates="calendars", link_model=CalendarPeopleLink)
 
     room_resources: List["Room"] = Relationship(back_populates="calendars", link_model=CalendarRoomLink)
-
-
-class ConfirmationReceipt(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __table_args__ = (UniqueConstraint("guid"),)
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    guid: str = Field(max_length=68, index=True)
-    sent_to: str = Field(max_length=255)
-    confirmed: bool = Field(default=False)
-    sent_when: datetime.datetime = Field(default=None)
-    confirmed_when: datetime.datetime = Field(default=None)
-
-    requested_by_id: Optional[int] = Field(default=None, foreign_key="person.id")
-
-    requested_by: Optional[Person] = Relationship(back_populates="confirmationreceipts")
-
-
-class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    content: str = Field(max_length=1024)
-
-    author_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
-    confirmation_id: Optional[int] = Field(default=None, foreign_key="confirmationreceipt.id")
-
-    confirmation: Optional[ConfirmationReceipt] = Relationship(back_populates="notes")
-    author: Optional[Person] = Relationship(back_populates="notes")
-
-
-class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    organization_number: int = Field(nullable=True)
-    name: str = Field(max_length=255)
-
-    organization_type_id: Optional[int] = Field(foreign_key="organizationtype.id")
-
-    organization_type: Optional[OrganizationType] = Relationship(back_populates="organizations")
-
-    notes: List["Note"] = Relationship(back_populates="organizations", link_model=OrganizationNotesLink)
-
-    members: List["Person"] = Relationship(back_populates="organizations", link_model=OrganizationMembersLink)
 
 
 class ServiceProvider(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
@@ -342,3 +386,5 @@ class LooseServiceRequisition(SQLModel, TimeStampMixin, CamelCaseMixin, table=Tr
 
     arrangement: Optional[Arrangement] = Relationship(back_populates="looseservicerequisitions")
     type_to_order: Optional[ServiceType] = Relationship(back_populates="looseservicerequisitions")
+
+"""

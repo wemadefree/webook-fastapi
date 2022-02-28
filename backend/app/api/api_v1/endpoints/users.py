@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, Response, encoders
-import typing as t
+from  typing import List
 
 from app.core.session import get_db
 from app.users.crud import (
@@ -15,11 +15,7 @@ from app.core.auth import get_current_active_user, get_current_active_superuser
 users_router = r = APIRouter()
 
 
-@r.get(
-    "/users",
-    response_model=t.List[User],
-    response_model_exclude_none=True,
-)
+@r.get("/users", response_model=List[User], response_model_exclude_none=True)
 async def users_list(
     response: Response,
     db=Depends(get_db),

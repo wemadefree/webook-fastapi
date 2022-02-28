@@ -1,6 +1,8 @@
+from typing import Any
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlmodel import Session
 
 from . import config
 
@@ -17,3 +19,18 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# Dependency
+def get_sqlmodel_sesion():
+    with Session(engine) as session:
+        yield session
+
+
+def commit_transaction(session: Session, db_item: Any):
+    """When adding or updating record in database (POST, PATCH, PUT)"""
+    session.add(db_item)
+    session.commit()
+    session.refresh(db_item)
+
+
