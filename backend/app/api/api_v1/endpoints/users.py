@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, Response, encoders
-from  typing import List
+from typing import List
 
 from app.core.session import get_db
 from app.users.crud import (

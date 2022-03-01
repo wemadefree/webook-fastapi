@@ -1,9 +1,9 @@
-import datetime, enum
+import datetime
 from typing import List, Optional
 from sqlmodel import Field, SQLModel
 from pydantic import EmailStr
 
-from app.arrangement.models import StageChoices
+from app.arrangement.model.basemodels import StageChoices
 from app.core.mixins import CamelCaseMixin
 
 
