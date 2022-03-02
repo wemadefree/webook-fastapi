@@ -86,24 +86,24 @@ def update_event(*, session: Session = Depends(get_session), event_id: int, even
 
 
 @evt.post("/eventservices", response_model=EventServiceReadExtra)
-def create_event(*, session: Session = Depends(get_session), eventservice: EventServiceCreate):
+def create_eventservice(*, session: Session = Depends(get_session), eventservice: EventServiceCreate):
     eventservice_item = CrudManager(EventService).create_item(session, eventservice)
     return eventservice_item
 
 
 @evt.get("/eventservices", response_model=List[EventServiceRead])
-def read_event(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
+def read_eventservices(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     eventservice = CrudManager(EventService).read_items(session, offset, limit)
     return eventservice
 
 
 @evt.get("/eventservice/{eventservice_id}", response_model=EventServiceReadExtra)
-def read_event(*, session: Session = Depends(get_session), eventservice_id: int):
+def read_eventservice(*, session: Session = Depends(get_session), eventservice_id: int):
     eventservice_item = CrudManager(EventService).read_item(session, eventservice_id)
     return eventservice_item
 
 
 @evt.patch("/eventservice/{eventservice_id}", response_model=EventServiceReadExtra)
-def update_event(*, session: Session = Depends(get_session), eventservice_id: int, eventservice: EventServiceUpdate):
+def update_eventservice(*, session: Session = Depends(get_session), eventservice_id: int, eventservice: EventServiceUpdate):
     eventservice_item = CrudManager(EventService).edit_item(session, eventservice_id, eventservice)
     return eventservice_item
