@@ -40,6 +40,11 @@ def update_hour(*, session: Session = Depends(get_session), hour_id: int, hour: 
     return db_hour
 
 
+@org.delete("/businesshour/{businesshour_id}")
+def delete_hour(*, session: Session = Depends(get_session), hour_id: int):
+    return CrudManager(BusinessHour).delete_item(session, hour_id)
+
+
 @org.post("/orgtypes", response_model=OrganizationTypeRead)
 def create_organization_type(*, session: Session = Depends(get_session), item: OrganizationTypeCreate):
     db_item = CrudManager(OrganizationType).create_item(session, item)
@@ -64,6 +69,11 @@ def update_organization_type(*, session: Session = Depends(get_session), org_typ
     return db_item
 
 
+@org.delete("/orgtypes/{org_type_id}")
+def delete_organization_type(*, session: Session = Depends(get_session), org_type_id: int):
+    return CrudManager(OrganizationType).delete_item(session, org_type_id)
+
+
 @org.post("/organizations", response_model=OrganizationRead)
 def create_organization(*, session: Session = Depends(get_session), item: OrganizationCreate):
     db_item = CrudManager(Organization).create_item(session, item)
@@ -86,3 +96,8 @@ def read_organizations(*, session: Session = Depends(get_session), offset: int =
 def update_organization(*, session: Session = Depends(get_session), organization_id: int, organization: OrganizationUpdate):
     db_item = CrudManager(Organization).edit_item(session, organization_id, organization)
     return db_item
+
+
+@org.delete("/organization/{org_id}")
+def delete_organization(*, session: Session = Depends(get_session), org_id: int):
+    return CrudManager(Organization).delete_item(session, org_id)

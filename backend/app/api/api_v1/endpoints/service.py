@@ -34,6 +34,11 @@ def update_servicetype(*, session: Session = Depends(get_session), servicetype_i
     return servicetype_item
 
 
+@ser.delete("/servicetype/{servicetype_id}")
+def delete_servicetype(*, session: Session = Depends(get_session), servicetype_id: int):
+    return CrudManager(ServiceType).delete_item(session, servicetype_id)
+
+
 @ser.post("/serviceproviders", response_model=ServiceProviderRead)
 def create_serviceprovider(*, session: Session = Depends(get_session), serviceprovider: ServiceProviderCreate):
     serviceprovider_item = CrudManager(ServiceProvider).create_item(session, serviceprovider)
@@ -58,6 +63,11 @@ def update_serviceprovider(*, session: Session = Depends(get_session), servicepr
     return serviceprovider_item
 
 
+@ser.delete("/serviceprovider/{serviceprovider_id}")
+def delete_serviceprovider(*, session: Session = Depends(get_session), serviceprovider_id: int):
+    return CrudManager(ServiceProvider).delete_item(session, serviceprovider_id)
+
+
 @ser.post("/servicerequisitons", response_model=LooseServiceRequisitionReadExtra)
 def create_servicerequisiton(*, session: Session = Depends(get_session), servicerequisiton: LooseServiceRequisitionCreate):
     servicerequisiton_item = CrudManager(LooseServiceRequisition).create_item(session, servicerequisiton)
@@ -80,3 +90,8 @@ def read_servicerequisiton(*, session: Session = Depends(get_session),servicereq
 def update_servicerequisiton(*, session: Session = Depends(get_session), servicerequisiton_id: int, servicerequisiton: LooseServiceRequisitionUpdate):
     servicerequisiton_item = CrudManager(LooseServiceRequisition).edit_item(session, servicerequisiton_id, servicerequisiton)
     return servicerequisiton_item
+
+
+@ser.delete("/servicerequisiton/{servicerequisiton_id}")
+def delete_servicerequisiton(*, session: Session = Depends(get_session), servicerequisiton_id: int):
+    return CrudManager(LooseServiceRequisition).delete_item(session, servicerequisiton_id)

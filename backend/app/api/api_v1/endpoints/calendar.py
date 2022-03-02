@@ -32,3 +32,8 @@ def read_calendar(*, session: Session = Depends(get_session), calendar_id: int):
 def update_calendar(*, session: Session = Depends(get_session), calendar_id: int, calendar: CalendarUpdate):
     calendar_item = CrudManager(Calendar).edit_item(session, calendar_id, calendar)
     return calendar_item
+
+
+@cal.delete("/calendar/{calendar_id}")
+def delete_arrangement(*, session: Session = Depends(get_session), calendar_id: int):
+    return CrudManager(Calendar).delete_item(session, calendar_id)

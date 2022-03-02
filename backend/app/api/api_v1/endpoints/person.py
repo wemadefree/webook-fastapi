@@ -49,6 +49,11 @@ def read_persons(*, session: Session = Depends(get_session), offset: int = 0, li
     return item
 
 
+@per.delete("/person/{person_id}")
+def delete_person(*, session: Session = Depends(get_session), person_id: int):
+    return CrudManager(Person).delete_item(session, person_id)
+
+
 @per.post("/notes/", response_model=NoteRead)
 def create_note(*, session: Session = Depends(get_session), item: NoteCreate):
     item = CrudManager(Note).create_item(session, item)
@@ -73,6 +78,11 @@ def update_note(*, session: Session = Depends(get_session), note_id: int, note: 
     return item
 
 
+@per.delete("/note/{note_id}")
+def delete_note(*, session: Session = Depends(get_session), note_id: int):
+    return CrudManager(Note).delete_item(session, note_id)
+
+
 @per.post("/receipts", response_model=ConfirmationRecieptRead)
 def create_receipt(*, session: Session = Depends(get_session), item: ConfirmationRecieptCreate):
     item = CrudManager(ConfirmationReceipt).create_item(session, item)
@@ -95,4 +105,9 @@ def read_receipt(*, session: Session = Depends(get_session), offset: int = 0, li
 def update_receipt(*, session: Session = Depends(get_session), receipt_id: int, receipt: ConfirmationRecieptUpdate):
     item = CrudManager(ConfirmationReceipt).edit_item(session, receipt_id, receipt)
     return item
+
+
+@per.delete("/receipt/{receipt_id}")
+def delete_note(*, session: Session = Depends(get_session), receipt_id: int):
+    return CrudManager(Note).delete_item(session, receipt_id)
 

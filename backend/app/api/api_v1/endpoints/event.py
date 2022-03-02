@@ -37,6 +37,11 @@ def update_article(*, session: Session = Depends(get_session), article_id: int, 
     return article_item
 
 
+@evt.delete("/article/{article_id}")
+def delete_servicerequisiton(*, session: Session = Depends(get_session), article_id: int):
+    return CrudManager(Article).delete_item(session, article_id)
+
+
 @evt.post("/eventseries", response_model=EventSerieReadExtra)
 def create_eventserie(*, session: Session = Depends(get_session), eventserie: EventSerieCreate):
     eventserie_item = CrudManager(EventSerie).create_item(session, eventserie)
@@ -59,6 +64,11 @@ def read_eventserie(*, session: Session = Depends(get_session), eventserie_id: i
 def update_eventserie(*, session: Session = Depends(get_session), eventserie_id: int, eventserie: EventSerieUpdate):
     eventserie_item = CrudManager(EventSerie).edit_item(session, eventserie_id, eventserie)
     return eventserie_item
+
+
+@evt.delete("/eventserie/{eventserie_id}")
+def delete_eventserie(*, session: Session = Depends(get_session), eventserie_id: int):
+    return CrudManager(EventSerie).delete_item(session, eventserie_id)
 
 
 @evt.post("/events", response_model=EventReadExtra)
@@ -85,6 +95,11 @@ def update_event(*, session: Session = Depends(get_session), event_id: int, even
     return event_item
 
 
+@evt.delete("/event/{event_id}")
+def delete_event(*, session: Session = Depends(get_session), event_id: int):
+    return CrudManager(Event).delete_item(session, event_id)
+
+
 @evt.post("/eventservices", response_model=EventServiceReadExtra)
 def create_eventservice(*, session: Session = Depends(get_session), eventservice: EventServiceCreate):
     eventservice_item = CrudManager(EventService).create_item(session, eventservice)
@@ -107,3 +122,8 @@ def read_eventservice(*, session: Session = Depends(get_session), eventservice_i
 def update_eventservice(*, session: Session = Depends(get_session), eventservice_id: int, eventservice: EventServiceUpdate):
     eventservice_item = CrudManager(EventService).edit_item(session, eventservice_id, eventservice)
     return eventservice_item
+
+
+@evt.delete("/eventservice/{eventservice_id}")
+def delete_eventservice(*, session: Session = Depends(get_session), eventservice_id: int):
+    return CrudManager(EventService).delete_item(session, eventservice_id)

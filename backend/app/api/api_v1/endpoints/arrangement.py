@@ -42,6 +42,11 @@ def update_audience(*, session: Session = Depends(get_session), audience_id: int
     return item
 
 
+@arr.delete("/audience/{audience_id}")
+def delete_audience(*, session: Session = Depends(get_session), audience_id: int):
+    return CrudManager(Audience).delete_item(session, audience_id)
+
+
 @arr.post("/timelines", response_model=TimeLineEventRead)
 def create_timeline(*, session: Session = Depends(get_session), item: TimeLineEventCreate):
     item = CrudManager(TimeLineEvent).create_item(session, item)
@@ -66,6 +71,11 @@ def update_timeline(*, session: Session = Depends(get_session), timeline_id: int
     return item
 
 
+@arr.delete("/timeline/{timeline_id}")
+def delete_timeline(*, session: Session = Depends(get_session), timeline_id: int):
+    return CrudManager(TimeLineEvent).delete_item(session, timeline_id)
+
+
 @arr.post("/arrangements", response_model=ArrangementRead)
 def create_arrangement(*, session: Session = Depends(get_session), item: ArrangementCreate):
     item = CrudManager(Arrangement).create_item(session, item)
@@ -88,3 +98,8 @@ def read_arrangements(*, session: Session = Depends(get_session), offset: int = 
 def update_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, arrangement: ArrangementUpdate):
     item = CrudManager(Arrangement).edit_item(session, arrangement_id, arrangement)
     return item
+
+
+@arr.delete("/arrangement/{arrangement_id}")
+def delete_arrangement(*, session: Session = Depends(get_session), arrangement_id: int):
+    return CrudManager(Arrangement).delete_item(session, arrangement_id)
