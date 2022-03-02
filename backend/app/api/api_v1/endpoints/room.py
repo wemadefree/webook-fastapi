@@ -19,7 +19,7 @@ def create_location(*, session: Session = Depends(get_session), location: Locati
 
 @loc.get("/locations", response_model=List[LocationRead])
 def read_locations(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
-    locations = CrudManager(LocationRead).read_items(session, offset, limit)
+    locations = CrudManager(Location).read_items(session, offset, limit)
     return locations
 
 
