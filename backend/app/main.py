@@ -3,13 +3,13 @@ from starlette.requests import Request
 import uvicorn
 from fastapi.staticfiles import StaticFiles
 
-from app.core import config
+from app.core.docs import main_description, tags_metadata
 from app.core.session import SessionLocal
 from app.core.routes import include_routes
 
 
 def start_application():
-    main_app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
+    main_app = FastAPI(title="WeBook API", description=main_description, docs_url="/api/docs", openapi_url="/api", openapi_tags=tags_metadata)
     include_routes(main_app)
     return main_app
 

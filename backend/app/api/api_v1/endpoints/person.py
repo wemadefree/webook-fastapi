@@ -12,6 +12,7 @@ from app.arrangement.factory import CrudManager
 
 
 person_router = per = APIRouter()
+note_router = nt = APIRouter()
 
 SelectOfScalar.inherit_cache = True  # type: ignore
 Select.inherit_cache = True  # type: ignore
@@ -54,31 +55,31 @@ def delete_person(*, session: Session = Depends(get_session), person_id: int):
     return CrudManager(Person).delete_item(session, person_id)
 
 
-@per.post("/notes/", response_model=NoteRead)
+@nt.post("/notes/", response_model=NoteRead)
 def create_note(*, session: Session = Depends(get_session), item: NoteCreate):
     item = CrudManager(Note).create_item(session, item)
     return item
 
 
-@per.get("/note/{note_id}", response_model=NoteReadWithAuthors)
+@nt.get("/note/{note_id}", response_model=NoteReadWithAuthors)
 def read_note(*, session: Session = Depends(get_session), note_id: int):
     item = CrudManager(Note).read_item(session, note_id)
     return item
 
 
-@per.get("/notes", response_model=List[NoteRead])
+@nt.get("/notes", response_model=List[NoteRead])
 def read_note(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     item = CrudManager(Note).read_items(session, offset, limit)
     return item
 
 
-@per.patch("/note/{note_id}", response_model=NoteRead)
+@nt.patch("/note/{note_id}", response_model=NoteRead)
 def update_note(*, session: Session = Depends(get_session), note_id: int, note: NoteUpdate):
     item = CrudManager(Note).edit_item(session, note_id, note)
     return item
 
 
-@per.delete("/note/{note_id}")
+@nt.delete("/note/{note_id}")
 def delete_note(*, session: Session = Depends(get_session), note_id: int):
     return CrudManager(Note).delete_item(session, note_id)
 

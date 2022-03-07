@@ -13,6 +13,7 @@ from app.arrangement.factory import CrudManager
 
 
 arrangement_router = arr = APIRouter()
+timeline_router = tim = APIRouter()
 
 SelectOfScalar.inherit_cache = True  # type: ignore
 Select.inherit_cache = True  # type: ignore
@@ -47,31 +48,31 @@ def delete_audience(*, session: Session = Depends(get_session), audience_id: int
     return CrudManager(Audience).delete_item(session, audience_id)
 
 
-@arr.post("/timelines", response_model=TimeLineEventRead)
+@tim.post("/timelines", response_model=TimeLineEventRead)
 def create_timeline(*, session: Session = Depends(get_session), item: TimeLineEventCreate):
     item = CrudManager(TimeLineEvent).create_item(session, item)
     return item
 
 
-@arr.get("/timeline/{timeline_id}", response_model=TimeLineEventRead)
+@tim.get("/timeline/{timeline_id}", response_model=TimeLineEventRead)
 def read_timeline(*, session: Session = Depends(get_session), timeline_id: int):
     item = CrudManager(TimeLineEvent).read_item(session, timeline_id)
     return item
 
 
-@arr.get("/timelines", response_model=List[TimeLineEventRead])
+@tim.get("/timelines", response_model=List[TimeLineEventRead])
 def read_timelines(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     item = CrudManager(TimeLineEvent).read_items(session, offset, limit)
     return item
 
 
-@arr.patch("/timeline/{timeline_id}", response_model=TimeLineEventRead)
+@tim.patch("/timeline/{timeline_id}", response_model=TimeLineEventRead)
 def update_timeline(*, session: Session = Depends(get_session), timeline_id: int, timeline: TimeLineEventUpdate):
     item = CrudManager(TimeLineEvent).edit_item(session, timeline_id, timeline)
     return item
 
 
-@arr.delete("/timeline/{timeline_id}")
+@tim.delete("/timeline/{timeline_id}")
 def delete_timeline(*, session: Session = Depends(get_session), timeline_id: int):
     return CrudManager(TimeLineEvent).delete_item(session, timeline_id)
 

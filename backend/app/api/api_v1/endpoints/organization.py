@@ -11,36 +11,37 @@ from sqlmodel.sql.expression import Select, SelectOfScalar
 from app.arrangement.factory import CrudManager
 
 organization_router = org = APIRouter()
+hour_router = hour = APIRouter()
 
 SelectOfScalar.inherit_cache = True  # type: ignore
 Select.inherit_cache = True  # type: ignore
 
 
-@org.get("/businesshours", response_model=List[BusinessHourRead])
+@hour.get("/businesshours", response_model=List[BusinessHourRead])
 def read_hours(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     hours = CrudManager(BusinessHour).read_items(session, offset, limit)
     return hours
 
 
-@org.get("/businesshour/{businesshour_id}", response_model=BusinessHourRead)
+@hour.get("/businesshour/{businesshour_id}", response_model=BusinessHourRead)
 def read_hour(*, session: Session = Depends(get_session), hour_id: int):
     hour = CrudManager(BusinessHour).read_item(session, hour_id)
     return hour
 
 
-@org.post("/businesshours/", response_model=BusinessHourRead)
+@hour.post("/businesshours/", response_model=BusinessHourRead)
 def create_hours(*, session: Session = Depends(get_session), hour: BusinessHourCreate):
     db_hour = CrudManager(BusinessHour).create_item(session, hour)
     return db_hour
 
 
-@org.patch("/businesshour/{businesshour_id}", response_model=BusinessHourRead)
+@hour.patch("/businesshour/{businesshour_id}", response_model=BusinessHourRead)
 def update_hour(*, session: Session = Depends(get_session), hour_id: int, hour: BusinessHourUpdate):
     db_hour = CrudManager(BusinessHour).edit_item(session, hour_id, hour)
     return db_hour
 
 
-@org.delete("/businesshour/{businesshour_id}")
+@hour.delete("/businesshour/{businesshour_id}")
 def delete_hour(*, session: Session = Depends(get_session), hour_id: int):
     return CrudManager(BusinessHour).delete_item(session, hour_id)
 
