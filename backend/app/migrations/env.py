@@ -8,8 +8,8 @@ from sqlalchemy import pool
 from sqlmodel import SQLModel
 
 #from app.users.models import Base
-from app.arrangement.models import Location, Room, Audience, Arrangement, Article, OrganizationType, TimeLineEvent, ServiceType, BusinessHour, Calendar, Note, ConfirmationReceipt, Person, Organization, ServiceProvider, Event, EventService, EventSerie, LooseServiceRequisition
-from app.arrangement.models import ArrangementNotesLink
+from app.arrangement.model.basemodels import Audience, BusinessHour, Person, Arrangement, Location, Room, Article, OrganizationType, TimeLineEvent, ServiceType, ConfirmationReceipt, Note, Organization, Calendar, ServiceProvider, EventSerie, Event, EventService, LooseServiceRequisition
+from app.arrangement.model.linkmodels import ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink, ArrangementTimelineEventsLink, CalendarPeopleLink, CalendarRoomLink, EventArticlesLink, EventNotesLink, EventPeopleLink, EventRoomLink, EventServicePeopleLink, EventServiceNotesLink, OrganizationMembersLinky, OrganizationNotesLink, EventLooseServiceRequisitionLink, ArrangementNotesLink, PersonBusinessHoursLink, PersonNotesLink
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
