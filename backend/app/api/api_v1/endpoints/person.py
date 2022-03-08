@@ -41,26 +41,50 @@ def update_person(*, session: Session = Depends(get_session), person_id: int, pe
     return db_person
 
 
-@per.post("/person/{person_id}/addnote", response_model=PersonReadExtra)
-def add_note(*, session: Session = Depends(get_session), person_id: int, note: NoteAddOrUpdate):
+@per.post("/person/{person_id}/note/{note_id}", response_model=PersonReadExtra)
+def add_note_for_person(*, session: Session = Depends(get_session), person_id: int, note_id: int):
     db_person = CrudManager(Person).read_item(session, person_id)
     if db_person:
-        db_note = CrudManager(Note).edit_item(session, note.id, note)
+        db_note = CrudManager(Note).read_item(session, note_id)
         if db_note:
             db_person.notes.append(db_note)
-    db_person = CrudManager(Person).edit_item(session, person_id, db_person)
+        db_person = CrudManager(Person).edit_item(session, person_id, db_person)
     return db_person
 
 
-@per.post("/person/{person_id}/addbusinesshour", response_model=PersonReadExtra)
-def add_hours(*, session: Session = Depends(get_session), person_id: int, hour: BusinessHourAddOrUpdate):
+@per.delete("/person/{person_id}/note/{note_id}", response_model=PersonReadExtra)
+def remove_note_from_person(*, session: Session = Depends(get_session), person_id: int, note_id: int):
+    db_cal = CrudManager(Person).read_item(session, person_id)
+    if db_cal:
+        for per in db_cal.notes:
+            if per.id == note_id:
+                db_cal.notes.remove(per)
+                break
+        db_cal = CrudManager(Person).edit_item(session, person_id, db_cal)
+    return db_cal
+
+
+@per.post("/person/{person_id}/businesshour/{hour_id}", response_model=PersonReadExtra)
+def add_business_hour_to_person(*, session: Session = Depends(get_session), person_id: int, hour_id: int):
     db_person = CrudManager(Person).read_item(session, person_id)
     if db_person:
-        db_hour = CrudManager(BusinessHour).edit_item(session, hour.id, hour)
+        db_hour = CrudManager(BusinessHour).read_item(session, hour_id)
         if db_hour:
             db_person.businesshours.append(db_hour)
-    db_person = CrudManager(Person).edit_item(session, person_id, db_person)
+        db_person = CrudManager(Person).edit_item(session, person_id, db_person)
     return db_person
+
+
+@per.delete("/person/{person_id}/businesshour/{hour_id}", response_model=PersonReadExtra)
+def remove_business_hour_from_person(*, session: Session = Depends(get_session), person_id: int, hour_id: int):
+    db_cal = CrudManager(Person).read_item(session, person_id)
+    if db_cal:
+        for per in db_cal.businesshours:
+            if per.id == hour_id:
+                db_cal.businesshours.remove(per)
+                break
+        db_cal = CrudManager(Person).edit_item(session, person_id, db_cal)
+    return db_cal
 
 
 @per.get("/person/{person_id}", response_model=PersonReadExtra)

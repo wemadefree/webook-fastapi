@@ -7,7 +7,6 @@ from app.arrangement.model.basemodels import Person, BusinessHour, Note, Confirm
 from app.arrangement.schema.bussineshours import BusinessHourRead, BusinessHourUpdate, BusinessHourCreate
 from app.arrangement.schema.organizations import OrganizationTypeRead, OrganizationTypeCreate, OrganizationTypeUpdate
 from app.arrangement.schema.organizations import OrganizationRead, OrganizationReadExtra, OrganizationCreate, OrganizationUpdate, OrganizationAddOrUpdate
-from app.arrangement.schema.persons import PersonAddOrUpdate, NoteAddOrUpdate
 from sqlmodel.sql.expression import Select, SelectOfScalar
 from app.arrangement.factory import CrudManager
 
@@ -108,24 +107,47 @@ def delete_organization(*, session: Session = Depends(get_session), org_id: int)
     return CrudManager(Organization).delete_item(session, org_id)
 
 
-@org.post("/organization/{org_id}/addmember", response_model=OrganizationReadExtra)
-def add_member(*, session: Session = Depends(get_session), organization_id: int, person: PersonAddOrUpdate):
-    db_organization = CrudManager(Organization).read_item(session, organization_id)
-    if db_organization:
-        db_person = CrudManager(Person).edit_item(session, person.id, person)
+@org.post("/organization/{org_id}/member/{person_id}", response_model=OrganizationReadExtra)
+def add_member_to_organization(*, session: Session = Depends(get_session), org_id: int, person_id: int):
+    db_cal = CrudManager(Organization).read_item(session, org_id)
+    if db_cal:
+        db_person = CrudManager(Person).read_item(session, person_id)
         if db_person:
-            db_organization.members.append(db_person)
-    db_organization = CrudManager(Organization).edit_item(session, organization_id, db_organization)
+            db_cal.members.append(db_person)
+        db_cal = CrudManager(Organization).edit_item(session, org_id, db_cal)
+    return db_cal
+
+
+@org.delete("/organization/{org_id}/member/{person_id}", response_model=OrganizationReadExtra)
+def remove_member_from_organization(*, session: Session = Depends(get_session), org_id: int, person_id: int):
+    db_organization = CrudManager(Organization).read_item(session, org_id)
+    if db_organization:
+        for per in db_organization.members:
+            if per.id == person_id:
+                db_organization.members.remove(per)
+                break
+        db_organization = CrudManager(Organization).edit_item(session, person_id, db_organization)
     return db_organization
 
 
-@org.post("/organization/{org_id}/addnote", response_model=OrganizationReadExtra)
-def add_note(*, session: Session = Depends(get_session), organization_id: int, note: NoteAddOrUpdate):
+@org.post("/organization/{org_id}/note/{note_id}", response_model=OrganizationReadExtra)
+def add_note_to_organization(*, session: Session = Depends(get_session), organization_id: int, note_id: int):
     db_organization = CrudManager(Organization).read_item(session, organization_id)
     if db_organization:
-        db_note = CrudManager(Note).edit_item(session, note.id, note)
+        db_note = CrudManager(Note).read_item(session, note_id)
         if db_note:
             db_organization.notes.append(db_note)
-    db_organization = CrudManager(Organization).edit_item(session, organization_id, db_organization)
+        db_organization = CrudManager(Organization).edit_item(session, organization_id, db_organization)
     return db_organization
 
+
+@org.delete("/organization/{org_id}/note/{note_id}", response_model=OrganizationReadExtra)
+def delete_note_from_organization(*, session: Session = Depends(get_session), organization_id: int, note_id: int):
+    db_organization = CrudManager(Organization).read_item(session, organization_id)
+    if db_organization:
+        for per in db_organization.notes:
+            if per.id == note_id:
+                db_organization.notes.remove(per)
+                break
+        db_organization = CrudManager(Organization).edit_item(session, note_id, db_organization)
+    return db_organization

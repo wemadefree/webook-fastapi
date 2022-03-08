@@ -108,57 +108,117 @@ def delete_arrangement(*, session: Session = Depends(get_session), arrangement_i
     return CrudManager(Arrangement).delete_item(session, arrangement_id)
 
 
-@arr.post("/arrangement/{arrangement_id}/addtimeline", response_model=ArrangementRead)
-def add_timeline(*, session: Session = Depends(get_session), arrangement_id: int, timeline: TimeLineEventAddOrUpdate):
+@arr.post("/arrangement/{arrangement_id}/note/{note_id}", response_model=ArrangementRead)
+def add_arrangement_note(*, session: Session = Depends(get_session), arrangement_id: int, note_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
-        db_timeline = CrudManager(TimeLineEvent).edit_item(session, timeline.id, timeline)
-        if db_timeline:
-            db_arrangement.timeline_events.append(db_timeline)
-    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
-    return db_arrangement
-
-
-@arr.post("/arrangement/{arrangement_id}/addnote", response_model=ArrangementRead)
-def add_note(*, session: Session = Depends(get_session), arrangement_id: int, note: NoteAddOrUpdate):
-    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
-    if db_arrangement:
-        db_note = CrudManager(Note).edit_item(session, note.id, note)
+        db_note = CrudManager(Note).read_item(session, note_id)
         if db_note:
             db_arrangement.notes.append(db_note)
-    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
     return db_arrangement
 
 
-@arr.post("/arrangement/{arrangement_id}/addplanner", response_model=ArrangementRead)
-def add_planner(*, session: Session = Depends(get_session), arrangement_id: int, person: PersonAddOrUpdate):
+@arr.delete("/arrangement/{arrangement_id}/note/{note_id}", response_model=ArrangementRead)
+def remove_note_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, note_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
-        db_person = CrudManager(Person).edit_item(session, person.id, person)
+        for per in db_arrangement.notes:
+            if per.id == note_id:
+                db_arrangement.notes.remove(per)
+                break
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/timeline/{timeline_id}", response_model=ArrangementRead)
+def add_arrangement_timeline_event(*, session: Session = Depends(get_session), arrangement_id: int, timeline_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_time = CrudManager(TimeLineEvent).read_item(session, timeline_id)
+        if db_time:
+            db_arrangement.timeline_events.append(db_time)
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.delete("/arrangement/{arrangement_id}/timeline/{timeline_id}", response_model=ArrangementRead)
+def remove_timeline_event_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, timeline_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        for per in db_arrangement.timeline_events:
+            if per.id == timeline_id:
+                db_arrangement.timeline_events.remove(per)
+                break
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/planner/{person_id}", response_model=ArrangementRead)
+def add_arrangement_planner(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_person = CrudManager(Person).read_item(session, person_id)
         if db_person:
             db_arrangement.planners.append(db_person)
-    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
     return db_arrangement
 
 
-@arr.post("/arrangement/{arrangement_id}/addpeople_participants", response_model=ArrangementRead)
-def add_people_participants(*, session: Session = Depends(get_session), arrangement_id: int, person: PersonAddOrUpdate):
+@arr.delete("/arrangement/{arrangement_id}/planner/{person_id}", response_model=ArrangementRead)
+def remove_planner_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
-        db_person = CrudManager(Person).edit_item(session, person.id, person)
+        for per in db_arrangement.planners:
+            if per.id == person_id:
+                db_arrangement.planners.remove(per)
+                break
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/participant/{person_id}", response_model=ArrangementRead)
+def add_person_participant_to_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_person = CrudManager(Person).read_item(session, person_id)
         if db_person:
             db_arrangement.people_participants.append(db_person)
-    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
     return db_arrangement
 
 
-@arr.post("/arrangement/{arrangement_id}/addorganization_participants", response_model=ArrangementRead)
-def add_organization_participants(*, session: Session = Depends(get_session), arrangement_id: int, organization: OrganizationAddOrUpdate):
+@arr.delete("/arrangement/{arrangement_id}/participant/{person_id}", response_model=ArrangementRead)
+def remove_person_participant_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
-        db_org = CrudManager(Organization).edit_item(session, organization.id, organization)
+        for per in db_arrangement.people_participants:
+            if per.id == person_id:
+                db_arrangement.people_participants.remove(per)
+                break
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/organization/{org_id}", response_model=ArrangementRead)
+def add_organization_participant_to_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, org_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_org = CrudManager(Organization).read_item(session, org_id)
         if db_org:
             db_arrangement.organization_participants.append(db_org)
-    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.delete("/arrangement/{arrangement_id}/organization/{org_id}", response_model=ArrangementRead)
+def remove_organization_participant_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, org_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        for per in db_arrangement.organization_participants:
+            if per.id == org_id:
+                db_arrangement.organization_participants.remove(per)
+                break
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
     return db_arrangement
 

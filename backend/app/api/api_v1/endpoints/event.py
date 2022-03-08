@@ -75,59 +75,120 @@ def delete_event(*, session: Session = Depends(get_session), event_id: int):
     return CrudManager(Event).delete_item(session, event_id)
 
 
-@evt.post("/event/{event_id}/addperson", response_model=EventReadExtra)
-def add_people(*, session: Session = Depends(get_session), event_id: int, person: PersonAddOrUpdate):
-    db_evt = CrudManager(Event).read_item(session, event_id)
-    if db_evt:
-        db_person = CrudManager(Person).edit_item(session, person.id, person)
-        if db_person:
-            db_evt.people.append(db_person)
-    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
-    return db_evt
-
-
-@evt.post("/event/{event_id}/addroom", response_model=EventReadExtra)
-def add_room(*, session: Session = Depends(get_session), event_id: int, room: RoomAddOrUpdate):
-    db_evt = CrudManager(Event).read_item(session, event_id)
-    if db_evt:
-        db_room = CrudManager(Room).edit_item(session, room.id, room)
+@evt.post("/event/{event_id}/room/{room_id}", response_model=EventReadExtra)
+def add_room_to_event(*, session: Session = Depends(get_session), event_id: int, room_id: int):
+    db_cal = CrudManager(Event).read_item(session, event_id)
+    if db_cal:
+        db_room = CrudManager(Room).read_item(session, room_id)
         if db_room:
-            db_evt.rooms.append(db_room)
-    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
-    return db_evt
+            db_cal.rooms.append(db_room)
+        db_cal = CrudManager(Event).edit_item(session, event_id, db_cal)
+    return db_cal
 
 
-@evt.post("/event/{event_id}/addarticle", response_model=EventReadExtra)
-def add_article(*, session: Session = Depends(get_session), event_id: int, article: ArticleAddOrUpdate):
+@evt.delete("/event/{event_id}/room/{room_id}", response_model=EventReadExtra)
+def remove_room_from_event(*, session: Session = Depends(get_session), event_id: int, room_id: int):
+    db_cal = CrudManager(Event).read_item(session, event_id)
+    if db_cal:
+        for per in db_cal.rooms:
+            if per.id == room_id:
+                db_cal.rooms.remove(per)
+                break
+        db_cal = CrudManager(Event).edit_item(session, event_id, db_cal)
+    return db_cal
+
+
+@evt.post("/event/{event_id}/article/{article_id}", response_model=EventReadExtra)
+def add_article_to_event(*, session: Session = Depends(get_session), event_id: int, article_id: int):
     db_evt = CrudManager(Event).read_item(session, event_id)
     if db_evt:
-        db_art = CrudManager(Article).edit_item(session, article.id, article)
+        db_art = CrudManager(Article).read_item(session, article_id)
         if db_art:
             db_evt.articles.append(db_art)
-    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
+        db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
     return db_evt
 
 
-@evt.post("/event/{event_id}/addnote", response_model=EventReadExtra)
-def add_note(*, session: Session = Depends(get_session), event_id: int, note: NoteAddOrUpdate):
-    db_evt = CrudManager(Event).read_item(session, event_id)
-    if db_evt:
-        db_note = CrudManager(Note).edit_item(session, note.id, note)
-        if db_note:
-            db_evt.notes.append(db_note)
-    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
-    return db_evt
+@evt.delete("/event/{event_id}/article/{article_id}", response_model=EventReadExtra)
+def remove_articles_from_event(*, session: Session = Depends(get_session), event_id: int, article_id: int):
+    db_cal = CrudManager(Event).read_item(session, event_id)
+    if db_cal:
+        for per in db_cal.articles:
+            if per.id == article_id:
+                db_cal.articles.remove(per)
+                break
+        db_cal = CrudManager(Event).edit_item(session, event_id, db_cal)
+    return db_cal
 
 
-@evt.post("/event/{event_id}/addrequisition", response_model=EventReadExtra)
-def add_requisition(*, session: Session = Depends(get_session), event_id: int, requisition: LooseServiceRequisitionAddOrUpdate):
+@evt.post("/event/{event_id}/requisition/{requisition_id}", response_model=EventReadExtra)
+def add_requisition_to_event(*, session: Session = Depends(get_session), event_id: int, requisition_id: int):
     db_evt = CrudManager(Event).read_item(session, event_id)
     if db_evt:
-        db_requisition = CrudManager(LooseServiceRequisition).edit_item(session, requisition.id, requisition)
+        db_requisition = CrudManager(LooseServiceRequisition).read_item(session, requisition_id)
         if db_requisition:
             db_evt.loose_requisitions.append(db_requisition)
-    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
+        db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
     return db_evt
+
+
+@evt.delete("/event/{event_id}/requisition/{requisition_id}", response_model=EventReadExtra)
+def remove_requisition_to_event(*, session: Session = Depends(get_session), event_id: int, requisition_id: int):
+    db_evt = CrudManager(Event).read_item(session, event_id)
+    if db_evt:
+        for per in db_evt.loose_requisitions:
+            if per.id == requisition_id:
+                db_evt.loose_requisitions.remove(per)
+                break
+        db_cal = CrudManager(Event).edit_item(session, event_id, db_evt)
+    return db_cal
+
+
+@evt.post("/event/{event_id}/person/{person_id}", response_model=EventReadExtra)
+def add_people_to_event(*, session: Session = Depends(get_session), org_id: int, person_id: int):
+    db_event = CrudManager(Event).read_item(session, org_id)
+    if db_event:
+        db_person = CrudManager(Person).read_item(session, person_id)
+        if db_person:
+            db_event.people.append(db_person)
+        db_event = CrudManager(Event).edit_item(session, org_id, db_event)
+    return db_event
+
+
+@evt.delete("/event/{event_id}/person/{person_id}", response_model=EventReadExtra)
+def remove_people_from_event(*, session: Session = Depends(get_session), org_id: int, person_id: int):
+    db_event = CrudManager(Event).read_item(session, org_id)
+    if db_event:
+        for per in db_event.people:
+            if per.id == person_id:
+                db_event.people.remove(per)
+                break
+        db_event = CrudManager(Event).edit_item(session, person_id, db_event)
+    return db_event
+
+
+@evt.post("/event/{event_id}/note/{note_id}", response_model=EventReadExtra)
+def add_note_to_event(*, session: Session = Depends(get_session), event_id: int, note_id: int):
+    db_event = CrudManager(Event).read_item(session, event_id)
+    if db_event:
+        db_note = CrudManager(Note).read_item(session, note_id)
+        if db_event:
+            db_event.notes.append(db_note)
+        db_event = CrudManager(Event).edit_item(session, event_id, db_event)
+    return db_event
+
+
+@evt.delete("/event/{event_id}/note/{note_id}", response_model=EventReadExtra)
+def delete_note_from_event(*, session: Session = Depends(get_session), event_id: int, note_id: int):
+    db_event = CrudManager(Event).read_item(session, event_id)
+    if db_event:
+        for per in db_event.notes:
+            if per.id == note_id:
+                db_event.notes.remove(per)
+                break
+        db_event = CrudManager(Event).edit_item(session, note_id, db_event)
+    return db_event
+
 
 
 @evt.post("/eventseries", response_model=EventSerieReadExtra)
