@@ -48,6 +48,13 @@ class NoteCreate(NoteBase):
 
 
 class NoteUpdate(SQLModel, CamelCaseMixin):
+    id: Optional[int]
+    content: Optional[str]
+    author_id: Optional[int]
+    confirmation_id: Optional[int]
+
+
+class NoteCreateOrUpdate(SQLModel, CamelCaseMixin):
     id: int
     content: Optional[str]
     author_id: Optional[int]
@@ -81,7 +88,6 @@ class PersonCreateWithNotes(PersonBase):
 
 
 class PersonUpdate(SQLModel, CamelCaseMixin):
-    id: int
     personal_email: Optional[EmailStr]
     first_name: Optional[str]
     middle_name: Optional[str]
@@ -97,6 +103,7 @@ class PersonUpdateWithNotes(PersonUpdate):
 class ConfirmationRecieptWithNoteAndAuthors(ConfirmationRecieptRead):
     notes: List[NoteRead] = []
     requested_by: Optional[PersonRead] = None
+
 
 class NoteReadWithAuthors(NoteRead):
     person_notes: List[PersonRead] = []

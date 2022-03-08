@@ -89,7 +89,7 @@ def read_organization(*, session: Session = Depends(get_session), org_id: int):
 
 @org.get("/organizations", response_model=List[OrganizationRead])
 def read_organizations(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
-    db_item = CrudManager(Organization).read_item(session, offset, limit)
+    db_item = CrudManager(Organization).read_items(session, offset, limit)
     return db_item
 
 

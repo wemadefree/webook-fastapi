@@ -13,7 +13,7 @@ location_router = loc = APIRouter()
 
 @loc.post("/locations/", response_model=LocationRead)
 def create_location(*, session: Session = Depends(get_session), location: LocationCreate):
-    location_item = CrudManager(Location).read_item(session, location)
+    location_item = CrudManager(Location).create_item(session, location)
     return location_item
 
 

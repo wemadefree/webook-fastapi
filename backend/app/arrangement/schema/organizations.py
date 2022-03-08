@@ -19,6 +19,7 @@ class BusinessHourCreate(BusinessHourBase):
 
 
 class BusinessHourUpdate(SQLModel, CamelCaseMixin):
+    id: Optional[int]
     start_of_business_hours: Optional[datetime.time]
     end_of_business_hours: Optional[datetime.time]
 

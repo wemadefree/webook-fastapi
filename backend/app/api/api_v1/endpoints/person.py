@@ -8,6 +8,7 @@ from app.arrangement.model.basemodels import Person, BusinessHour, Note, Confirm
 from app.arrangement.schema.persons import PersonRead, PersonCreate, PersonUpdate, PersonReadWithHours, PersonCreateWithNotes, PersonUpdateWithNotes
 from app.arrangement.schema.persons import NoteRead, NoteCreate, NoteUpdate, NoteReadWithAuthors
 from app.arrangement.schema.persons import ConfirmationRecieptRead, ConfirmationRecieptCreate, ConfirmationRecieptUpdate, ConfirmationRecieptWithNoteAndAuthors
+from app.arrangement.schema.organizations import BusinessHourUpdate
 from app.arrangement.factory import CrudManager
 
 
@@ -29,12 +30,42 @@ def create_person(*, session: Session = Depends(get_session), person: PersonCrea
 
 @per.patch("/person/{person_id}", response_model=PersonUpdateWithNotes)
 def update_person(*, session: Session = Depends(get_session), person_id: int, person: PersonUpdateWithNotes):
-    for note in person.notes:
-        CrudManager(Note).edit_item(session, note.id, note)
-    for hour in person.businesshours:
-        CrudManager(BusinessHour).edit_item(session, hour.id, hour)
+    if person.notes:
+        for note in person.notes:
+            CrudManager(Note).edit_item(session, note.id, note)
+    if person.businesshours:
+        for hour in person.businesshours:
+            CrudManager(BusinessHour).edit_item(session, hour.id, hour)
 
     db_person = CrudManager(Person).edit_item(session, person_id, person)
+    return db_person
+
+
+@per.patch("/person/{person_id}/addnote", response_model=PersonUpdateWithNotes)
+def add_person_note(*, session: Session = Depends(get_session), person_id: int, note: NoteUpdate):
+    db_person = CrudManager(Person).read_item(session, person_id)
+    if db_person:
+        if note.id:
+            db_note = CrudManager(Note).edit_item(session, note.id, note)
+        else:
+            db_note = CrudManager(Note).create_item(session, note)
+        if db_note:
+            db_person.notes.append(db_note)
+    db_person = CrudManager(Person).edit_item(session, person_id, db_person)
+    return db_person
+
+
+@per.patch("/person/{person_id}/addhours", response_model=PersonUpdateWithNotes)
+def add_person_note(*, session: Session = Depends(get_session), person_id: int, hour: BusinessHourUpdate):
+    db_person = CrudManager(Person).read_item(session, person_id)
+    if db_person:
+        if hour.id:
+            db_hour = CrudManager(BusinessHour).edit_item(session, hour.id, hour)
+        else:
+            db_hour = CrudManager(BusinessHour).create_item(session, hour)
+        if db_hour:
+            db_person.businesshours.append(db_hour)
+    db_person = CrudManager(Person).edit_item(session, person_id, db_person)
     return db_person
 
 
