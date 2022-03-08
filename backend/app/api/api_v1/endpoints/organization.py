@@ -4,9 +4,10 @@ from sqlmodel import Session
 
 from app.core.session import get_sqlmodel_sesion as get_session
 from app.arrangement.model.basemodels import Person, BusinessHour, Note, ConfirmationReceipt, OrganizationType, Organization
-from app.arrangement.schema.organizations import BusinessHourRead, BusinessHourUpdate, BusinessHourCreate
+from app.arrangement.schema.bussineshours import BusinessHourRead, BusinessHourUpdate, BusinessHourCreate
 from app.arrangement.schema.organizations import OrganizationTypeRead, OrganizationTypeCreate, OrganizationTypeUpdate
-from app.arrangement.schema.organizations import OrganizationRead, OrganizationCreate, OrganizationUpdate
+from app.arrangement.schema.organizations import OrganizationRead, OrganizationReadExtra, OrganizationCreate, OrganizationUpdate, OrganizationAddOrUpdate
+from app.arrangement.schema.persons import PersonAddOrUpdate, NoteAddOrUpdate
 from sqlmodel.sql.expression import Select, SelectOfScalar
 from app.arrangement.factory import CrudManager
 
@@ -19,6 +20,9 @@ Select.inherit_cache = True  # type: ignore
 
 @hour.get("/businesshours", response_model=List[BusinessHourRead])
 def read_hours(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
+    """
+    Get a Bussiness Hour
+    """
     hours = CrudManager(BusinessHour).read_items(session, offset, limit)
     return hours
 
@@ -81,7 +85,7 @@ def create_organization(*, session: Session = Depends(get_session), item: Organi
     return db_item
 
 
-@org.get("/organization/{org_id}", response_model=OrganizationRead)
+@org.get("/organization/{org_id}", response_model=OrganizationReadExtra)
 def read_organization(*, session: Session = Depends(get_session), org_id: int):
     db_item = CrudManager(Organization).read_item(session, org_id)
     return db_item
@@ -93,7 +97,7 @@ def read_organizations(*, session: Session = Depends(get_session), offset: int =
     return db_item
 
 
-@org.patch("/organization/{org_id}", response_model=OrganizationRead)
+@org.patch("/organization/{org_id}", response_model=OrganizationReadExtra)
 def update_organization(*, session: Session = Depends(get_session), organization_id: int, organization: OrganizationUpdate):
     db_item = CrudManager(Organization).edit_item(session, organization_id, organization)
     return db_item
@@ -102,3 +106,26 @@ def update_organization(*, session: Session = Depends(get_session), organization
 @org.delete("/organization/{org_id}")
 def delete_organization(*, session: Session = Depends(get_session), org_id: int):
     return CrudManager(Organization).delete_item(session, org_id)
+
+
+@org.post("/organization/{org_id}/addmember", response_model=OrganizationReadExtra)
+def add_member(*, session: Session = Depends(get_session), organization_id: int, person: PersonAddOrUpdate):
+    db_organization = CrudManager(Organization).read_item(session, organization_id)
+    if db_organization:
+        db_person = CrudManager(Person).edit_item(session, person.id, person)
+        if db_person:
+            db_organization.members.append(db_person)
+    db_organization = CrudManager(Organization).edit_item(session, organization_id, db_organization)
+    return db_organization
+
+
+@org.post("/organization/{org_id}/addnote", response_model=OrganizationReadExtra)
+def add_note(*, session: Session = Depends(get_session), organization_id: int, note: NoteAddOrUpdate):
+    db_organization = CrudManager(Organization).read_item(session, organization_id)
+    if db_organization:
+        db_note = CrudManager(Note).edit_item(session, note.id, note)
+        if db_note:
+            db_organization.notes.append(db_note)
+    db_organization = CrudManager(Organization).edit_item(session, organization_id, db_organization)
+    return db_organization
+

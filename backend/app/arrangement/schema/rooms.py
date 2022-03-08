@@ -40,6 +40,13 @@ class RoomUpdate(SQLModel, CamelCaseMixin):
     location_id: Optional[int]
 
 
+class RoomAddOrUpdate(SQLModel, CamelCaseMixin):
+    id: int
+    name: Optional[str] = None
+    max_capacity: Optional[int]
+    location_id: Optional[int]
+
+
 class RoomReadWithLocation(RoomRead):
     location: Optional[LocationRead] = None
 

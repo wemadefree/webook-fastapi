@@ -230,13 +230,13 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 
     serie: Optional[EventSerie] = Relationship(back_populates="events")
     arrangement: Optional[Arrangement] = Relationship(back_populates="events")
+    eventservices: List["EventService"] = Relationship(back_populates="event")
 
     people: List["Person"] = Relationship(back_populates="events", link_model=EventPeopleLink)
     rooms: List["Room"] = Relationship(back_populates="events", link_model=EventRoomLink)
     loose_requisitions: List["LooseServiceRequisition"] = Relationship(back_populates="events", link_model=EventLooseServiceRequisitionLink)
     articles: List["Article"] = Relationship(back_populates="events", link_model=EventArticlesLink)
     notes: List["Note"] = Relationship(back_populates="events", link_model=EventNotesLink)
-    eventservices: List["EventService"] = Relationship(back_populates="event")
 
 
 class EventService(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):

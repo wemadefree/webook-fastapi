@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlmodel import SQLModel
 from pydantic import EmailStr
 
-from app.arrangement.schema.organizations import BusinessHourBase, BusinessHourRead, BusinessHourUpdate
+from app.arrangement.schema.bussineshours import BusinessHourBase, BusinessHourRead, BusinessHourUpdate
 from app.core.mixins import CamelCaseMixin
 
 
@@ -48,10 +48,13 @@ class NoteCreate(NoteBase):
 
 
 class NoteUpdate(SQLModel, CamelCaseMixin):
-    id: Optional[int]
     content: Optional[str]
     author_id: Optional[int]
     confirmation_id: Optional[int]
+
+
+class NoteAddOrUpdate(NoteUpdate):
+    id: int
 
 
 class NoteCreateOrUpdate(SQLModel, CamelCaseMixin):
@@ -77,6 +80,11 @@ class PersonCreate(PersonBase):
     pass
 
 
+class PersonReadExtra(PersonRead):
+    notes: List[NoteRead]
+    businesshours: List[BusinessHourRead]
+
+
 class PersonReadWithHours(PersonRead):
     notes: List[NoteRead] = []
     businesshours: List[BusinessHourRead] = []
@@ -93,6 +101,10 @@ class PersonUpdate(SQLModel, CamelCaseMixin):
     middle_name: Optional[str]
     last_name: Optional[str]
     birth_date: Optional[datetime.date]
+
+
+class PersonAddOrUpdate(PersonUpdate):
+    id: int
 
 
 class PersonUpdateWithNotes(PersonUpdate):

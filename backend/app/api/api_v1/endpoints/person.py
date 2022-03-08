@@ -5,10 +5,10 @@ from sqlmodel.sql.expression import Select, SelectOfScalar
 
 from app.core.session import get_sqlmodel_sesion as get_session
 from app.arrangement.model.basemodels import Person, BusinessHour, Note, ConfirmationReceipt, Audience, OrganizationType, Organization
-from app.arrangement.schema.persons import PersonRead, PersonCreate, PersonUpdate, PersonReadWithHours, PersonCreateWithNotes, PersonUpdateWithNotes
-from app.arrangement.schema.persons import NoteRead, NoteCreate, NoteUpdate, NoteReadWithAuthors
+from app.arrangement.schema.persons import PersonRead, PersonReadExtra, PersonCreate, PersonUpdate, PersonReadWithHours, PersonCreateWithNotes, PersonUpdateWithNotes
+from app.arrangement.schema.persons import NoteRead, NoteCreate, NoteUpdate, NoteAddOrUpdate, NoteReadWithAuthors
 from app.arrangement.schema.persons import ConfirmationRecieptRead, ConfirmationRecieptCreate, ConfirmationRecieptUpdate, ConfirmationRecieptWithNoteAndAuthors
-from app.arrangement.schema.organizations import BusinessHourUpdate
+from app.arrangement.schema.bussineshours import BusinessHourAddOrUpdate
 from app.arrangement.factory import CrudManager
 
 
@@ -28,7 +28,7 @@ def create_person(*, session: Session = Depends(get_session), person: PersonCrea
     return db_person
 
 
-@per.patch("/person/{person_id}", response_model=PersonUpdateWithNotes)
+@per.patch("/person/{person_id}", response_model=PersonReadExtra)
 def update_person(*, session: Session = Depends(get_session), person_id: int, person: PersonUpdateWithNotes):
     if person.notes:
         for note in person.notes:
@@ -41,35 +41,29 @@ def update_person(*, session: Session = Depends(get_session), person_id: int, pe
     return db_person
 
 
-@per.patch("/person/{person_id}/addnote", response_model=PersonUpdateWithNotes)
-def add_person_note(*, session: Session = Depends(get_session), person_id: int, note: NoteUpdate):
+@per.post("/person/{person_id}/addnote", response_model=PersonReadExtra)
+def add_note(*, session: Session = Depends(get_session), person_id: int, note: NoteAddOrUpdate):
     db_person = CrudManager(Person).read_item(session, person_id)
     if db_person:
-        if note.id:
-            db_note = CrudManager(Note).edit_item(session, note.id, note)
-        else:
-            db_note = CrudManager(Note).create_item(session, note)
+        db_note = CrudManager(Note).edit_item(session, note.id, note)
         if db_note:
             db_person.notes.append(db_note)
     db_person = CrudManager(Person).edit_item(session, person_id, db_person)
     return db_person
 
 
-@per.patch("/person/{person_id}/addhours", response_model=PersonUpdateWithNotes)
-def add_person_note(*, session: Session = Depends(get_session), person_id: int, hour: BusinessHourUpdate):
+@per.post("/person/{person_id}/addbusinesshour", response_model=PersonReadExtra)
+def add_hours(*, session: Session = Depends(get_session), person_id: int, hour: BusinessHourAddOrUpdate):
     db_person = CrudManager(Person).read_item(session, person_id)
     if db_person:
-        if hour.id:
-            db_hour = CrudManager(BusinessHour).edit_item(session, hour.id, hour)
-        else:
-            db_hour = CrudManager(BusinessHour).create_item(session, hour)
+        db_hour = CrudManager(BusinessHour).edit_item(session, hour.id, hour)
         if db_hour:
             db_person.businesshours.append(db_hour)
     db_person = CrudManager(Person).edit_item(session, person_id, db_person)
     return db_person
 
 
-@per.get("/person/{person_id}", response_model=PersonReadWithHours)
+@per.get("/person/{person_id}", response_model=PersonReadExtra)
 def read_person(*, session: Session = Depends(get_session), person_id: int):
     item = CrudManager(Person).read_item(session, person_id)
     return item

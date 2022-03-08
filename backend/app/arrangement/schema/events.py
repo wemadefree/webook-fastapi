@@ -4,7 +4,7 @@ from sqlmodel import SQLModel
 
 from app.arrangement.schema.arrangements import ArrangementRead
 from app.arrangement.schema.persons import PersonRead, NoteRead, ConfirmationRecieptRead
-from app.arrangement.schema.service import LooseServiceRequisitionRead, ServiceProviderRead
+from app.arrangement.schema.services import LooseServiceRequisitionRead, ServiceProviderRead
 from app.arrangement.schema.rooms import RoomRead
 from app.core.mixins import CamelCaseMixin
 
@@ -23,6 +23,10 @@ class ArticleCreate(ArticleBase):
 
 class ArticleUpdate(SQLModel, CamelCaseMixin):
     name: Optional[str]
+
+
+class ArticleAddOrUpdate(ArticleUpdate):
+    id: int
 
 
 class EventSerieBase(SQLModel, CamelCaseMixin):

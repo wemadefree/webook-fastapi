@@ -32,5 +32,5 @@ class CalendarReadExtra(SQLModel, CamelCaseMixin):
     is_personal: Optional[bool]
     owner_id: Optional[int]
     owner: Optional[PersonRead]
-    people_resources: List[PersonRead] = []
-    room_resources: List[RoomRead] = []
+    people_resources: List[PersonRead]
+    room_resources: List[RoomRead]

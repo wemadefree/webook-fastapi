@@ -1,27 +1,9 @@
 import datetime
-from typing import Optional
+from typing import Optional, List
 from sqlmodel import SQLModel
 
 from app.core.mixins import CamelCaseMixin
-
-
-class BusinessHourBase(SQLModel, CamelCaseMixin):
-    start_of_business_hours: datetime.time
-    end_of_business_hours: datetime.time
-
-
-class BusinessHourRead(BusinessHourBase):
-    id: int
-
-
-class BusinessHourCreate(BusinessHourBase):
-    pass
-
-
-class BusinessHourUpdate(SQLModel, CamelCaseMixin):
-    id: Optional[int]
-    start_of_business_hours: Optional[datetime.time]
-    end_of_business_hours: Optional[datetime.time]
+from app.arrangement.schema.persons import PersonRead, NoteRead
 
 
 class OrganizationTypeBase(SQLModel, CamelCaseMixin):
@@ -55,7 +37,19 @@ class OrganizationRead(OrganizationBase):
     organization_type: Optional[OrganizationTypeRead] = None
 
 
+class OrganizationReadExtra(OrganizationRead):
+    members: List[PersonRead]
+    notes: List[NoteRead]
+
+
 class OrganizationUpdate(SQLModel, CamelCaseMixin):
+    name:  Optional[str]
+    organization_number:  Optional[int]
+    organization_type_id: Optional[int]
+
+
+class OrganizationAddOrUpdate(SQLModel, CamelCaseMixin):
+    id: int
     name:  Optional[str]
     organization_number:  Optional[int]
     organization_type_id: Optional[int]

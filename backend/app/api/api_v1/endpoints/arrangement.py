@@ -8,7 +8,9 @@ from app.arrangement.model.basemodels import Person, BusinessHour, Note, Confirm
 from app.arrangement.model.basemodels import TimeLineEvent, Arrangement
 from app.arrangement.schema.arrangements import ArrangementRead, ArrangementUpdate, ArrangementCreate
 from app.arrangement.schema.arrangements import AudienceRead, AudienceCreate, AudienceUpdate
-from app.arrangement.schema.arrangements import TimeLineEventRead, TimeLineEventCreate, TimeLineEventUpdate
+from app.arrangement.schema.arrangements import TimeLineEventRead, TimeLineEventCreate, TimeLineEventUpdate, TimeLineEventAddOrUpdate
+from app.arrangement.schema.persons import NoteAddOrUpdate, PersonAddOrUpdate
+from app.arrangement.schema.organizations import OrganizationAddOrUpdate
 from app.arrangement.factory import CrudManager
 
 
@@ -104,3 +106,59 @@ def update_arrangement(*, session: Session = Depends(get_session), arrangement_i
 @arr.delete("/arrangement/{arrangement_id}")
 def delete_arrangement(*, session: Session = Depends(get_session), arrangement_id: int):
     return CrudManager(Arrangement).delete_item(session, arrangement_id)
+
+
+@arr.post("/arrangement/{arrangement_id}/addtimeline", response_model=ArrangementRead)
+def add_timeline(*, session: Session = Depends(get_session), arrangement_id: int, timeline: TimeLineEventAddOrUpdate):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_timeline = CrudManager(TimeLineEvent).edit_item(session, timeline.id, timeline)
+        if db_timeline:
+            db_arrangement.timeline_events.append(db_timeline)
+    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/addnote", response_model=ArrangementRead)
+def add_note(*, session: Session = Depends(get_session), arrangement_id: int, note: NoteAddOrUpdate):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_note = CrudManager(Note).edit_item(session, note.id, note)
+        if db_note:
+            db_arrangement.notes.append(db_note)
+    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/addplanner", response_model=ArrangementRead)
+def add_planner(*, session: Session = Depends(get_session), arrangement_id: int, person: PersonAddOrUpdate):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_person = CrudManager(Person).edit_item(session, person.id, person)
+        if db_person:
+            db_arrangement.planners.append(db_person)
+    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/addpeople_participants", response_model=ArrangementRead)
+def add_people_participants(*, session: Session = Depends(get_session), arrangement_id: int, person: PersonAddOrUpdate):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_person = CrudManager(Person).edit_item(session, person.id, person)
+        if db_person:
+            db_arrangement.people_participants.append(db_person)
+    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.post("/arrangement/{arrangement_id}/addorganization_participants", response_model=ArrangementRead)
+def add_organization_participants(*, session: Session = Depends(get_session), arrangement_id: int, organization: OrganizationAddOrUpdate):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_org = CrudManager(Organization).edit_item(session, organization.id, organization)
+        if db_org:
+            db_arrangement.organization_participants.append(db_org)
+    db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+

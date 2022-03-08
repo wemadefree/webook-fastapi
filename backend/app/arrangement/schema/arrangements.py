@@ -44,6 +44,12 @@ class TimeLineEventUpdate(SQLModel, CamelCaseMixin):
     stamp: Optional[datetime.datetime]
 
 
+class TimeLineEventAddOrUpdate(SQLModel, CamelCaseMixin):
+    id: int
+    content: Optional[str]
+    stamp: Optional[datetime.datetime]
+
+
 class ArrangementBase(SQLModel, CamelCaseMixin):
     name: str
     stages: StageChoices
@@ -62,11 +68,11 @@ class ArrangementRead(ArrangementBase):
     audience: Optional[AudienceRead] = None
     responsible: Optional[PersonRead] = None
 
-    timeline_events: List[TimeLineEventRead] = []
-    planners: List[PersonRead] = []
-    people_participants: List[PersonRead] = []
-    organization_participants: List[OrganizationRead] = []
-    notes: List[NoteRead] = []
+    timeline_events: List[TimeLineEventRead]
+    planners: List[PersonRead]
+    people_participants: List[PersonRead]
+    organization_participants: List[OrganizationRead]
+    notes: List[NoteRead]
 
 
 class ArrangementUpdate(SQLModel, CamelCaseMixin):

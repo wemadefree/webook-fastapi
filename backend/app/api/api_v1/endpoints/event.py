@@ -3,15 +3,19 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 from app.core.session import get_sqlmodel_sesion as get_session
-from app.arrangement.model.basemodels import EventSerie, Event, EventService, Article
+from app.arrangement.model.basemodels import Article, EventSerie, Event, EventService, LooseServiceRequisition, Note, Person, Room
 from app.arrangement.schema.events import EventSerieRead, EventSerieReadExtra, EventSerieCreate, EventSerieUpdate
 from app.arrangement.schema.events import EventRead, EventReadExtra, EventCreate, EventUpdate
 from app.arrangement.schema.events import EventServiceRead, EventServiceReadExtra, EventServiceCreate, EventServiceUpdate
-from app.arrangement.schema.events import ArticleRead, ArticleCreate, ArticleUpdate
+from app.arrangement.schema.events import ArticleRead, ArticleAddOrUpdate, ArticleCreate, ArticleUpdate
+from app.arrangement.schema.services import LooseServiceRequisitionAddOrUpdate
+from app.arrangement.schema.rooms import RoomAddOrUpdate
+from app.arrangement.schema.persons import PersonAddOrUpdate, NoteAddOrUpdate
 from app.arrangement.factory import CrudManager
 
 event_router = evt = APIRouter()
 article_router = art = APIRouter()
+
 
 @art.post("/articles", response_model=ArticleRead)
 def create_articles(*, session: Session = Depends(get_session), article: ArticleCreate):
@@ -71,6 +75,61 @@ def delete_event(*, session: Session = Depends(get_session), event_id: int):
     return CrudManager(Event).delete_item(session, event_id)
 
 
+@evt.post("/event/{event_id}/addperson", response_model=EventReadExtra)
+def add_people(*, session: Session = Depends(get_session), event_id: int, person: PersonAddOrUpdate):
+    db_evt = CrudManager(Event).read_item(session, event_id)
+    if db_evt:
+        db_person = CrudManager(Person).edit_item(session, person.id, person)
+        if db_person:
+            db_evt.people.append(db_person)
+    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
+    return db_evt
+
+
+@evt.post("/event/{event_id}/addroom", response_model=EventReadExtra)
+def add_room(*, session: Session = Depends(get_session), event_id: int, room: RoomAddOrUpdate):
+    db_evt = CrudManager(Event).read_item(session, event_id)
+    if db_evt:
+        db_room = CrudManager(Room).edit_item(session, room.id, room)
+        if db_room:
+            db_evt.rooms.append(db_room)
+    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
+    return db_evt
+
+
+@evt.post("/event/{event_id}/addarticle", response_model=EventReadExtra)
+def add_article(*, session: Session = Depends(get_session), event_id: int, article: ArticleAddOrUpdate):
+    db_evt = CrudManager(Event).read_item(session, event_id)
+    if db_evt:
+        db_art = CrudManager(Article).edit_item(session, article.id, article)
+        if db_art:
+            db_evt.articles.append(db_art)
+    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
+    return db_evt
+
+
+@evt.post("/event/{event_id}/addnote", response_model=EventReadExtra)
+def add_note(*, session: Session = Depends(get_session), event_id: int, note: NoteAddOrUpdate):
+    db_evt = CrudManager(Event).read_item(session, event_id)
+    if db_evt:
+        db_note = CrudManager(Note).edit_item(session, note.id, note)
+        if db_note:
+            db_evt.notes.append(db_note)
+    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
+    return db_evt
+
+
+@evt.post("/event/{event_id}/addrequisition", response_model=EventReadExtra)
+def add_requisition(*, session: Session = Depends(get_session), event_id: int, requisition: LooseServiceRequisitionAddOrUpdate):
+    db_evt = CrudManager(Event).read_item(session, event_id)
+    if db_evt:
+        db_requisition = CrudManager(LooseServiceRequisition).edit_item(session, requisition.id, requisition)
+        if db_requisition:
+            db_evt.loose_requisitions.append(db_requisition)
+    db_evt = CrudManager(Event).edit_item(session, event_id, db_evt)
+    return db_evt
+
+
 @evt.post("/eventseries", response_model=EventSerieReadExtra)
 def create_eventserie(*, session: Session = Depends(get_session), eventserie: EventSerieCreate):
     eventserie_item = CrudManager(EventSerie).create_item(session, eventserie)
@@ -127,3 +186,25 @@ def update_eventservice(*, session: Session = Depends(get_session), eventservice
 @evt.delete("/eventservice/{eventservice_id}")
 def delete_eventservice(*, session: Session = Depends(get_session), eventservice_id: int):
     return CrudManager(EventService).delete_item(session, eventservice_id)
+
+
+@evt.post("/eventservice/{eventservice_id}/addnote", response_model=EventServiceReadExtra)
+def add_event_service_note(*, session: Session = Depends(get_session), eventservice_id: int, note: NoteAddOrUpdate):
+    db_evt = CrudManager(EventService).read_item(session, eventservice_id)
+    if db_evt:
+        db_note = CrudManager(Note).edit_item(session, note.id, note)
+        if db_note:
+            db_evt.notes.append(db_note)
+    db_evt = CrudManager(EventService).edit_item(session, eventservice_id, db_evt)
+    return db_evt
+
+
+@evt.post("/eventservice/{eventservice_id}/addperson", response_model=EventServiceReadExtra)
+def add_event_service_note(*, session: Session = Depends(get_session), eventservice_id: int, person: PersonAddOrUpdate):
+    db_evt = CrudManager(EventService).read_item(session, eventservice_id)
+    if db_evt:
+        db_person = CrudManager(Person).edit_item(session, person.id, person)
+        if db_person:
+            db_evt.associated_people.append(db_person)
+    db_evt = CrudManager(EventService).edit_item(session, eventservice_id, db_evt)
+    return db_evt

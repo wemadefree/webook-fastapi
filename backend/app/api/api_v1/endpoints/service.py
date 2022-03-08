@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 from app.core.session import get_sqlmodel_sesion as get_session
 from app.arrangement.model.basemodels import LooseServiceRequisition, ServiceType, ServiceProvider
-from app.arrangement.schema.service import LooseServiceRequisitionRead, LooseServiceRequisitionReadExtra, LooseServiceRequisitionCreate, LooseServiceRequisitionUpdate, ServiceTypeRead, ServiceTypeCreate, ServiceTypeUpdate, ServiceProviderRead, ServiceProviderReadExtra, ServiceProviderCreate, ServiceProviderUpdate
+from app.arrangement.schema.services import LooseServiceRequisitionRead, LooseServiceRequisitionReadExtra, LooseServiceRequisitionCreate, LooseServiceRequisitionUpdate, ServiceTypeRead, ServiceTypeCreate, ServiceTypeUpdate, ServiceProviderRead, ServiceProviderReadExtra, ServiceProviderCreate, ServiceProviderUpdate
 from app.arrangement.factory import CrudManager
 
 service_router = ser = APIRouter()

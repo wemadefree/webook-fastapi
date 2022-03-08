@@ -67,6 +67,10 @@ class LooseServiceRequisitionUpdate(SQLModel, CamelCaseMixin):
     type_to_order_id: Optional[int]
 
 
+class LooseServiceRequisitionAddOrUpdate(LooseServiceRequisitionUpdate):
+    id: int
+
+
 class LooseServiceRequisitionReadExtra(LooseServiceRequisitionRead):
     arrangement: Optional[ArrangementRead]
     type_to_order: Optional[ServiceTypeRead]
