@@ -9,8 +9,6 @@ from app.arrangement.model.basemodels import TimeLineEvent, Arrangement
 from app.arrangement.schema.arrangements import ArrangementRead, ArrangementUpdate, ArrangementCreate
 from app.arrangement.schema.arrangements import AudienceRead, AudienceCreate, AudienceUpdate
 from app.arrangement.schema.arrangements import TimeLineEventRead, TimeLineEventCreate, TimeLineEventUpdate, TimeLineEventAddOrUpdate
-from app.arrangement.schema.persons import NoteAddOrUpdate, PersonAddOrUpdate
-from app.arrangement.schema.organizations import OrganizationAddOrUpdate
 from app.arrangement.factory import CrudManager
 
 

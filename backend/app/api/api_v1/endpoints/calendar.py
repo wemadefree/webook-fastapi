@@ -5,8 +5,6 @@ from sqlmodel import Session
 from app.core.session import get_sqlmodel_sesion as get_session
 from app.arrangement.model.basemodels import Calendar, Room, Person
 from app.arrangement.schema.calendar import CalendarRead, CalendarReadExtra, CalendarCreate, CalendarUpdate
-from app.arrangement.schema.rooms import RoomAddOrUpdate
-from app.arrangement.schema.persons import PersonAddOrUpdate
 from app.arrangement.factory import CrudManager
 
 calendar_router = cal = APIRouter()

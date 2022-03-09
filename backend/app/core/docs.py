@@ -42,8 +42,7 @@ tags_metadata = [
     },
     {
         "name": "event",
-        "description": "The **event** model represents an event, or happening that takes place in a set span of time, and which may reserve certain resources for use in that span of time (such as a room, or a person etc..)."
-                       "\n\nThe **event service** model is a many-to-many mapping relationship between Event and ServiceProvider",
+        "description": "The **event** model represents an event, or happening that takes place in a set span of time, and which may reserve certain resources for use in that span of time (such as a room, or a person etc..).",
     },
     {
         "name": "articles",
@@ -53,6 +52,14 @@ tags_metadata = [
         "name": "service",
         "description": "A **service type** is a type categorization of service providers"
                        "\n\nThe **service provider** provides services that can be consumed by events. An organization may provide multiple services, and thus be represented through multiple service provider records",
+    },
+    {
+        "name": "event serie",
+        "description": "Operations with users. The **login** logic is also here.",
+    },
+    {
+        "name": "event service",
+        "description": "The **event service** model is a many-to-many mapping relationship between Event and ServiceProvider",
     },
 
     {

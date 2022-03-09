@@ -15,6 +15,8 @@ from app.api.api_v1.endpoints.calendar import calendar_router
 from app.api.api_v1.endpoints.service import service_router
 from app.api.api_v1.endpoints.event import event_router
 from app.api.api_v1.endpoints.event import article_router
+from app.api.api_v1.endpoints.event import event_service_router
+from app.api.api_v1.endpoints.event import event_serie_router
 
 
 def include_routes(app: FastAPI):
@@ -37,6 +39,21 @@ def include_routes(app: FastAPI):
         arrangement_router,
         prefix="/api/v1",
         tags=["arrangement"],
+        # dependencies=[Depends(get_current_active_user)],
+    )
+
+    app.include_router(
+        event_serie_router,
+        prefix="/api/v1",
+        tags=["event serie"],
+        # dependencies=[Depends(get_current_active_user)],
+    )
+
+
+    app.include_router(
+        event_service_router,
+        prefix="/api/v1",
+        tags=["event service"],
         # dependencies=[Depends(get_current_active_user)],
     )
 

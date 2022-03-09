@@ -8,7 +8,6 @@ from app.arrangement.model.basemodels import Person, BusinessHour, Note, Confirm
 from app.arrangement.schema.persons import PersonRead, PersonReadExtra, PersonCreate, PersonUpdate, PersonReadWithHours, PersonCreateWithNotes, PersonUpdateWithNotes
 from app.arrangement.schema.persons import NoteRead, NoteCreate, NoteUpdate, NoteAddOrUpdate, NoteReadWithAuthors
 from app.arrangement.schema.persons import ConfirmationRecieptRead, ConfirmationRecieptCreate, ConfirmationRecieptUpdate, ConfirmationRecieptWithNoteAndAuthors
-from app.arrangement.schema.bussineshours import BusinessHourAddOrUpdate
 from app.arrangement.factory import CrudManager
 
 
