@@ -7,6 +7,7 @@ from app.api.api_v1.endpoints.room import location_router
 from app.api.api_v1.endpoints.base import base_router
 from app.api.api_v1.endpoints.person import person_router
 from app.api.api_v1.endpoints.person import note_router
+from app.api.api_v1.endpoints.person import receipt_router
 from app.api.api_v1.endpoints.organization import organization_router
 from app.api.api_v1.endpoints.organization import hour_router
 from app.api.api_v1.endpoints.arrangement import arrangement_router
@@ -16,7 +17,7 @@ from app.api.api_v1.endpoints.service import service_router
 from app.api.api_v1.endpoints.event import event_router
 from app.api.api_v1.endpoints.event import article_router
 from app.api.api_v1.endpoints.event import event_service_router
-from app.api.api_v1.endpoints.event import event_serie_router
+from app.api.api_v1.endpoints.service import requisition_router
 
 
 def include_routes(app: FastAPI):
@@ -24,14 +25,21 @@ def include_routes(app: FastAPI):
     app.include_router(
         person_router,
         prefix="/api/v1",
-        tags=["persons"],
+        tags=["person"],
        # dependencies=[Depends(get_current_active_user)],
     )
 
     app.include_router(
         note_router,
         prefix="/api/v1",
-        tags=["notes"],
+        tags=["note"],
+        # dependencies=[Depends(get_current_active_user)],
+    )
+
+    app.include_router(
+        receipt_router,
+        prefix="/api/v1",
+        tags=["confirmation receipt"],
         # dependencies=[Depends(get_current_active_user)],
     )
 
@@ -43,14 +51,6 @@ def include_routes(app: FastAPI):
     )
 
     app.include_router(
-        event_serie_router,
-        prefix="/api/v1",
-        tags=["event serie"],
-        # dependencies=[Depends(get_current_active_user)],
-    )
-
-
-    app.include_router(
         event_service_router,
         prefix="/api/v1",
         tags=["event service"],
@@ -60,7 +60,7 @@ def include_routes(app: FastAPI):
     app.include_router(
         organization_router,
         prefix="/api/v1",
-        tags=["organization"],
+        tags=["organization & org.type"],
         # dependencies=[Depends(get_current_active_user)],
     )
 
@@ -74,7 +74,7 @@ def include_routes(app: FastAPI):
     app.include_router(
         article_router,
         prefix="/api/v1",
-        tags=["articles"],
+        tags=["article"],
         # dependencies=[Depends(get_current_active_user)],
     )
 
@@ -88,7 +88,7 @@ def include_routes(app: FastAPI):
     app.include_router(
         service_router,
         prefix="/api/v1",
-        tags=["service"],
+        tags=["service provider & type"],
         # dependencies=[Depends(get_current_active_user)],
     )
 
@@ -102,7 +102,7 @@ def include_routes(app: FastAPI):
     app.include_router(
         location_router,
         prefix="/api/v1",
-        tags=["locations"],
+        tags=["location & room"],
         # dependencies=[Depends(get_current_active_user)],
     )
 
@@ -114,9 +114,16 @@ def include_routes(app: FastAPI):
     )
 
     app.include_router(
+        requisition_router,
+        prefix="/api/v1",
+        tags=["requisition of service"],
+        # dependencies=[Depends(get_current_active_user)],
+    )
+
+    app.include_router(
         users_router,
         prefix="/api/v1",
-        tags=["users"],
+        tags=["user"],
         dependencies=[Depends(get_current_active_user)],
     )
     app.include_router(auth_router, prefix="/api", tags=["auth"])

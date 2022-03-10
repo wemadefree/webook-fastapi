@@ -13,12 +13,13 @@ from app.arrangement.factory import CrudManager
 
 person_router = per = APIRouter()
 note_router = nt = APIRouter()
+receipt_router = rec = APIRouter()
 
 SelectOfScalar.inherit_cache = True  # type: ignore
 Select.inherit_cache = True  # type: ignore
 
 
-@per.post("/persons/", response_model=PersonRead)
+@per.post("/persons", response_model=PersonRead)
 def create_person(*, session: Session = Depends(get_session), person: PersonCreateWithNotes):
     db_notes: List[Note] = [Note.from_orm(note) for note in person.notes if Note.from_orm(note)]
     db_person = Person.from_orm(person)
@@ -93,7 +94,7 @@ def read_person(*, session: Session = Depends(get_session), person_id: int):
 
 
 @per.get("/persons", response_model=List[PersonRead])
-def read_persons(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
+def list_persons(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     item = CrudManager(Person).read_items(session, offset, limit)
     return item
 
@@ -132,31 +133,31 @@ def delete_note(*, session: Session = Depends(get_session), note_id: int):
     return CrudManager(Note).delete_item(session, note_id)
 
 
-@per.post("/receipts", response_model=ConfirmationRecieptRead)
+@rec.post("/receipts", response_model=ConfirmationRecieptRead)
 def create_receipt(*, session: Session = Depends(get_session), item: ConfirmationRecieptCreate):
     item = CrudManager(ConfirmationReceipt).create_item(session, item)
     return item
 
 
-@per.get("/receipt/{receipt_id}", response_model=ConfirmationRecieptWithNoteAndAuthors)
+@rec.get("/receipt/{receipt_id}", response_model=ConfirmationRecieptWithNoteAndAuthors)
 def read_receipt(*, session: Session = Depends(get_session), receipt_id: int):
     item = CrudManager(ConfirmationReceipt).read_item(session, receipt_id)
     return item
 
 
-@per.get("/receipts", response_model=List[ConfirmationRecieptRead])
-def read_receipt(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
+@rec.get("/receipts", response_model=List[ConfirmationRecieptRead])
+def list_receipts(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     item = CrudManager(ConfirmationReceipt).read_items(session, offset, limit)
     return item
 
 
-@per.patch("/receipt/{receipt_id}", response_model=ConfirmationRecieptRead)
+@rec.patch("/receipt/{receipt_id}", response_model=ConfirmationRecieptRead)
 def update_receipt(*, session: Session = Depends(get_session), receipt_id: int, receipt: ConfirmationRecieptUpdate):
     item = CrudManager(ConfirmationReceipt).edit_item(session, receipt_id, receipt)
     return item
 
 
-@per.delete("/receipt/{receipt_id}")
+@rec.delete("/receipt/{receipt_id}")
 def delete_note(*, session: Session = Depends(get_session), receipt_id: int):
     return CrudManager(Note).delete_item(session, receipt_id)
 

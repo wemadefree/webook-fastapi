@@ -32,7 +32,7 @@ def read_audience(*, session: Session = Depends(get_session), audience_id: int):
 
 
 @arr.get("/audiences", response_model=List[AudienceRead])
-def read_audience(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
+def list_audiences(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     item = CrudManager(Audience).read_items(session, offset, limit)
     return item
 
@@ -85,7 +85,7 @@ def create_arrangement(*, session: Session = Depends(get_session), item: Arrange
 
 @arr.get("/arrangement/{arrangement_id}", response_model=ArrangementRead)
 def read_arrangement(*, session: Session = Depends(get_session), arrangement_id: int):
-    item = CrudManager(Arrangement).create_item(session, arrangement_id)
+    item = CrudManager(Arrangement).read_item(session, arrangement_id)
     return item
 
 
