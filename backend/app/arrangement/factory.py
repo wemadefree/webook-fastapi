@@ -21,8 +21,8 @@ class CrudManager:
         return self._get_item_by_id(session, item_id)
 
     def read_items(self, session: Session, offset: int, limit: int) -> List[Any]:
-        locations = session.query(self.class_model).offset(offset).limit(limit).all()
-        return locations
+        items = session.query(self.class_model).offset(offset).limit(limit).all()
+        return items
 
     def edit_item(self, db: Session, item_id: int, item: Any) -> Any:
         db_item = self._get_item_by_id(db, item_id)
@@ -40,10 +40,10 @@ class CrudManager:
 
     def _get_item_by_id(self, db: Session, item_id: int) -> Any:
         stmt = select(self.class_model).where(self.class_model.id == item_id)
-        person = db.exec(stmt).first()
-        if not person:
+        item = db.exec(stmt).first()
+        if not item:
             raise HTTPException(status_code=404, detail=f"{self.class_model.__name__} not found")
-        return person
+        return item
 
     def _prepare_for_update(self, updater: Any, db_item: Any) -> Any:
         model_data = updater.dict(exclude_unset=True)

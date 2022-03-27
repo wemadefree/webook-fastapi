@@ -8,8 +8,9 @@ from sqlalchemy import pool
 from sqlmodel import SQLModel
 
 from app.users.models import Base
-#from app.arrangement.model.basemodels import Audience, BusinessHour, Person, Arrangement, Location, Room, Article, OrganizationType, TimeLineEvent, ServiceType, ConfirmationReceipt, Note, Organization, Calendar, ServiceProvider, EventSerie, Event, EventService, LooseServiceRequisition
-#from app.arrangement.model.linkmodels import ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink, ArrangementTimelineEventsLink, CalendarPeopleLink, CalendarRoomLink, EventArticlesLink, EventNotesLink, EventPeopleLink, EventRoomLink, EventServicePeopleLink, EventServiceNotesLink, OrganizationMembersLink, OrganizationNotesLink, EventLooseServiceRequisitionLink, ArrangementNotesLink, PersonBusinessHoursLink, PersonNotesLink
+from app.arrangement.model.basemodels import Audience, BusinessHour, Person, Arrangement, Location, Room, Article, OrganizationType, TimeLineEvent, ServiceType, ConfirmationReceipt, Note, Organization, Calendar, ServiceProvider, EventSerie, Event, EventService, LooseServiceRequisition
+from app.arrangement.model.linkmodels import ArrangementDisplayLayout, EventDisplayLayout, ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink, ArrangementTimelineEventsLink, CalendarPeopleLink, CalendarRoomLink, EventArticlesLink, EventNotesLink, EventPeopleLink, EventRoomLink, EventServicePeopleLink, EventServiceNotesLink, OrganizationMembersLink, OrganizationNotesLink, EventLooseServiceRequisitionLink, ArrangementNotesLink, PersonBusinessHoursLink, PersonNotesLink
+from app.arrangement.model.basemodels import ScreenResource, ScreenResourceGroup, ScreenGroup,  DisplayLayoutResource, DisplayLayout,  DisplayLayoutSetting
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -22,9 +23,9 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+#target_metadata = Base.metadata
 
-#target_metadata = SQLModel.metadata
+target_metadata = SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

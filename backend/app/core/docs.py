@@ -66,7 +66,10 @@ tags_metadata = [
         "name": "requisition of service",
         "description": "",
     },
-
+    {
+        "name": "html generator",
+        "description": "HTML Generator For Screen Display",
+    },
     {
         "name": "user",
         "description": "Operations with users. The **login** logic is also here.",

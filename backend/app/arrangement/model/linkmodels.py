@@ -10,6 +10,12 @@ class ArrangementOwnersLink(SQLModel, table=True):
     person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
 
 
+class ArrangementDisplayLayout(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    display_layout_id: Optional[int] = Field(foreign_key="displaylayout.id", nullable=False)
+    arrangement_id: Optional[int] = Field(foreign_key="arrangement.id", nullable=False)
+
+
 class ArrangementPeopleParticipantsLink(SQLModel, table=True):
     __tablename__ = "arrangement_people_participants"
 
@@ -48,6 +54,12 @@ class CalendarRoomLink(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     calendar_id: Optional[int] = Field(foreign_key="calendar.id", nullable=False)
     room_id: Optional[int] = Field(foreign_key="room.id", nullable=False)
+
+
+class EventDisplayLayout(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    display_layout_id: Optional[int] = Field(foreign_key="displaylayout.id", nullable=False)
+    event_id: Optional[int] = Field(foreign_key="event.id", nullable=False)
 
 
 class EventArticlesLink(SQLModel, table=True):
@@ -144,3 +156,4 @@ class PersonNotesLink(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     note_id: Optional[int] = Field(foreign_key="note.id", nullable=False)
     person_id: Optional[int] = Field(foreign_key="person.id", nullable=False)
+

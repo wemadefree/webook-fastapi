@@ -20,10 +20,8 @@ Select.inherit_cache = True  # type: ignore
 
 
 @per.post("/persons", response_model=PersonRead)
-def create_person(*, session: Session = Depends(get_session), person: PersonCreateWithNotes):
-    db_notes: List[Note] = [Note.from_orm(note) for note in person.notes if Note.from_orm(note)]
+def create_person(*, session: Session = Depends(get_session), person: PersonCreate):
     db_person = Person.from_orm(person)
-    db_person.notes.extend(db_notes)
     db_person = CrudManager(Person).create_item(session, db_person)
     return db_person
 

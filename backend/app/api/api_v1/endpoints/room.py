@@ -5,7 +5,7 @@ from sqlmodel import Session
 from app.core.session import get_sqlmodel_sesion as get_session
 from app.arrangement.model.basemodels import Location, Room
 from app.arrangement.schema.rooms import LocationRead, LocationCreate, LocationUpdate, LocationReadWithRoom
-from app.arrangement.schema.rooms import RoomRead, RoomCreate, RoomReadWithLocation, RoomUpdate
+from app.arrangement.schema.rooms import RoomRead, RoomCreate, RoomWithLocation, RoomUpdate
 from app.arrangement.factory import CrudManager
 
 location_router = loc = APIRouter()
@@ -47,7 +47,13 @@ def read_rooms(*, session: Session = Depends(get_session), offset: int = 0, limi
     return rooms
 
 
-@loc.get("/room/{room_id}", response_model=RoomReadWithLocation)
+@loc.get("/rooms/{location_id}", response_model=List[RoomRead])
+def list_rooms_per_location(*, session: Session = Depends(get_session), location_id: int, offset: int = 0, limit: int = Query(default=100, lte=100)):
+    rooms = session.query(Room).where(Room.location_id == location_id).offset(offset).limit(limit).all()
+    return rooms
+
+
+@loc.get("/room/{room_id}", response_model=RoomWithLocation)
 def read_room(*, session: Session = Depends(get_session), room_id: int):
     room = session.get(Room, room_id)
     if not room:

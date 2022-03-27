@@ -5,8 +5,8 @@ from sqlmodel.sql.expression import Select, SelectOfScalar
 
 from app.core.session import get_sqlmodel_sesion as get_session
 from app.arrangement.model.basemodels import Person, BusinessHour, Note, ConfirmationReceipt, Audience, OrganizationType, Organization
-from app.arrangement.model.basemodels import TimeLineEvent, Arrangement
-from app.arrangement.schema.arrangements import ArrangementRead, ArrangementUpdate, ArrangementCreate
+from app.arrangement.model.basemodels import TimeLineEvent, Arrangement, DisplayLayout, ArrangementType
+from app.arrangement.schema.arrangements import ArrangementRead, ArrangementReadExtra, ArrangementUpdate, ArrangementCreate, ArrangementTypeCreate, ArrangementTypeBase
 from app.arrangement.schema.arrangements import AudienceRead, AudienceCreate, AudienceUpdate
 from app.arrangement.schema.arrangements import TimeLineEventRead, TimeLineEventCreate, TimeLineEventUpdate, TimeLineEventAddOrUpdate
 from app.arrangement.factory import CrudManager
@@ -77,13 +77,42 @@ def delete_timeline(*, session: Session = Depends(get_session), timeline_id: int
     return CrudManager(TimeLineEvent).delete_item(session, timeline_id)
 
 
+@arr.post("/arrangementtype", response_model=ArrangementTypeBase)
+def create_arrangement_type(*, session: Session = Depends(get_session), item: ArrangementTypeCreate):
+    item = CrudManager(ArrangementType).create_item(session, item)
+    return item
+
+
+@arr.get("/arrangementtype/{arrangement_id}", response_model=ArrangementTypeBase)
+def read_arrangement_type(*, session: Session = Depends(get_session), arrangement_id: int):
+    item = CrudManager(ArrangementType).read_item(session, arrangement_id)
+    return item
+
+
+@arr.get("/arrangementtype", response_model=List[ArrangementTypeBase])
+def read_arrangement_types(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
+    item = CrudManager(ArrangementType).read_items(session, offset, limit)
+    return item
+
+
+@arr.patch("/arrangementtype/{arrangement_id}", response_model=ArrangementTypeBase)
+def update_arrangement_type(*, session: Session = Depends(get_session), arrangement_id: int, arrangement: ArrangementTypeBase):
+    item = CrudManager(ArrangementType).edit_item(session, arrangement_id, arrangement)
+    return item
+
+
+@arr.delete("/arrangementtype/{arrangement_id}")
+def delete_arrangement_type(*, session: Session = Depends(get_session), arrangement_id: int):
+    return CrudManager(ArrangementType).delete_item(session, arrangement_id)
+
+
 @arr.post("/arrangements", response_model=ArrangementRead)
 def create_arrangement(*, session: Session = Depends(get_session), item: ArrangementCreate):
     item = CrudManager(Arrangement).create_item(session, item)
     return item
 
 
-@arr.get("/arrangement/{arrangement_id}", response_model=ArrangementRead)
+@arr.get("/arrangement/{arrangement_id}", response_model=ArrangementReadExtra)
 def read_arrangement(*, session: Session = Depends(get_session), arrangement_id: int):
     item = CrudManager(Arrangement).read_item(session, arrangement_id)
     return item
@@ -106,7 +135,7 @@ def delete_arrangement(*, session: Session = Depends(get_session), arrangement_i
     return CrudManager(Arrangement).delete_item(session, arrangement_id)
 
 
-@arr.post("/arrangement/{arrangement_id}/note/{note_id}", response_model=ArrangementRead)
+@arr.post("/arrangement/{arrangement_id}/note/{note_id}", response_model=ArrangementReadExtra)
 def add_arrangement_note(*, session: Session = Depends(get_session), arrangement_id: int, note_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -117,7 +146,7 @@ def add_arrangement_note(*, session: Session = Depends(get_session), arrangement
     return db_arrangement
 
 
-@arr.delete("/arrangement/{arrangement_id}/note/{note_id}", response_model=ArrangementRead)
+@arr.delete("/arrangement/{arrangement_id}/note/{note_id}", response_model=ArrangementReadExtra)
 def remove_note_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, note_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -129,7 +158,7 @@ def remove_note_from_arrangement(*, session: Session = Depends(get_session), arr
     return db_arrangement
 
 
-@arr.post("/arrangement/{arrangement_id}/timeline/{timeline_id}", response_model=ArrangementRead)
+@arr.post("/arrangement/{arrangement_id}/timeline/{timeline_id}", response_model=ArrangementReadExtra)
 def add_arrangement_timeline_event(*, session: Session = Depends(get_session), arrangement_id: int, timeline_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -140,7 +169,7 @@ def add_arrangement_timeline_event(*, session: Session = Depends(get_session), a
     return db_arrangement
 
 
-@arr.delete("/arrangement/{arrangement_id}/timeline/{timeline_id}", response_model=ArrangementRead)
+@arr.delete("/arrangement/{arrangement_id}/timeline/{timeline_id}", response_model=ArrangementReadExtra)
 def remove_timeline_event_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, timeline_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -152,7 +181,7 @@ def remove_timeline_event_from_arrangement(*, session: Session = Depends(get_ses
     return db_arrangement
 
 
-@arr.post("/arrangement/{arrangement_id}/planner/{person_id}", response_model=ArrangementRead)
+@arr.post("/arrangement/{arrangement_id}/planner/{person_id}", response_model=ArrangementReadExtra)
 def add_arrangement_planner(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -163,7 +192,7 @@ def add_arrangement_planner(*, session: Session = Depends(get_session), arrangem
     return db_arrangement
 
 
-@arr.delete("/arrangement/{arrangement_id}/planner/{person_id}", response_model=ArrangementRead)
+@arr.delete("/arrangement/{arrangement_id}/planner/{person_id}", response_model=ArrangementReadExtra)
 def remove_planner_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -175,7 +204,7 @@ def remove_planner_from_arrangement(*, session: Session = Depends(get_session), 
     return db_arrangement
 
 
-@arr.post("/arrangement/{arrangement_id}/participant/{person_id}", response_model=ArrangementRead)
+@arr.post("/arrangement/{arrangement_id}/participant/{person_id}", response_model=ArrangementReadExtra)
 def add_person_participant_to_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -186,7 +215,19 @@ def add_person_participant_to_arrangement(*, session: Session = Depends(get_sess
     return db_arrangement
 
 
-@arr.delete("/arrangement/{arrangement_id}/participant/{person_id}", response_model=ArrangementRead)
+
+@arr.post("/arrangement/{arrangement_id}/display_layout/{layout_id}", response_model=ArrangementReadExtra)
+def add_arrangement_display_configuration(*, session: Session = Depends(get_session), arrangement_id: int, layout_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        db_conf = CrudManager(DisplayLayout).read_item(session, layout_id)
+        if db_conf:
+            db_arrangement.display_layouts.append(db_conf)
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
+@arr.delete("/arrangement/{arrangement_id}/participant/{person_id}", response_model=ArrangementReadExtra)
 def remove_person_participant_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -198,7 +239,7 @@ def remove_person_participant_from_arrangement(*, session: Session = Depends(get
     return db_arrangement
 
 
-@arr.post("/arrangement/{arrangement_id}/organization/{org_id}", response_model=ArrangementRead)
+@arr.post("/arrangement/{arrangement_id}/organization/{org_id}", response_model=ArrangementReadExtra)
 def add_organization_participant_to_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, org_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:
@@ -209,7 +250,7 @@ def add_organization_participant_to_arrangement(*, session: Session = Depends(ge
     return db_arrangement
 
 
-@arr.delete("/arrangement/{arrangement_id}/organization/{org_id}", response_model=ArrangementRead)
+@arr.delete("/arrangement/{arrangement_id}/organization/{org_id}", response_model=ArrangementReadExtra)
 def remove_organization_participant_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, org_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
     if db_arrangement:

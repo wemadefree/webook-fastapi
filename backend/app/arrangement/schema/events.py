@@ -2,10 +2,10 @@ import datetime
 from typing import List, Optional
 from sqlmodel import SQLModel
 
-from app.arrangement.schema.arrangements import ArrangementRead
+from app.arrangement.schema.arrangements import ArrangementRead, ArrangementHTMLGenerator
 from app.arrangement.schema.persons import PersonRead, NoteRead, ConfirmationRecieptRead
 from app.arrangement.schema.services import LooseServiceRequisitionRead, ServiceProviderRead
-from app.arrangement.schema.rooms import RoomRead
+from app.arrangement.schema.rooms import RoomRead, RoomWithLocation
 from app.core.mixins import CamelCaseMixin
 
 
@@ -51,6 +51,7 @@ class EventSerieReadExtra(EventSerieRead):
 
 class EventBase(SQLModel, CamelCaseMixin):
     title: str
+    title_en: Optional[str]
     start: datetime.datetime
     end: datetime.datetime
     all_day: bool
@@ -69,7 +70,8 @@ class EventRead(EventBase):
 
 
 class EventUpdate(SQLModel, CamelCaseMixin):
-    title: Optional[str]
+    title_no: Optional[str]
+    title_en: Optional[str]
     start: Optional[datetime.datetime]
     end: Optional[datetime.datetime]
     all_day: Optional[bool]
@@ -87,6 +89,17 @@ class EventReadExtra(EventRead):
     loose_requisitions: List[LooseServiceRequisitionRead]
     articles: List[ArticleRead]
     notes: List[NoteRead]
+
+
+class EventHTMLGenerator(SQLModel, CamelCaseMixin):
+    id: int
+    title: str
+    title_en: Optional[str]
+    start: datetime.datetime
+    end: datetime.datetime
+    all_day: bool
+    arrangement: ArrangementHTMLGenerator
+    rooms: List[RoomWithLocation]
 
 
 class EventServiceBase(SQLModel, CamelCaseMixin):

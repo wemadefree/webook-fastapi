@@ -6,7 +6,7 @@ from sqlmodel import Column, Field, Relationship, SQLModel, VARCHAR
 from pydantic import EmailStr
 
 from app.core.mixins import CamelCaseMixin, TimeStampMixin
-from app.arrangement.model.linkmodels import ArrangementNotesLink, ArrangementTimelineEventsLink, ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink, CalendarPeopleLink, CalendarRoomLink, OrganizationMembersLink, OrganizationNotesLink, PersonNotesLink, PersonBusinessHoursLink, EventRoomLink, EventNotesLink ,EventServiceNotesLink, EventServicePeopleLink, EventLooseServiceRequisitionLink, EventPeopleLink
+from app.arrangement.model.linkmodels import ArrangementNotesLink, ArrangementDisplayLayout, ArrangementTimelineEventsLink, ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink, CalendarPeopleLink, CalendarRoomLink, OrganizationMembersLink, OrganizationNotesLink, PersonNotesLink, PersonBusinessHoursLink, EventRoomLink, EventNotesLink ,EventServiceNotesLink, EventServicePeopleLink, EventLooseServiceRequisitionLink, EventPeopleLink
 
 
 class StageChoices(str, enum.Enum):
@@ -56,16 +56,27 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     eventservices: List["EventService"] = Relationship(back_populates="associated_people", link_model=EventServicePeopleLink)
 
 
+class ArrangementType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(max_length=255)
+    name_en: str = Field(max_length=255, nullable=True, default="")
+
+    arrangements: List["Arrangement"] = Relationship(back_populates="arrangement_type")
+
+
 class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
+    name_en: str = Field(max_length=255, nullable=True, default="")
     stages: StageChoices = Field(sa_column=Column(ENUM(StageChoices)), default=StageChoices.PLANNING)
     starts: datetime.date
     ends: datetime.date
 
+    arrangement_type_id: Optional[int] = Field(default=None, foreign_key="arrangementtype.id")
     audience_id: Optional[int] = Field(default=None, foreign_key="audience.id")
     responsible_id: Optional[int] = Field(default=None, foreign_key="person.id")
 
+    arrangement_type: Optional[ArrangementType] = Relationship(back_populates="arrangements")
     audience: Optional[Audience] = Relationship(back_populates="arrangements")
     responsible: Optional[Person] = Relationship(back_populates="arrangements")
     looseservicerequisitions: List["LooseServiceRequisition"] = Relationship(back_populates="arrangement")
@@ -78,17 +89,22 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     people_participants: List["Person"] = Relationship(back_populates="arrangement_participants", link_model=ArrangementPeopleParticipantsLink)
     organization_participants: List["Organization"] = Relationship(back_populates="arrangement_participants", link_model=ArrangementOrganizationParticipantsLink)
 
+    display_layouts: List["DisplayLayout"] = Relationship(link_model=ArrangementDisplayLayout)
+
 
 class Location(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
     rooms: List["Room"] = Relationship(back_populates="location")
 
+    screen_resources: List["ScreenResource"] = Relationship(back_populates="location")
+
 
 class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
     max_capacity: int = Field(alias="maxCapacity")
+    has_screen: bool = Field(default=True)
     location_id: Optional[int] = Field(foreign_key="location.id", nullable=False)
 
     location: Optional[Location] = Relationship(back_populates="rooms")
@@ -237,6 +253,66 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     loose_requisitions: List["LooseServiceRequisition"] = Relationship(back_populates="events", link_model=EventLooseServiceRequisitionLink)
     articles: List["Article"] = Relationship(back_populates="events", link_model=EventArticlesLink)
     notes: List["Note"] = Relationship(back_populates="events", link_model=EventNotesLink)
+
+
+class ScreenResourceGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    group_id: Optional[int] = Field(foreign_key="screengroup.id", nullable=False)
+    resource_id: Optional[int] = Field(foreign_key="screenresource.id", nullable=False)
+
+
+class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    __table_args__ = (UniqueConstraint("location_id", "name", name="uniq_name_loc_1"),)
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(max_length=255)
+    description: str = Field(max_length=1024)
+    quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
+    room_screen: bool = Field(default=True, nullable=False, description="Is screen in room")
+    location_id: Optional[int] = Field(foreign_key="location.id", nullable=True)
+
+    location: Optional[Location] = Relationship(back_populates="screen_resources")
+    groups: List["ScreenGroup"] = Relationship(link_model=ScreenResourceGroup)
+
+
+class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    group_name: str = Field(max_length=255)
+    description: str = Field(max_length=1024)
+    quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
+
+    screens: List["ScreenResource"] = Relationship(link_model=ScreenResourceGroup)
+
+
+class DisplayLayoutResource(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    layout_id: Optional[int] = Field(foreign_key="displaylayout.id", nullable=False)
+    group_id: Optional[int] = Field(foreign_key="screengroup.id", nullable=True)
+    resource_id: Optional[int] = Field(foreign_key="screenresource.id", nullable=True)
+
+
+class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(max_length=255)
+    description: str = Field(max_length=1024)
+    room_based: bool = Field(default=True, nullable=False, description="If true app will create events per room")
+    active: bool = Field(default=True)
+    setting_id: Optional[int] = Field(foreign_key="displaylayoutsetting.id", nullable=True)
+
+    setting: Optional["DisplayLayoutSetting"] = Relationship(back_populates="layouts")
+
+    screens: List["ScreenResource"] = Relationship(link_model=DisplayLayoutResource)
+    groups: List["ScreenGroup"] = Relationship(link_model=DisplayLayoutResource)
+
+
+class DisplayLayoutSetting(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(max_length=255)
+    html_template: Optional[str]
+    css_template: Optional[str]
+    file_output_path: str
+
+    layouts: List["DisplayLayout"] = Relationship(back_populates="setting")
 
 
 class EventService(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):

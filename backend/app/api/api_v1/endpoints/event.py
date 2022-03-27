@@ -1,14 +1,14 @@
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session
+from sqlmodel import Session, select
 from app.core.session import get_sqlmodel_sesion as get_session
-from app.arrangement.model.basemodels import Article, EventSerie, Event, EventService, LooseServiceRequisition, Note, Person, Room
+from app.arrangement.model.basemodels import Article, EventSerie, Event, Arrangement, EventService, LooseServiceRequisition, Note, Person, Room
 from app.arrangement.schema.events import EventSerieRead, EventSerieReadExtra, EventSerieCreate, EventSerieUpdate
-from app.arrangement.schema.events import EventRead, EventReadExtra, EventCreate, EventUpdate
+from app.arrangement.schema.events import EventRead, EventReadExtra, EventHTMLGenerator, EventCreate, EventUpdate
 from app.arrangement.schema.events import EventServiceRead, EventServiceReadExtra, EventServiceCreate, EventServiceUpdate
 from app.arrangement.schema.events import ArticleRead, ArticleAddOrUpdate, ArticleCreate, ArticleUpdate
-from app.arrangement.schema.persons import PersonAddOrUpdate, NoteAddOrUpdate
 from app.arrangement.factory import CrudManager
 
 event_router = evt = APIRouter()
@@ -54,6 +54,35 @@ def create_event(*, session: Session = Depends(get_session), event: EventCreate)
 @evt.get("/events", response_model=List[EventRead])
 def read_event(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     events = CrudManager(Event).read_items(session, offset, limit)
+    return events
+
+
+@evt.get("/events/current", response_model=List[EventRead])
+def get_current_events(*, session: Session = Depends(get_session)):
+    now = datetime.now()
+    events = session.query(Event).where(now > Event.start).where(now < Event.end).order_by(Event.start).all()
+    return events
+
+
+@evt.get("/events/next_on_schedule", response_model=List[EventHTMLGenerator])
+def get_events_next_on_schedule(*, session: Session = Depends(get_session), limit: int = Query(default=30, lte=30)):
+    '''Add filter by location'''
+    now = datetime.now()
+    #today_max_time = datetime.combine(datetime.today(), datetime.max.time())
+    events = session.query(Event).where(Event.start >= now).order_by(Event.start).limit(limit).all()
+    return events
+
+
+@evt.get("/events/starting_next", response_model=List[EventHTMLGenerator])
+def get_events_starting_next(*, session: Session = Depends(get_session)):
+    '''Add filter by location'''
+    statement = select(Event.title, Arrangement.name).where(Event.arrangement_id == Arrangement.id).where(Arrangement.show_in_mmg == True)
+    results = session.exec(statement)
+    for event, arrangement in results:
+        print("Event:", event, "Arrangement:", arrangement)
+    now = datetime.now()
+    today_max_time = datetime.combine(datetime.today(), datetime.max.time())
+    events = session.query(Event).where(Event.start >= now).where(Event.start <= today_max_time).order_by(Event.start).all()
     return events
 
 

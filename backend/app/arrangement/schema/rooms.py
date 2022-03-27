@@ -23,6 +23,7 @@ class LocationUpdate(SQLModel):
 class RoomBase(SQLModel, CamelCaseMixin):
     name: str
     max_capacity: int
+    has_screen: bool
     location_id: Optional[int]
 
 
@@ -44,11 +45,16 @@ class RoomAddOrUpdate(SQLModel, CamelCaseMixin):
     id: int
     name: Optional[str] = None
     max_capacity: Optional[int]
+    has_screen: Optional[bool]
     location_id: Optional[int]
 
 
-class RoomReadWithLocation(RoomRead):
-    location: Optional[LocationRead] = None
+class RoomWithLocation(SQLModel, CamelCaseMixin):
+    id: int
+    name: str
+    max_capacity: int
+    has_screen: bool
+    location: Optional[LocationRead]
 
 
 class LocationReadWithRoom(LocationRead):
