@@ -11,6 +11,7 @@ from app.core.mixins import CamelCaseMixin
 
 class AudienceBase(SQLModel, CamelCaseMixin):
     name: str
+    name_en: str
     icon_class: str
 
 
@@ -64,6 +65,7 @@ class ArrangementTypeCreate(SQLModel, CamelCaseMixin):
 
 class ArrangementBase(SQLModel, CamelCaseMixin):
     name: str
+    name_en: str
     stages: StageChoices
     starts: datetime.date
     ends: datetime.date

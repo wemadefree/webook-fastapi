@@ -7,6 +7,7 @@ from app.arrangement.schema.rooms import LocationRead
 
 class ScreenResourceBase(SQLModel, CamelCaseMixin):
     name: str
+    name_en: Optional[str]
     description: str
     quantity: int
     room_screen: bool
@@ -82,18 +83,16 @@ class DisplayLayoutBase(SQLModel, CamelCaseMixin):
     setting_id: Optional[int]
 
 
-class DisplayLayoutSimple(SQLModel, CamelCaseMixin):
-    name: str
-    description: str
-    room_based: bool
-
-
 class DisplayLayoutRead(DisplayLayoutBase):
     id: int
 
     setting: Optional[DisplayLayoutSettingRead]
     screens: List[ScreenResourceRead]
     groups: List[ScreenGroupRead]
+
+
+class DisplayLayoutSimple(SQLModel, CamelCaseMixin):
+    name: str
 
 
 class DisplayLayoutCreate(DisplayLayoutBase):

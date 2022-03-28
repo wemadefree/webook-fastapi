@@ -51,7 +51,6 @@ class EventSerieReadExtra(EventSerieRead):
 
 class EventBase(SQLModel, CamelCaseMixin):
     title: str
-    title_en: Optional[str]
     start: datetime.datetime
     end: datetime.datetime
     all_day: bool
@@ -70,8 +69,7 @@ class EventRead(EventBase):
 
 
 class EventUpdate(SQLModel, CamelCaseMixin):
-    title_no: Optional[str]
-    title_en: Optional[str]
+    title: Optional[str]
     start: Optional[datetime.datetime]
     end: Optional[datetime.datetime]
     all_day: Optional[bool]
@@ -94,7 +92,6 @@ class EventReadExtra(EventRead):
 class EventHTMLGenerator(SQLModel, CamelCaseMixin):
     id: int
     title: str
-    title_en: Optional[str]
     start: datetime.datetime
     end: datetime.datetime
     all_day: bool
