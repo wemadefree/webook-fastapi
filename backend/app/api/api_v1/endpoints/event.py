@@ -72,7 +72,7 @@ def get_events_next_on_schedule(*, session: Session = Depends(get_session), limi
     events = session.query(Event).where(Event.start >= now).order_by(Event.start).limit(limit).all()
     return events
 
-
+"""
 @evt.get("/events/starting_next", response_model=List[EventHTMLGenerator])
 def get_events_starting_next(*, session: Session = Depends(get_session)):
     '''Add filter by location'''
@@ -84,7 +84,7 @@ def get_events_starting_next(*, session: Session = Depends(get_session)):
     today_max_time = datetime.combine(datetime.today(), datetime.max.time())
     events = session.query(Event).where(Event.start >= now).where(Event.start <= today_max_time).order_by(Event.start).all()
     return events
-
+"""
 
 @evt.get("/event/{event_id}", response_model=EventReadExtra)
 def read_event(*, session: Session = Depends(get_session), event_id: int):

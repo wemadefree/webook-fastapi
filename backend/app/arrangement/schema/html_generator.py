@@ -82,6 +82,12 @@ class DisplayLayoutBase(SQLModel, CamelCaseMixin):
     setting_id: Optional[int]
 
 
+class DisplayLayoutSimple(SQLModel, CamelCaseMixin):
+    name: str
+    description: str
+    room_based: bool
+
+
 class DisplayLayoutRead(DisplayLayoutBase):
     id: int
 

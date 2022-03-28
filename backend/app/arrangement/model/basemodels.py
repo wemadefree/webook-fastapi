@@ -6,7 +6,7 @@ from sqlmodel import Column, Field, Relationship, SQLModel, VARCHAR
 from pydantic import EmailStr
 
 from app.core.mixins import CamelCaseMixin, TimeStampMixin
-from app.arrangement.model.linkmodels import ArrangementNotesLink, ArrangementDisplayLayout, ArrangementTimelineEventsLink, ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink, CalendarPeopleLink, CalendarRoomLink, OrganizationMembersLink, OrganizationNotesLink, PersonNotesLink, PersonBusinessHoursLink, EventRoomLink, EventNotesLink ,EventServiceNotesLink, EventServicePeopleLink, EventLooseServiceRequisitionLink, EventPeopleLink
+from app.arrangement.model.linkmodels import ArrangementNotesLink, ArrangementDisplayLayout, ArrangementTimelineEventsLink, ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink, EventDisplayLayout, CalendarPeopleLink, CalendarRoomLink, OrganizationMembersLink, OrganizationNotesLink, PersonNotesLink, PersonBusinessHoursLink, EventRoomLink, EventNotesLink ,EventServiceNotesLink, EventServicePeopleLink, EventLooseServiceRequisitionLink, EventPeopleLink
 
 
 class StageChoices(str, enum.Enum):
@@ -253,6 +253,8 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     loose_requisitions: List["LooseServiceRequisition"] = Relationship(back_populates="events", link_model=EventLooseServiceRequisitionLink)
     articles: List["Article"] = Relationship(back_populates="events", link_model=EventArticlesLink)
     notes: List["Note"] = Relationship(back_populates="events", link_model=EventNotesLink)
+
+    display_layouts: List["DisplayLayout"] = Relationship(link_model=EventDisplayLayout)
 
 
 class ScreenResourceGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):

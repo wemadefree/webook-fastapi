@@ -5,6 +5,7 @@ from sqlmodel import SQLModel
 from app.arrangement.model.basemodels import StageChoices
 from app.arrangement.schema.persons import PersonRead, NoteRead, NoteUpdate
 from app.arrangement.schema.organizations import OrganizationRead
+from app.arrangement.schema.html_generator import DisplayLayoutSimple
 from app.core.mixins import CamelCaseMixin
 
 
@@ -80,6 +81,7 @@ class ArrangementRead(ArrangementBase):
     audience: Optional[AudienceRead]
     arrangement_type: Optional[ArrangementTypeBase]
     responsible: Optional[PersonRead]
+    display_layouts: List[DisplayLayoutSimple]
 
 
 class ArrangementHTMLGenerator(SQLModel, CamelCaseMixin):
