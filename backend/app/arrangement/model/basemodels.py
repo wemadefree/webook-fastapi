@@ -19,6 +19,7 @@ class StageChoices(str, enum.Enum):
 class Audience(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(..., max_length=255)
+    name_en: str = Field(max_length=255, nullable=True)
     icon_class: Optional[str] = Field(default='', max_length=255)
 
     arrangements: List["Arrangement"] = Relationship(back_populates="audience")
@@ -268,6 +269,7 @@ class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
+    name_en: str = Field(max_length=255, nullable=True)
     description: str = Field(max_length=1024)
     quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
     room_screen: bool = Field(default=True, nullable=False, description="Is screen in room")
@@ -280,6 +282,7 @@ class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     group_name: str = Field(max_length=255)
+    group_name_en: str = Field(max_length=255, nullable=True)
     description: str = Field(max_length=1024)
     quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
 
