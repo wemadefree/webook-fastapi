@@ -2,7 +2,8 @@ import datetime
 from typing import List, Optional
 from sqlmodel import SQLModel
 
-from app.arrangement.schema.arrangements import ArrangementRead, ArrangementHTMLGenerator
+from app.arrangement.schema.arrangements import ArrangementRead, ArrangementDisplayRead
+from app.arrangement.schema.html_generator import DisplayLayoutSimple
 from app.arrangement.schema.persons import PersonRead, NoteRead, ConfirmationRecieptRead
 from app.arrangement.schema.services import LooseServiceRequisitionRead, ServiceProviderRead
 from app.arrangement.schema.rooms import RoomRead, RoomWithLocation
@@ -66,6 +67,7 @@ class EventCreate(EventBase):
 
 class EventRead(EventBase):
     id: int
+    display_layouts: List[DisplayLayoutSimple]
 
 
 class EventUpdate(SQLModel, CamelCaseMixin):
@@ -89,14 +91,15 @@ class EventReadExtra(EventRead):
     notes: List[NoteRead]
 
 
-class EventHTMLGenerator(SQLModel, CamelCaseMixin):
+class EventDisplayRead(SQLModel, CamelCaseMixin):
     id: int
     title: str
     start: datetime.datetime
     end: datetime.datetime
     all_day: bool
-    arrangement: ArrangementHTMLGenerator
+    arrangement: ArrangementDisplayRead
     rooms: List[RoomWithLocation]
+    display_layouts: List[DisplayLayoutSimple]
 
 
 class EventServiceBase(SQLModel, CamelCaseMixin):

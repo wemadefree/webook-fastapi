@@ -270,9 +270,8 @@ class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
     name_en: str = Field(max_length=255, nullable=True)
-    description: str = Field(max_length=1024)
     quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
-    room_screen: bool = Field(default=True, nullable=False, description="Is screen in room")
+    is_room_screen: bool = Field(default=True, nullable=False, description="Is screen in room")
     location_id: Optional[int] = Field(foreign_key="location.id", nullable=True)
 
     location: Optional[Location] = Relationship(back_populates="screen_resources")
@@ -283,7 +282,6 @@ class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     group_name: str = Field(max_length=255)
     group_name_en: str = Field(max_length=255, nullable=True)
-    description: str = Field(max_length=1024)
     quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
 
     screens: List["ScreenResource"] = Relationship(link_model=ScreenResourceGroup)
@@ -300,8 +298,10 @@ class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
     description: str = Field(max_length=1024)
-    room_based: bool = Field(default=True, nullable=False, description="If true app will create events per room")
-    active: bool = Field(default=True)
+    quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
+    is_room_based: bool = Field(default=True, nullable=False, description="If true app will create events per room")
+    all_events: bool = Field(default=True, nullable=False, description="Showing all events")
+    is_active: bool = Field(default=True, description="Is Layout Active")
     setting_id: Optional[int] = Field(foreign_key="displaylayoutsetting.id", nullable=True)
 
     setting: Optional["DisplayLayoutSetting"] = Relationship(back_populates="layouts")

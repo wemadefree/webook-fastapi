@@ -67,7 +67,7 @@ tags_metadata = [
         "description": "",
     },
     {
-        "name": "html generator",
+        "name": "screen show generator",
         "description": "HTML Generator For Screen Display",
     },
     {

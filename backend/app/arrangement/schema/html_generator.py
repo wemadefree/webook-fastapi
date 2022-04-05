@@ -8,9 +8,8 @@ from app.arrangement.schema.rooms import LocationRead
 class ScreenResourceBase(SQLModel, CamelCaseMixin):
     name: str
     name_en: Optional[str]
-    description: str
     quantity: int
-    room_screen: bool
+    is_room_screen: bool
     location_id: Optional[int]
 
 
@@ -25,15 +24,15 @@ class ScreenResourceRead(ScreenResourceBase):
 
 class ScreenResourceUpdate(SQLModel, CamelCaseMixin):
     name: Optional[str]
-    description: Optional[str]
+    name_en: Optional[str]
     quantity: Optional[int]
-    room_screen: Optional[bool]
+    is_room_screen: Optional[bool]
     location_id: Optional[int]
 
 
 class ScreenGroupBase(SQLModel, CamelCaseMixin):
     group_name: str
-    description: str
+    group_name_en: Optional[str]
     quantity: int
 
 
@@ -49,7 +48,6 @@ class ScreenGroupCreate(ScreenGroupBase):
 
 class ScreenGroupUpdate(SQLModel, CamelCaseMixin):
     group_name: Optional[str]
-    description: Optional[str]
     quantity: Optional[int]
 
 
@@ -78,8 +76,9 @@ class DisplayLayoutSettingUpdate(SQLModel, CamelCaseMixin):
 class DisplayLayoutBase(SQLModel, CamelCaseMixin):
     name: str
     description: str
-    room_based: bool
-    active: bool
+    is_room_based: bool
+    all_events: bool
+    is_active: bool
     setting_id: Optional[int]
 
 
@@ -102,8 +101,9 @@ class DisplayLayoutCreate(DisplayLayoutBase):
 class DisplayLayoutUpdate(SQLModel, CamelCaseMixin):
     name: Optional[str]
     description: Optional[str]
-    room_based: Optional[bool]
-    active: Optional[bool]
+    is_room_based: Optional[bool]
+    is_active: Optional[bool]
+    all_events: Optional[bool]
     setting_id: Optional[int]
 
 

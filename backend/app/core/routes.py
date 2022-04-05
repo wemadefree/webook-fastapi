@@ -124,7 +124,7 @@ def include_routes(app: FastAPI):
     app.include_router(
         html_router,
         prefix="/api/v1",
-        tags=["html generator"],
+        tags=["screen show generator"],
         # dependencies=[Depends(get_current_active_user)],
     )
 

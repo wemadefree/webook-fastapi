@@ -227,6 +227,18 @@ def add_arrangement_display_configuration(*, session: Session = Depends(get_sess
     return db_arrangement
 
 
+@arr.delete("/arrangement/{arrangement_id}/display_layout/{layout_id}", response_model=ArrangementReadExtra)
+def remove_arrangement_display_configuration(*, session: Session = Depends(get_session), arrangement_id: int, layout_id: int):
+    db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
+    if db_arrangement:
+        for per in db_arrangement.display_layouts:
+            if per.id == layout_id:
+                db_arrangement.display_layouts.remove(per)
+                break
+        db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
+    return db_arrangement
+
+
 @arr.delete("/arrangement/{arrangement_id}/participant/{person_id}", response_model=ArrangementReadExtra)
 def remove_person_participant_from_arrangement(*, session: Session = Depends(get_session), arrangement_id: int, person_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)

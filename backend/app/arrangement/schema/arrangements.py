@@ -86,13 +86,15 @@ class ArrangementRead(ArrangementBase):
     display_layouts: List[DisplayLayoutSimple]
 
 
-class ArrangementHTMLGenerator(SQLModel, CamelCaseMixin):
+class ArrangementDisplayRead(SQLModel, CamelCaseMixin):
     id: int
     name: str
+    name_en: str
     starts: datetime.date
     ends: datetime.date
     audience: Optional[AudienceRead]
     arrangement_type: Optional[ArrangementTypeBase]
+    display_layouts: List[DisplayLayoutSimple]
 
 
 class ArrangementReadExtra(ArrangementRead):
