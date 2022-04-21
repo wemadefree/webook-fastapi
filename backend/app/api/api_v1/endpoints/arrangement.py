@@ -4,7 +4,7 @@ from sqlmodel import Session
 from sqlmodel.sql.expression import Select, SelectOfScalar
 
 from app.core.session import get_sqlmodel_sesion as get_session
-from app.arrangement.model.basemodels import Person, BusinessHour, Note, ConfirmationReceipt, Audience, OrganizationType, Organization
+from app.arrangement.model.basemodels import Person, Note, ConfirmationReceipt, Audience, OrganizationType, Organization
 from app.arrangement.model.basemodels import TimeLineEvent, Arrangement, DisplayLayout, ArrangementType
 from app.arrangement.schema.arrangements import ArrangementRead, ArrangementReadExtra, ArrangementUpdate, ArrangementCreate, ArrangementTypeCreate, ArrangementTypeBase
 from app.arrangement.schema.arrangements import AudienceRead, AudienceCreate, AudienceUpdate

@@ -9,6 +9,17 @@ services:
     depends_on:
       - backend
 
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data:cached
+
   pgadmin:
     container_name: pgadmin4
     image: dpage/pgadmin4
@@ -30,7 +41,9 @@ services:
       - ./.docker/.ipython:/root/.ipython:cached
     environment:
       PYTHONPATH: .
-      DATABASE_URL: 'postgresql://postgres:postgres@host.docker.internal:5433/postgres'
+      DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:5433/postgres'
+    depends_on:
+      - "postgres"
 
 volumes:
   db-data:
