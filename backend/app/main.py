@@ -10,6 +10,7 @@ from app.core.routes import include_routes
 
 def start_application():
     main_app = FastAPI(title="WeBook API", description=main_description, docs_url="/api/docs", openapi_url="/api", openapi_tags=tags_metadata)
+    main_app.mount("/static", StaticFiles(directory="./static"), name="static")
     include_routes(main_app)
     return main_app
 

@@ -2,8 +2,13 @@ version: '3.7'
 services:
   nginx:
     image: nginx:1.17
+    build:
+      context: nginx
+      dockerfile: Dockerfile
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/app/static:/www/static:rw
+    tty: true
     ports:
       - 8440:80
     depends_on:
