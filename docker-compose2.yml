@@ -2,17 +2,23 @@ version: '3.7'
 services:
   nginx:
     image: nginx:1.17
-    build:
-      context: nginx
-      dockerfile: Dockerfile
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./backend/app/static:/www/static:rw
-    tty: true
     ports:
       - 8440:80
     depends_on:
       - backend
+
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data:cached
 
   pgadmin:
     container_name: pgadmin4
@@ -35,7 +41,9 @@ services:
       - ./.docker/.ipython:/root/.ipython:cached
     environment:
       PYTHONPATH: .
-      DATABASE_URL: 'postgresql://postgres:postgres@host.docker.internal:5433/postgres'
+      DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:5433/postgres'
+    depends_on:
+      - "postgres"
 
 volumes:
   db-data:

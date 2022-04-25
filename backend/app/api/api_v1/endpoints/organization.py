@@ -3,8 +3,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
 from app.core.session import get_sqlmodel_sesion as get_session
-from app.arrangement.model.basemodels import Person, BusinessHour, Note, ConfirmationReceipt, OrganizationType, Organization
-from app.arrangement.schema.bussineshours import BusinessHourRead, BusinessHourUpdate, BusinessHourCreate
+from app.arrangement.model.basemodels import Person, Note, ConfirmationReceipt, OrganizationType, Organization
 from app.arrangement.schema.organizations import OrganizationTypeRead, OrganizationTypeCreate, OrganizationTypeUpdate
 from app.arrangement.schema.organizations import OrganizationRead, OrganizationReadExtra, OrganizationCreate, OrganizationUpdate, OrganizationAddOrUpdate
 from sqlmodel.sql.expression import Select, SelectOfScalar
@@ -15,38 +14,6 @@ hour_router = hour = APIRouter()
 
 SelectOfScalar.inherit_cache = True  # type: ignore
 Select.inherit_cache = True  # type: ignore
-
-
-@hour.get("/businesshours", response_model=List[BusinessHourRead])
-def read_hours(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
-    """
-    Get a Bussiness Hour
-    """
-    hours = CrudManager(BusinessHour).read_items(session, offset, limit)
-    return hours
-
-
-@hour.get("/businesshour/{businesshour_id}", response_model=BusinessHourRead)
-def read_hour(*, session: Session = Depends(get_session), hour_id: int):
-    hour = CrudManager(BusinessHour).read_item(session, hour_id)
-    return hour
-
-
-@hour.post("/businesshours/", response_model=BusinessHourRead)
-def create_hours(*, session: Session = Depends(get_session), hour: BusinessHourCreate):
-    db_hour = CrudManager(BusinessHour).create_item(session, hour)
-    return db_hour
-
-
-@hour.patch("/businesshour/{businesshour_id}", response_model=BusinessHourRead)
-def update_hour(*, session: Session = Depends(get_session), hour_id: int, hour: BusinessHourUpdate):
-    db_hour = CrudManager(BusinessHour).edit_item(session, hour_id, hour)
-    return db_hour
-
-
-@hour.delete("/businesshour/{businesshour_id}")
-def delete_hour(*, session: Session = Depends(get_session), hour_id: int):
-    return CrudManager(BusinessHour).delete_item(session, hour_id)
 
 
 @org.post("/orgtypes", response_model=OrganizationTypeRead)
