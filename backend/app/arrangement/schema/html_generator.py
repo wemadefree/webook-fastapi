@@ -1,14 +1,14 @@
 from typing import List, Optional
 from sqlmodel import SQLModel, Field
 
+from app.arrangement.schema.rooms import RoomRead
 from app.core.mixins import CamelCaseMixin
 
 
 class ScreenResourceBase(SQLModel, CamelCaseMixin):
-    name: str
-    name_en: Optional[str]
-    quantity: int
-    is_room_screen: bool
+    screen_model: str
+    items_shown: int
+    room_id: Optional[int]
 
 
 class ScreenResourceCreate(ScreenResourceBase):
@@ -17,13 +17,13 @@ class ScreenResourceCreate(ScreenResourceBase):
 
 class ScreenResourceRead(ScreenResourceBase):
     id: int
+    room: Optional[RoomRead]
 
 
 class ScreenResourceUpdate(SQLModel, CamelCaseMixin):
-    name: Optional[str]
-    name_en: Optional[str]
-    quantity: Optional[int]
-    is_room_screen: Optional[bool]
+    screen_model: Optional[str]
+    items_shown: Optional[int]
+    room_id: Optional[int]
 
 
 class ScreenGroupBase(SQLModel, CamelCaseMixin):

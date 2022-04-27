@@ -543,13 +543,11 @@ class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     #__table_args__ = (UniqueConstraint("location_id", "name", name="uniq_name_loc_1"),)
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-    name_en: str = Field(max_length=255, nullable=True)
-    quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
-    is_room_screen: bool = Field(default=True, nullable=False, description="Is screen in room")
-    #location_id: Optional[int] = Field(foreign_key="arrangement_location.id", nullable=True)
+    screen_model: str = Field(max_length=255)
+    items_shown: int = Field(default=10, nullable=False, description="Number of items to list on screen")
+    room_id: Optional[int] = Field(foreign_key="arrangement_room.id", nullable=True)
+    room: Optional["Room"] = Relationship()
 
-    #location: Optional[Location] = Relationship(back_populates="screen_resources")
     groups: List["ScreenGroup"] = Relationship(
         link_model=ScreenResourceGroup,
         sa_relationship_kwargs=dict(
