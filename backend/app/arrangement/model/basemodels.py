@@ -6,7 +6,13 @@ from sqlmodel import Column, Field, Relationship, SQLModel, VARCHAR
 from pydantic import EmailStr
 
 from app.core.mixins import CamelCaseMixin, TimeStampMixin
-from app.arrangement.model.linkmodels import ArrangementNotesLink, ArrangementDisplayLayout, ArrangementTimelineEventsLink, ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink, EventDisplayLayout, CalendarPeopleLink, CalendarRoomLink, OrganizationMembersLink, OrganizationNotesLink, PersonNotesLink, EventRoomLink, EventNotesLink ,EventServiceNotesLink, EventServicePeopleLink, EventLooseServiceRequisitionLink, EventPeopleLink
+from app.arrangement.model.linkmodels import (
+    ArrangementNotesLink, ArrangementDisplayLayout, ArrangementTimelineEventsLink, ArrangementOwnersLink,
+    ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink,
+    EventDisplayLayout, CalendarPeopleLink, CalendarRoomLink, OrganizationMembersLink, OrganizationNotesLink,
+    PersonNotesLink, EventRoomLink, EventNotesLink ,EventServiceNotesLink, EventServicePeopleLink,
+    EventLooseServiceRequisitionLink, EventPeopleLink, RoomPresetLink
+    )
 
 
 class StageChoices(str, enum.Enum):
@@ -233,6 +239,21 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         sa_relationship_kwargs=dict(
             primaryjoin="Room.id==EventRoomLink.event_id",
             secondaryjoin="Room.id==EventRoomLink.room_id",
+        ),
+    )
+
+
+class RoomPreset(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+    __tablename__ = "arrangement_roompreset"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(index=True)
+
+    rooms: List["Room"] = Relationship(
+        link_model=RoomPresetLink,
+        sa_relationship_kwargs=dict(
+            primaryjoin="RoomPreset.id==RoomPresetLink.room_id",
+            secondaryjoin="Room.id==RoomPresetLink.roompreset_id",
         ),
     )
 
@@ -564,6 +585,9 @@ class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     group_name: str = Field(max_length=255)
     group_name_en: str = Field(max_length=255, nullable=True)
     quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
+    #roompreset_id = Optional[int] = Field(foreign_key="arrangement_roompreset.id", nullable=True)
+
+    #roompreset: Optional["RoomPreset"] = Relationship()
 
     screens: List["ScreenResource"] = Relationship(
         link_model=ScreenResourceGroup,
@@ -596,7 +620,7 @@ class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
     description: str = Field(max_length=1024)
-    quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
+    items_shown: int = Field(default=10, nullable=False, description="Number of items to list on screen")
     is_room_based: bool = Field(default=True, nullable=False, description="If true app will create events per room")
     all_events: bool = Field(default=True, nullable=False, description="Showing all events")
     is_active: bool = Field(default=True, description="Is Layout Active")

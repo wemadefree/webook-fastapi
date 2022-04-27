@@ -161,3 +161,9 @@ class PersonNotesLink(SQLModel, table=True):
     note_id: Optional[int] = Field(foreign_key="arrangement_note.id", nullable=False)
     person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
 
+class RoomPresetLink(SQLModel, table=True):
+    __tablename__ = "arrangement_roompreset_rooms"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    roompreset_id: Optional[int] = Field(foreign_key="arrangement_roompreset.id", nullable=False)
+    room_id: Optional[int] = Field(foreign_key="arrangement_room.id", nullable=False)

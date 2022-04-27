@@ -68,3 +68,21 @@ class RoomWithLocation(SQLModel, CamelCaseMixin):
 
 class LocationReadWithRoom(LocationRead):
     rooms: List[RoomRead] = []
+
+
+class RoomPresetBase(SQLModel, CamelCaseMixin):
+    name: str
+
+
+class RoomPresetCreate(RoomPresetBase):
+    pass
+
+
+class RoomPresetRead(RoomPresetBase):
+    id: int
+    rooms: Optional[List[RoomRead]]
+
+
+class RoomPresetUpdate(SQLModel, CamelCaseMixin):
+    name: Optional[str]
+

@@ -72,6 +72,7 @@ class DisplayLayoutSettingUpdate(SQLModel, CamelCaseMixin):
 class DisplayLayoutBase(SQLModel, CamelCaseMixin):
     name: str
     description: str
+    items_shown: int
     is_room_based: bool
     all_events: bool
     is_active: bool
@@ -97,6 +98,7 @@ class DisplayLayoutCreate(DisplayLayoutBase):
 class DisplayLayoutUpdate(SQLModel, CamelCaseMixin):
     name: Optional[str]
     description: Optional[str]
+    items_shown: Optional[int]
     is_room_based: Optional[bool]
     is_active: Optional[bool]
     all_events: Optional[bool]
