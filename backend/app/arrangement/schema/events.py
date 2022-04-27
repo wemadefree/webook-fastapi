@@ -88,7 +88,7 @@ class EventReadExtra(EventRead):
     rooms: List[RoomRead]
     loose_requisitions: List[LooseServiceRequisitionRead]
     articles: List[ArticleRead]
-    notes: List[NoteRead]
+    #notes: List[NoteRead]
 
 
 class EventDisplayRead(SQLModel, CamelCaseMixin):

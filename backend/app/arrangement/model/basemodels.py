@@ -62,7 +62,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="planners",
         link_model=ArrangementOwnersLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Person.id==ArrangementOwnersLink.arrangement_id",
+            primaryjoin="Arrangement.id==ArrangementOwnersLink.arrangement_id",
             secondaryjoin="Person.id==ArrangementOwnersLink.person_id",
         ),
     )
@@ -70,7 +70,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="people_participants",
         link_model=ArrangementPeopleParticipantsLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Person.id==ArrangementPeopleParticipantsLink.arrangement_id",
+            primaryjoin="Arrangement.id==ArrangementPeopleParticipantsLink.arrangement_id",
             secondaryjoin="Person.id==ArrangementPeopleParticipantsLink.person_id",
         ),
     )
@@ -79,7 +79,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="members",
         link_model=OrganizationMembersLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Person.id==OrganizationMembersLink.organization_id",
+            primaryjoin="Organization.id==OrganizationMembersLink.organization_id",
             secondaryjoin="Person.id==OrganizationMembersLink.person_id",
         ),
     )
@@ -88,7 +88,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="people_resources",
         link_model=CalendarPeopleLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Person.id==CalendarPeopleLink.calendar_id",
+            primaryjoin="Calendar.id==CalendarPeopleLink.calendar_id",
             secondaryjoin="Person.id==CalendarPeopleLink.person_id",
         ),
     )
@@ -97,7 +97,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     person_notes: List["Note"] = Relationship(
         link_model=PersonNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Person.id==PersonNotesLink.note_id",
+            primaryjoin="Note.id==PersonNotesLink.note_id",
             secondaryjoin="Person.id==PersonNotesLink.person_id",
         ),
     )
@@ -106,7 +106,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="people",
         link_model=EventPeopleLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Person.id==EventPeopleLink.event_id",
+            primaryjoin="Event.id==EventPeopleLink.event_id",
             secondaryjoin="Person.id==EventPeopleLink.person_id",
         ),
 
@@ -115,7 +115,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="associated_people",
         link_model=EventServicePeopleLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Person.id==EventServicePeopleLink.eventservice_id",
+            primaryjoin="EventService.id==EventServicePeopleLink.eventservice_id",
             secondaryjoin="Person.id==EventServicePeopleLink.person_id",
         ),
     )
@@ -156,7 +156,7 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="arrangements",
         link_model=ArrangementTimelineEventsLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Arrangement.id==ArrangementTimelineEventsLink.timelineevent_id",
+            primaryjoin="TimeLineEvent.id==ArrangementTimelineEventsLink.timelineevent_id",
             secondaryjoin="Arrangement.id==ArrangementTimelineEventsLink.arrangement_id",
         ),
     )
@@ -164,7 +164,7 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="arrangement_notes",
         link_model=ArrangementNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Arrangement.id==ArrangementNotesLink.note_id",
+            primaryjoin="Note.id==ArrangementNotesLink.note_id",
             secondaryjoin="Arrangement.id==ArrangementNotesLink.arrangement_id",
         ),
     )
@@ -172,7 +172,7 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="arrangement_planners",
         link_model=ArrangementOwnersLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Arrangement.id==ArrangementOwnersLink.person_id",
+            primaryjoin="Person.id==ArrangementOwnersLink.person_id",
             secondaryjoin="Arrangement.id==ArrangementOwnersLink.arrangement_id",
         ),
     )
@@ -180,7 +180,7 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="arrangement_participants",
         link_model=ArrangementPeopleParticipantsLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Arrangement.id==ArrangementPeopleParticipantsLink.person_id",
+            primaryjoin="Person.id==ArrangementPeopleParticipantsLink.person_id",
             secondaryjoin="Arrangement.id==ArrangementPeopleParticipantsLink.arrangement_id",
         ),
     )
@@ -188,7 +188,7 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="arrangement_participants",
         link_model=ArrangementOrganizationParticipantsLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Arrangement.id==ArrangementOrganizationParticipantsLink.organization_id",
+            primaryjoin="Organization.id==ArrangementOrganizationParticipantsLink.organization_id",
             secondaryjoin="Arrangement.id==ArrangementOrganizationParticipantsLink.arrangement_id",
         ),
     )
@@ -196,7 +196,7 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     display_layouts: List["DisplayLayout"] = Relationship(
         link_model=ArrangementDisplayLayout,
         sa_relationship_kwargs=dict(
-            primaryjoin="Arrangement.id==ArrangementDisplayLayout.displaylayout_id",
+            primaryjoin="DisplayLayout.id==ArrangementDisplayLayout.displaylayout_id",
             secondaryjoin="Arrangement.id==ArrangementDisplayLayout.arrangement_id",
         ),
     )
@@ -229,7 +229,7 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="room_resources",
         link_model=CalendarRoomLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Room.id==CalendarRoomLink.calendar_id",
+            primaryjoin="Calendar.id==CalendarRoomLink.calendar_id",
             secondaryjoin="Room.id==CalendarRoomLink.room_id",
         ),
     )
@@ -237,7 +237,7 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="rooms",
         link_model=EventRoomLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Room.id==EventRoomLink.event_id",
+            primaryjoin="Event.id==EventRoomLink.event_id",
             secondaryjoin="Room.id==EventRoomLink.room_id",
         ),
     )
@@ -268,7 +268,7 @@ class Article(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="articles",
         link_model=EventArticlesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Article.id==EventArticlesLink.event_id",
+            primaryjoin="Event.id==EventArticlesLink.event_id",
             secondaryjoin="Article.id==EventArticlesLink.article_id",
         ),
     )
@@ -294,7 +294,7 @@ class TimeLineEvent(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="timeline_events",
         link_model=ArrangementTimelineEventsLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="TimeLineEvent.id==ArrangementTimelineEventsLink.arrangement_id",
+            primaryjoin="Arrangement.id==ArrangementTimelineEventsLink.arrangement_id",
             secondaryjoin="TimeLineEvent.id==ArrangementTimelineEventsLink.timelineevent_id",
         ),
     )
@@ -342,7 +342,7 @@ class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     persons: List["Person"] = Relationship(
         link_model=PersonNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Note.id==PersonNotesLink.person_id",
+            primaryjoin="Person.id==PersonNotesLink.person_id",
             secondaryjoin="Note.id==PersonNotesLink.note_id",
         ),
     ),
@@ -351,7 +351,7 @@ class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="notes",
         link_model=ArrangementNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Note.id==ArrangementNotesLink.arrangement_id",
+            primaryjoin="Arrangement.id==ArrangementNotesLink.arrangement_id",
             secondaryjoin="Note.id==ArrangementNotesLink.note_id",
         ),
     )
@@ -360,7 +360,7 @@ class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="notes",
         link_model=OrganizationNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Note.id==OrganizationNotesLink.organization_id",
+            primaryjoin="Organization.id==OrganizationNotesLink.organization_id",
             secondaryjoin="Note.id==OrganizationNotesLink.note_id",
         ),
 
@@ -370,7 +370,7 @@ class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="notes",
         link_model=EventNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Note.id==EventNotesLink.event_id",
+            primaryjoin="Event.id==EventNotesLink.event_id",
             secondaryjoin="Note.id==EventNotesLink.note_id",
         ),
     )
@@ -378,7 +378,7 @@ class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="notes",
         link_model=EventServiceNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Note.id==EventServiceNotesLink.eventservice_id",
+            primaryjoin="EventService.id==EventServiceNotesLink.eventservice_id",
             secondaryjoin="Note.id==EventServiceNotesLink.note_id",
         ),
     )
@@ -401,7 +401,7 @@ class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="organization_participants",
         link_model=ArrangementOrganizationParticipantsLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Organization.id==ArrangementOrganizationParticipantsLink.arrangement_id",
+            primaryjoin="Arrangement.id==ArrangementOrganizationParticipantsLink.arrangement_id",
             secondaryjoin="Organization.id==ArrangementOrganizationParticipantsLink.organization_id",
         ),
     )
@@ -410,7 +410,7 @@ class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="organization_members",
         link_model=OrganizationMembersLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Organization.id==OrganizationMembersLink.person_id",
+            primaryjoin="Person.id==OrganizationMembersLink.person_id",
             secondaryjoin="Organization.id==OrganizationMembersLink.organization_id",
         ),
     )
@@ -419,7 +419,7 @@ class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="organization_notes",
         link_model=OrganizationNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Organization.id==OrganizationNotesLink.note_id",
+            primaryjoin="Note.id==OrganizationNotesLink.note_id",
             secondaryjoin="Organization.id==OrganizationNotesLink.organization_id",
         ),
 
@@ -441,7 +441,7 @@ class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="calendars",
         link_model=CalendarPeopleLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Calendar.id==CalendarPeopleLink.person_id",
+            primaryjoin="Person.id==CalendarPeopleLink.person_id",
             secondaryjoin="Calendar.id==CalendarPeopleLink.calendar_id",
         ),
 
@@ -451,7 +451,7 @@ class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="calendars",
         link_model=CalendarRoomLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Calendar.id==CalendarRoomLink.room_id",
+            primaryjoin="Room.id==CalendarRoomLink.room_id",
             secondaryjoin="Calendar.id==CalendarRoomLink.calendar_id",
         ),
 
@@ -505,7 +505,7 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="events",
         link_model=EventPeopleLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Event.id==EventPeopleLink.person_id",
+            primaryjoin="Person.id==EventPeopleLink.person_id",
             secondaryjoin="Event.id==EventPeopleLink.event_id",
         ),
     )
@@ -513,7 +513,7 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="events",
         link_model=EventRoomLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Event.id==EventRoomLink.room_id",
+            primaryjoin="Room.id==EventRoomLink.room_id",
             secondaryjoin="Event.id==EventRoomLink.event_id",
         ),
     )
@@ -521,7 +521,7 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="events",
         link_model=EventLooseServiceRequisitionLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Event.id==EventLooseServiceRequisitionLink.looseservicerequisition_id",
+            primaryjoin="LooseServiceRequisition.id==EventLooseServiceRequisitionLink.looseservicerequisition_id",
             secondaryjoin="Event.id==EventLooseServiceRequisitionLink.event_id",
         ),
     )
@@ -529,7 +529,7 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="events",
         link_model=EventArticlesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Event.id==EventArticlesLink.article_id",
+            primaryjoin="Article.id==EventArticlesLink.article_id",
             secondaryjoin="Event.id==EventArticlesLink.event_id",
         ),
     )
@@ -537,7 +537,7 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         back_populates="events",
         link_model=EventNotesLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="Event.id==EventNotesLink.note_id",
+            primaryjoin="Note.id==EventNotesLink.note_id",
             secondaryjoin="Event.id==EventNotesLink.event_id",
         ),
     )
@@ -545,7 +545,7 @@ class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     display_layouts: List["DisplayLayout"] = Relationship(
         link_model=EventDisplayLayout,
         sa_relationship_kwargs=dict(
-            primaryjoin="Event.id==EventDisplayLayout.displaylayout_id",
+            primaryjoin="DisplayLayout.id==EventDisplayLayout.displaylayout_id",
             secondaryjoin="Event.id==EventDisplayLayout.event_id",
         ),
     )
@@ -572,7 +572,7 @@ class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     groups: List["ScreenGroup"] = Relationship(
         link_model=ScreenResourceGroup,
         sa_relationship_kwargs=dict(
-            primaryjoin="ScreenResource.id==ScreenResourceGroup.screengroup_id",
+            primaryjoin="ScreenGroup.id==ScreenResourceGroup.screengroup_id",
             secondaryjoin="ScreenResource.id==ScreenResourceGroup.screenresource_id",
         ),
     )
@@ -592,7 +592,7 @@ class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     screens: List["ScreenResource"] = Relationship(
         link_model=ScreenResourceGroup,
         sa_relationship_kwargs=dict(
-            primaryjoin="ScreenGroup.id==ScreenResourceGroup.screenresource_id",
+            primaryjoin="ScreenResource.id==ScreenResourceGroup.screenresource_id",
             secondaryjoin="ScreenGroup.id==ScreenResourceGroup.screengroup_id",
         ),
     )
@@ -631,14 +631,14 @@ class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     screens: List["ScreenResource"] = Relationship(
         link_model=DisplayLayoutResource,
         sa_relationship_kwargs=dict(
-            primaryjoin="DisplayLayout.id==DisplayLayoutResource.screenresource_id",
+            primaryjoin="ScreenResource.id==DisplayLayoutResource.screenresource_id",
             secondaryjoin="DisplayLayout.id==DisplayLayoutResource.displaylayout_id",
         ),
     )
     groups: List["ScreenGroup"] = Relationship(
         link_model=DisplayLayoutGroup,
         sa_relationship_kwargs=dict(
-            primaryjoin="DisplayLayout.id==DisplayLayoutGroup.screengroup_id",
+            primaryjoin="ScreenGroup.id==DisplayLayoutGroup.screengroup_id",
             secondaryjoin="DisplayLayout.id==DisplayLayoutGroup.displaylayout_id",
         ),
     )
@@ -674,14 +674,14 @@ class EventService(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         link_model=EventServiceNotesLink,
         sa_relationship_kwargs=dict(
             primaryjoin="Note.id==EventServiceNotesLink.note_id",
-            secondaryjoin="Note.id==EventServiceNotesLink.eventservice_id",
+            secondaryjoin="EventService.id==EventServiceNotesLink.eventservice_id",
         ),
     )
     associated_people: List["Person"] = Relationship(
         back_populates="eventservices",
         link_model=EventServicePeopleLink,
         sa_relationship_kwargs=dict(
-            primaryjoin="EventService.id==EventServicePeopleLink.person_id",
+            primaryjoin="Person.id==EventServicePeopleLink.person_id",
             secondaryjoin="EventService.id==EventServicePeopleLink.eventservice_id",
         ),
     )

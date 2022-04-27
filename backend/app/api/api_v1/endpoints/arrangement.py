@@ -121,6 +121,7 @@ def read_arrangement(*, session: Session = Depends(get_session), arrangement_id:
 @arr.get("/arrangements", response_model=List[ArrangementRead])
 def read_arrangements(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     item = CrudManager(Arrangement).read_items(session, offset, limit)
+    print(item)
     return item
 
 
