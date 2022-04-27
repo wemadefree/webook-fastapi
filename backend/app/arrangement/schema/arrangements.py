@@ -11,7 +11,7 @@ from app.core.mixins import CamelCaseMixin
 
 class AudienceBase(SQLModel, CamelCaseMixin):
     name: str
-    name_en: str
+    name_en: Optional[str]
     icon_class: str
 
 
@@ -25,6 +25,7 @@ class AudienceCreate(AudienceBase):
 
 class AudienceUpdate(SQLModel, CamelCaseMixin):
     name: Optional[str]
+    name_en: Optional[str]
     icon_class: Optional[str]
 
 

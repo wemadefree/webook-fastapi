@@ -212,7 +212,8 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
     max_capacity: int = Field(alias="maxCapacity")
-    has_screen: bool = Field(default=True)
+    #has_screen: bool = Field(default=True)
+    is_exclusive: bool = Field(default=False)
     location_id: Optional[int] = Field(foreign_key="arrangement_location.id", nullable=False)
 
     location: Optional[Location] = Relationship(back_populates="rooms")
