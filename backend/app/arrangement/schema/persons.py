@@ -66,7 +66,7 @@ class NoteCreateOrUpdate(SQLModel, CamelCaseMixin):
 class PersonBase(SQLModel, CamelCaseMixin):
     personal_email: EmailStr
     first_name: str
-    middle_name: str
+    middle_name: Optional[str]
     last_name: str
     birth_date: datetime.date
 

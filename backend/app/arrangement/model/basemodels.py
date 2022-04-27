@@ -46,7 +46,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     __tablename__ = "arrangement_person"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    personal_email: EmailStr = Field(sa_column=Column("username", VARCHAR, unique=True))
+    personal_email: EmailStr
     first_name: str = Field(max_length=255)
     middle_name: str = Field(max_length=255)
     last_name: str = Field(max_length=255)
