@@ -57,6 +57,7 @@ class ArrangementTypeBase(SQLModel, CamelCaseMixin):
     id: Optional[int]
     name: str
     name_en: Optional[str]
+    slug: Optional[str]
 
 
 class ArrangementTypeCreate(SQLModel, CamelCaseMixin):

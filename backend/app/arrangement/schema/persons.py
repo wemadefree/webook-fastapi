@@ -69,6 +69,7 @@ class PersonBase(SQLModel, CamelCaseMixin):
     middle_name: Optional[str]
     last_name: str
     birth_date: Optional[datetime.date]
+    slug: Optional[str]
 
 
 class PersonRead(PersonBase):

@@ -1,8 +1,9 @@
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 from sqlalchemy import Column, DateTime
 from sqlmodel import Field
+from slugify import slugify
 from app.core.utils import to_camel
 
 
@@ -24,6 +25,18 @@ class TimeStampMixin(BaseModel):
             onupdate=datetime.utcnow,
         )
     )
+
+
+class SlugifyMixin(BaseModel):
+    """Provides slugs for model"""
+    slug: Optional[str]
+
+    @root_validator
+    def create_slug(cls, values):
+        name = values.get("name")
+        slugify_name = slugify(name)
+        values["slug"] = slugify_name
+        return values
 
 
 class CamelCaseMixin(BaseModel):

@@ -1,14 +1,14 @@
 import datetime, enum
-from pydantic import EmailStr
+from pydantic import EmailStr, root_validator
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects.postgresql import ENUM
-from sqlalchemy.orm import column_property, declared_attr, relationship, backref
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlmodel import Column, Field, Relationship, SQLModel, VARCHAR
 from slugify import slugify
 from typing import List, Optional
 
 
-from app.core.mixins import CamelCaseMixin, TimeStampMixin
+from app.core.mixins import CamelCaseMixin, TimeStampMixin, SlugifyMixin
 from app.arrangement.model.linkmodels import (
     ArrangementNotesLink, ArrangementDisplayLayout, ArrangementTimelineEventsLink, ArrangementOwnersLink,
     ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink,
@@ -25,13 +25,14 @@ class StageChoices():
     IN_PRODUCTION = 'in_production'
 
 
-class Audience(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class Audience(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_audience"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(..., max_length=255)
     name_en: str = Field(max_length=255, nullable=True)
     icon_class: Optional[str] = Field(default='', max_length=255)
+    slug: Optional[str]
 
     arrangements: List["Arrangement"] = Relationship(back_populates="audience")
 
@@ -45,7 +46,7 @@ class BusinessHour(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 """
 
 
-class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class Person(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_person"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -54,6 +55,13 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     middle_name: str = Field(max_length=255)
     last_name: str = Field(max_length=255)
     birth_date: datetime.date = Field(nullable=True)
+
+    @root_validator
+    def create_slug(cls, values):
+        name = ' '.join(name for name in (values.get("first_name"), values.get("middle_name"), values.get("last_name")) if name)
+        slugify_name = slugify(name)
+        values["slug"] = slugify_name
+        return values
 
     confirmationreceipts: List["ConfirmationReceipt"] = Relationship(back_populates="requested_by")
     calendar_owners: List["Calendar"] = Relationship(back_populates="owner")
@@ -92,7 +100,7 @@ class Person(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class ArrangementType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class ArrangementType(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_arrangementtype"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -102,7 +110,8 @@ class ArrangementType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     arrangements: List["Arrangement"] = Relationship(back_populates="arrangement_type")
 
 
-class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+
+class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_arrangement"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -149,7 +158,8 @@ class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class Location(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+
+class Location(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_location"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -159,7 +169,7 @@ class Location(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     #screen_resources: List["ScreenResource"] = Relationship(back_populates="location")
 
 
-class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class Room(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_room"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -168,6 +178,7 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     max_capacity: int = Field(alias="maxCapacity")
     has_screen: bool = Field(default=True)
     is_exclusive: bool = Field(default=False)
+    slug: Optional[str]
     location_id: Optional[int] = Field(foreign_key="arrangement_location.id", nullable=False)
 
     location: Optional[Location] = Relationship(back_populates="rooms")
@@ -182,7 +193,7 @@ class Room(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class RoomPreset(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class RoomPreset(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_roompreset"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -193,7 +204,7 @@ class RoomPreset(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class Article(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class Article(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_article"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -205,16 +216,17 @@ class Article(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class OrganizationType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class OrganizationType(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_organizationtype"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
+    slug: Optional[str]
 
     organizations: List["Organization"] = Relationship(back_populates="organization_type")
 
 
-class TimeLineEvent(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class TimeLineEvent(SQLModel, TimeStampMixin, CamelCaseMixin,  table=True):
     __tablename__ = "arrangement_timelineevent"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -227,7 +239,7 @@ class TimeLineEvent(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class ServiceType(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class ServiceType(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_servicetype"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -260,8 +272,8 @@ class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     content: str = Field(max_length=1024)
-
     author_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
+
     author: Optional[Person] = Relationship(back_populates="author_notes")
 
     reciept_notes: List["ConfirmationReceipt"] = Relationship(back_populates="note")
@@ -290,7 +302,7 @@ class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_organization"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -298,7 +310,6 @@ class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     name: str = Field(max_length=255)
 
     organization_type_id: Optional[int] = Field(foreign_key="arrangement_organizationtype.id")
-
     organization_type: Optional[OrganizationType] = Relationship(back_populates="organizations")
 
     serviceproviders: List["ServiceProvider"] = Relationship(back_populates="organization")
@@ -319,15 +330,15 @@ class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "arrangement_calendar"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=255)
     is_personal: bool = Field(default=True)
+    slug: Optional[str]
 
     owner_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
-
     owner: Optional[Person] = Relationship(back_populates="calendar_owners")
 
     people_resources: List["Person"] = Relationship(
@@ -422,7 +433,7 @@ class ScreenResourceGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     screenresource_id: Optional[int] = Field(foreign_key="screenshow_screenresource.id", nullable=False)
 
 
-class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "screenshow_screenresource"
     #__table_args__ = (UniqueConstraint("location_id", "name", name="uniq_name_loc_1"),)
 
@@ -436,8 +447,15 @@ class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
         link_model=ScreenResourceGroup,
     )
 
+    @root_validator
+    def create_slug(cls, values):
+        name = values.get("screen_model")
+        slugify_name = slugify(name)
+        values["slug"] = slugify_name
+        return values
 
-class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+
+class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "screenshow_screengroup"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -451,6 +469,13 @@ class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     screens: List["ScreenResource"] = Relationship(
         link_model=ScreenResourceGroup,
     )
+
+    @root_validator
+    def create_slug(cls, values):
+        name = values.get("group_name")
+        slugify_name = slugify(name)
+        values["slug"] = slugify_name
+        return values
 
 
 class DisplayLayoutResource(SQLModel, table=True):
@@ -469,7 +494,7 @@ class DisplayLayoutGroup(SQLModel, table=True):
     screengroup_id: Optional[int] = Field(foreign_key="screenshow_screengroup.id", nullable=True)
 
 
-class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "screenshow_displaylayout"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -479,8 +504,8 @@ class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     is_room_based: bool = Field(default=True, nullable=False, description="If true app will create events per room")
     all_events: bool = Field(default=True, nullable=False, description="Showing all events")
     is_active: bool = Field(default=True, description="Is Layout Active")
-    setting_id: Optional[int] = Field(foreign_key="screenshow_displaylayoutsetting.id", nullable=True)
 
+    setting_id: Optional[int] = Field(foreign_key="screenshow_displaylayoutsetting.id", nullable=True)
     setting: Optional["DisplayLayoutSetting"] = Relationship(back_populates="layouts")
 
     screens: List["ScreenResource"] = Relationship(
@@ -491,7 +516,7 @@ class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-class DisplayLayoutSetting(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class DisplayLayoutSetting(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
     __tablename__ = "screenshow_displaylayoutsetting"
 
     id: Optional[int] = Field(default=None, primary_key=True)
