@@ -29,21 +29,22 @@ def include_routes(app: FastAPI):
         tags=["person"],
        # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
     app.include_router(
         note_router,
         prefix="/api/v1",
         tags=["note"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
+    """
     app.include_router(
         receipt_router,
         prefix="/api/v1",
         tags=["confirmation receipt"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+     """
     app.include_router(
         arrangement_router,
         prefix="/api/v1",
@@ -64,35 +65,36 @@ def include_routes(app: FastAPI):
         tags=["organization & org.type"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
     app.include_router(
         hour_router,
         prefix="/api/v1",
         tags=["business hours"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
     app.include_router(
         article_router,
         prefix="/api/v1",
         tags=["article"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
     app.include_router(
         calendar_router,
         prefix="/api/v1",
         tags=["calendar"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
+    """
     app.include_router(
         service_router,
         prefix="/api/v1",
         tags=["service provider & type"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
     app.include_router(
         event_router,
         prefix="/api/v1",
@@ -113,14 +115,14 @@ def include_routes(app: FastAPI):
         tags=["timeline"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
     app.include_router(
         requisition_router,
         prefix="/api/v1",
         tags=["requisition of service"],
         # dependencies=[Depends(get_current_active_user)],
     )
-
+    """
     app.include_router(
         html_router,
         prefix="/api/v1",

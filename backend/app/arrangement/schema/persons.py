@@ -64,11 +64,11 @@ class NoteCreateOrUpdate(SQLModel, CamelCaseMixin):
 
 
 class PersonBase(SQLModel, CamelCaseMixin):
-    personal_email: EmailStr
+    personal_email: Optional[str]
     first_name: str
     middle_name: Optional[str]
     last_name: str
-    birth_date: datetime.date
+    birth_date: Optional[datetime.date]
 
 
 class PersonRead(PersonBase):
@@ -80,19 +80,19 @@ class PersonCreate(PersonBase):
 
 
 class PersonReadExtra(PersonRead):
-    notes: List[NoteRead]
+    #notes: List[NoteRead]
     #businesshours: List[BusinessHourRead]
-
+    pass
 
 class PersonReadWithHours(PersonRead):
-    notes: List[NoteRead] = []
+    #notes: List[NoteRead] = []
     #businesshours: List[BusinessHourRead] = []
-
+    pass
 
 class PersonCreateWithNotes(PersonBase):
-    notes: List[NoteBase] = []
+    #notes: List[NoteBase] = []
     #businesshours: List[BusinessHourBase] = []
-
+    pass
 
 class PersonUpdate(SQLModel, CamelCaseMixin):
     personal_email: Optional[EmailStr]

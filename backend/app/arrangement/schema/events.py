@@ -55,7 +55,7 @@ class EventBase(SQLModel, CamelCaseMixin):
     start: datetime.datetime
     end: datetime.datetime
     all_day: bool
-    sequence_guid: str
+    sequence_guid: Optional[str]
     color: str
     serie_id: Optional[int]
     arrangement_id: Optional[int]

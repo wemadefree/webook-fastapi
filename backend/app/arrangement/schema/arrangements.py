@@ -66,10 +66,10 @@ class ArrangementTypeCreate(SQLModel, CamelCaseMixin):
 
 class ArrangementBase(SQLModel, CamelCaseMixin):
     name: str
-    name_en: str
-    stages: StageChoices
-    starts: datetime.date
-    ends: datetime.date
+    name_en: Optional[str]
+    stages: str
+    starts: Optional[datetime.date]
+    ends: Optional[datetime.date]
     audience_id: Optional[int]
     responsible_id: Optional[int]
     arrangement_type_id: Optional[int]
@@ -90,9 +90,9 @@ class ArrangementRead(ArrangementBase):
 class ArrangementDisplayRead(SQLModel, CamelCaseMixin):
     id: int
     name: str
-    name_en: str
-    starts: datetime.date
-    ends: datetime.date
+    name_en: Optional[str]
+    starts: Optional[datetime.date]
+    ends: Optional[datetime.date]
     audience: Optional[AudienceRead]
     arrangement_type: Optional[ArrangementTypeBase]
     display_layouts: List[DisplayLayoutSimple]
@@ -103,12 +103,12 @@ class ArrangementReadExtra(ArrangementRead):
     planners: List[PersonRead]
     people_participants: List[PersonRead]
     organization_participants: List[OrganizationRead]
-    notes: List[NoteRead]
+    #notes: List[NoteRead]
 
 
 class ArrangementUpdate(SQLModel, CamelCaseMixin):
     name: Optional[str]
-    stages: Optional[StageChoices]
+    stages: Optional[str]
     starts: Optional[datetime.date]
     ends: Optional[datetime.date]
     audience_id: Optional[int]

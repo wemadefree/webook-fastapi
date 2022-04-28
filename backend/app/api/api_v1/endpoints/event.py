@@ -107,13 +107,13 @@ def delete_event(*, session: Session = Depends(get_session), event_id: int):
 
 @evt.post("/event/{event_id}/display_layout/{layout_id}", response_model=EventReadExtra)
 def add_event_display_configuration(*, session: Session = Depends(get_session), event_id: int, layout_id: int):
-    db_arrangement = CrudManager(Event).read_item(session, event_id)
-    if db_arrangement:
+    db_event = CrudManager(Event).read_item(session, event_id)
+    if db_event:
         db_conf = CrudManager(DisplayLayout).read_item(session, layout_id)
         if db_conf:
-            db_arrangement.display_layouts.append(db_conf)
-        db_arrangement = CrudManager(Event).edit_item(session, event_id, db_arrangement)
-    return db_arrangement
+            db_event.display_layouts.append(db_conf)
+        db_event = CrudManager(Event).edit_item(session, event_id, db_event)
+    return db_event
 
 
 @evt.delete("/event/{event_id}/display_layout/{layout_id}", response_model=EventReadExtra)
@@ -173,7 +173,7 @@ def remove_articles_from_event(*, session: Session = Depends(get_session), event
         db_cal = CrudManager(Event).edit_item(session, event_id, db_cal)
     return db_cal
 
-
+"""
 @evt.post("/event/{event_id}/requisition/{requisition_id}", response_model=EventReadExtra)
 def add_requisition_to_event(*, session: Session = Depends(get_session), event_id: int, requisition_id: int):
     db_evt = CrudManager(Event).read_item(session, event_id)
@@ -195,7 +195,7 @@ def remove_requisition_to_event(*, session: Session = Depends(get_session), even
                 break
         db_cal = CrudManager(Event).edit_item(session, event_id, db_evt)
     return db_cal
-
+"""
 
 @evt.post("/event/{event_id}/person/{person_id}", response_model=EventReadExtra)
 def add_people_to_event(*, session: Session = Depends(get_session), org_id: int, person_id: int):
@@ -219,7 +219,7 @@ def remove_people_from_event(*, session: Session = Depends(get_session), org_id:
         db_event = CrudManager(Event).edit_item(session, person_id, db_event)
     return db_event
 
-
+"""
 @evt.post("/event/{event_id}/note/{note_id}", response_model=EventReadExtra)
 def add_note_to_event(*, session: Session = Depends(get_session), event_id: int, note_id: int):
     db_event = CrudManager(Event).read_item(session, event_id)
@@ -241,7 +241,7 @@ def delete_note_from_event(*, session: Session = Depends(get_session), event_id:
                 break
         db_event = CrudManager(Event).edit_item(session, note_id, db_event)
     return db_event
-
+"""
 
 @evt.post("/eventseries", response_model=EventSerieReadExtra)
 def create_eventserie(*, session: Session = Depends(get_session), eventserie: EventSerieCreate):

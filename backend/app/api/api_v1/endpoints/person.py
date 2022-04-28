@@ -26,16 +26,12 @@ def create_person(*, session: Session = Depends(get_session), person: PersonCrea
     return db_person
 
 
-@per.patch("/person/{person_id}", response_model=PersonReadExtra)
-def update_person(*, session: Session = Depends(get_session), person_id: int, person: PersonUpdateWithNotes):
-    if person.notes:
-        for note in person.notes:
-            CrudManager(Note).edit_item(session, note.id, note)
-
+@per.patch("/person/{person_id}", response_model=PersonRead)
+def update_person(*, session: Session = Depends(get_session), person_id: int, person: PersonUpdate):
     db_person = CrudManager(Person).edit_item(session, person_id, person)
     return db_person
 
-
+"""
 @per.post("/person/{person_id}/note/{note_id}", response_model=PersonReadExtra)
 def add_note_for_person(*, session: Session = Depends(get_session), person_id: int, note_id: int):
     db_person = CrudManager(Person).read_item(session, person_id)
@@ -58,7 +54,7 @@ def remove_note_from_person(*, session: Session = Depends(get_session), person_i
         db_cal = CrudManager(Person).edit_item(session, person_id, db_cal)
     return db_cal
 
-
+"""
 
 @per.get("/person/{person_id}", response_model=PersonReadExtra)
 def read_person(*, session: Session = Depends(get_session), person_id: int):

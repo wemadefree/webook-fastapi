@@ -121,7 +121,6 @@ def read_arrangement(*, session: Session = Depends(get_session), arrangement_id:
 @arr.get("/arrangements", response_model=List[ArrangementRead])
 def read_arrangements(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
     item = CrudManager(Arrangement).read_items(session, offset, limit)
-    print(item)
     return item
 
 
@@ -135,7 +134,7 @@ def update_arrangement(*, session: Session = Depends(get_session), arrangement_i
 def delete_arrangement(*, session: Session = Depends(get_session), arrangement_id: int):
     return CrudManager(Arrangement).delete_item(session, arrangement_id)
 
-
+"""
 @arr.post("/arrangement/{arrangement_id}/note/{note_id}", response_model=ArrangementReadExtra)
 def add_arrangement_note(*, session: Session = Depends(get_session), arrangement_id: int, note_id: int):
     db_arrangement = CrudManager(Arrangement).read_item(session, arrangement_id)
@@ -157,7 +156,7 @@ def remove_note_from_arrangement(*, session: Session = Depends(get_session), arr
                 break
         db_arrangement = CrudManager(Arrangement).edit_item(session, arrangement_id, db_arrangement)
     return db_arrangement
-
+"""
 
 @arr.post("/arrangement/{arrangement_id}/timeline/{timeline_id}", response_model=ArrangementReadExtra)
 def add_arrangement_timeline_event(*, session: Session = Depends(get_session), arrangement_id: int, timeline_id: int):

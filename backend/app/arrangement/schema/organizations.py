@@ -24,7 +24,7 @@ class OrganizationTypeUpdate(SQLModel):
 
 class OrganizationBase(SQLModel, CamelCaseMixin):
     name: str
-    organization_number: int
+    organization_number: Optional[int]
     organization_type_id: Optional[int]
 
 
@@ -39,7 +39,7 @@ class OrganizationRead(OrganizationBase):
 
 class OrganizationReadExtra(OrganizationRead):
     members: List[PersonRead]
-    notes: List[NoteRead]
+    #notes: List[NoteRead]
 
 
 class OrganizationUpdate(SQLModel, CamelCaseMixin):
