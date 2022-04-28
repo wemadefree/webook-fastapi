@@ -551,8 +551,6 @@ class EventService(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     )
 
 
-
-
 class LooseServiceRequisition(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
     __tablename__ = "arrangement_looseservicerequisition"
 
