@@ -1,14 +1,16 @@
 from typing import List, Optional
-from sqlmodel import SQLModel, Field
 
 from app.arrangement.schema.rooms import RoomRead
-from app.core.mixins import CamelCaseMixin
+from app.core.mixins import CamelModelMixin
 
 
-class ScreenResourceBase(SQLModel, CamelCaseMixin):
+class ScreenResourceBase(CamelModelMixin):
     screen_model: str
     items_shown: int
     room_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 class ScreenResourceCreate(ScreenResourceBase):
@@ -20,16 +22,22 @@ class ScreenResourceRead(ScreenResourceBase):
     room: Optional[RoomRead]
 
 
-class ScreenResourceUpdate(SQLModel, CamelCaseMixin):
+class ScreenResourceUpdate(CamelModelMixin):
     screen_model: Optional[str]
     items_shown: Optional[int]
     room_id: Optional[int]
 
+    class Config:
+        orm_mode = True
 
-class ScreenGroupBase(SQLModel, CamelCaseMixin):
+
+class ScreenGroupBase(CamelModelMixin):
     group_name: str
     group_name_en: Optional[str]
     quantity: int
+
+    class Config:
+        orm_mode = True
 
 
 class ScreenGroupRead(ScreenGroupBase):
@@ -42,16 +50,22 @@ class ScreenGroupCreate(ScreenGroupBase):
     pass
 
 
-class ScreenGroupUpdate(SQLModel, CamelCaseMixin):
+class ScreenGroupUpdate(CamelModelMixin):
     group_name: Optional[str]
     quantity: Optional[int]
 
+    class Config:
+        orm_mode = True
 
-class DisplayLayoutSettingBase(SQLModel, CamelCaseMixin):
+
+class DisplayLayoutSettingBase(CamelModelMixin):
     name: str
     html_template: str
     css_template: str
     file_output_path: str
+
+    class Config:
+        orm_mode = True
 
 
 class DisplayLayoutSettingRead(DisplayLayoutSettingBase):
@@ -62,14 +76,17 @@ class DisplayLayoutSettingCreate(DisplayLayoutSettingBase):
     pass
 
 
-class DisplayLayoutSettingUpdate(SQLModel, CamelCaseMixin):
+class DisplayLayoutSettingUpdate(CamelModelMixin):
     name: Optional[str]
     html_template: Optional[str]
     css_template: Optional[str]
     file_output_path: Optional[str]
 
+    class Config:
+        orm_mode = True
 
-class DisplayLayoutBase(SQLModel, CamelCaseMixin):
+
+class DisplayLayoutBase(CamelModelMixin):
     name: str
     description: str
     items_shown: int
@@ -77,6 +94,9 @@ class DisplayLayoutBase(SQLModel, CamelCaseMixin):
     all_events: bool
     is_active: bool
     setting_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 class DisplayLayoutRead(DisplayLayoutBase):
@@ -87,15 +107,18 @@ class DisplayLayoutRead(DisplayLayoutBase):
     groups: List[ScreenGroupRead]
 
 
-class DisplayLayoutSimple(SQLModel, CamelCaseMixin):
+class DisplayLayoutSimple(CamelModelMixin):
     name: str
+
+    class Config:
+        orm_mode = True
 
 
 class DisplayLayoutCreate(DisplayLayoutBase):
     pass
 
 
-class DisplayLayoutUpdate(SQLModel, CamelCaseMixin):
+class DisplayLayoutUpdate(CamelModelMixin):
     name: Optional[str]
     description: Optional[str]
     items_shown: Optional[int]
@@ -103,6 +126,9 @@ class DisplayLayoutUpdate(SQLModel, CamelCaseMixin):
     is_active: Optional[bool]
     all_events: Optional[bool]
     setting_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 

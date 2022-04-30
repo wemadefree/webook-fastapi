@@ -2,7 +2,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import timedelta
 
-from app.core.session import get_db
+from app.core.session import get_session
 from app.core import security
 from app.core.auth import authenticate_user, sign_up_new_user
 
@@ -11,7 +11,7 @@ auth_router = r = APIRouter()
 
 @r.post("/token")
 async def login(
-    db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+    db=Depends(get_session), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -38,7 +38,7 @@ async def login(
 
 @r.post("/signup")
 async def signup(
-    db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+    db=Depends(get_session), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     user = sign_up_new_user(db, form_data.username, form_data.password)
     if not user:

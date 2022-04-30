@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 import typing as t
 
 from app.core import config, security
-from app.core.session import Base, get_db
+from app.core.session import Base, get_session
 from app.users import models
 from app.main import app
 
@@ -82,7 +82,7 @@ def client(test_db):
     def get_test_db():
         yield test_db
 
-    app.dependency_overrides[get_db] = get_test_db
+    app.dependency_overrides[get_session] = get_test_db
 
     yield TestClient(app)
 

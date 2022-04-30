@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from sqlmodel import Session, select
+from sqlalchemy.orm import Session
 from typing import Any, List
 
 
@@ -7,11 +7,12 @@ class CrudManager:
 
     def __init__(self, class_model):
         self.class_model = class_model
-        if not getattr(self.class_model.__config__, "table", False):
+        """if not getattr(self.class_model.__config__, "table", False):
             raise ValueError("Not valid SQL model (table need to be set on True)")
-
+        """
     def create_item(self, session: Session, item: Any) -> Any:
-        db_item = self.class_model.from_orm(item)
+        db_item = self.class_model(**item.dict())
+        #print(**item.dict())
         session.add(db_item)
         session.commit()
         session.refresh(db_item)
@@ -26,9 +27,9 @@ class CrudManager:
 
     def edit_item(self, db: Session, item_id: int, item: Any) -> Any:
         db_item = self._get_item_by_id(db, item_id)
-        prep_person = self._prepare_for_update(item, db_item)
-        self._commit_transaction(db, prep_person)
-        return prep_person
+        prep_item = self._prepare_for_update(item, db_item)
+        self._commit_transaction(db, prep_item)
+        return prep_item
 
     def delete_item(self, session: Session, item_id: int) -> Any:
         db_item = self._get_item_by_id(session, item_id)
@@ -39,8 +40,7 @@ class CrudManager:
         return {"ok": True}
 
     def _get_item_by_id(self, db: Session, item_id: int) -> Any:
-        stmt = select(self.class_model).where(self.class_model.id == item_id)
-        item = db.exec(stmt).first()
+        item = db.query(self.class_model).filter(self.class_model.id == item_id).first()
         if not item:
             raise HTTPException(status_code=404, detail=f"{self.class_model.__name__} not found")
         return item

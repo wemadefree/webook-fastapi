@@ -5,8 +5,6 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from sqlmodel import SQLModel
-
 from app.users.models import Base
 from app.arrangement.model.basemodels import Audience, BusinessHour, Person, Arrangement, Location, Room, Article, OrganizationType, TimeLineEvent, ServiceType, ConfirmationReceipt, Note, Organization, Calendar, ServiceProvider, EventSerie, Event, EventService, LooseServiceRequisition
 from app.arrangement.model.linkmodels import ArrangementDisplayLayout, EventDisplayLayout, ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink, ArrangementTimelineEventsLink, CalendarPeopleLink, CalendarRoomLink, EventArticlesLink, EventNotesLink, EventPeopleLink, EventRoomLink, EventServicePeopleLink, EventServiceNotesLink, OrganizationMembersLink, OrganizationNotesLink, EventLooseServiceRequisitionLink, ArrangementNotesLink, PersonBusinessHoursLink, PersonNotesLink

@@ -1,11 +1,13 @@
 from typing import List, Optional
-from sqlmodel import SQLModel
 
-from app.core.mixins import CamelCaseMixin
+from app.core.mixins import CamelModelMixin
 
 
-class LocationBase(SQLModel, CamelCaseMixin):
+class LocationBase(CamelModelMixin):
     name: str
+
+    class Config:
+        orm_mode = True
 
 
 class LocationCreate(LocationBase):
@@ -16,17 +18,23 @@ class LocationRead(LocationBase):
     id: int
 
 
-class LocationUpdate(SQLModel):
+class LocationUpdate(CamelModelMixin):
     name: Optional[str] = None
 
+    class Config:
+        orm_mode = True
 
-class RoomBase(SQLModel, CamelCaseMixin):
+
+class RoomBase(CamelModelMixin):
     name: str
     name_en: Optional[str]
     max_capacity: int
     is_exclusive: bool
     has_screen: bool
     location_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 class RoomCreate(RoomBase):
@@ -37,7 +45,7 @@ class RoomRead(RoomBase):
     id: int
 
 
-class RoomUpdate(SQLModel, CamelCaseMixin):
+class RoomUpdate(CamelModelMixin):
     name: Optional[str] = None
     name_en: Optional[str]
     max_capacity: Optional[int]
@@ -45,8 +53,11 @@ class RoomUpdate(SQLModel, CamelCaseMixin):
     location_id: Optional[int]
     has_screen: Optional[bool]
 
+    class Config:
+        orm_mode = True
 
-class RoomAddOrUpdate(SQLModel, CamelCaseMixin):
+
+class RoomAddOrUpdate(CamelModelMixin):
     id: int
     name: Optional[str] = None
     name_en: Optional[str]
@@ -56,7 +67,7 @@ class RoomAddOrUpdate(SQLModel, CamelCaseMixin):
     location_id: Optional[int]
 
 
-class RoomWithLocation(SQLModel, CamelCaseMixin):
+class RoomWithLocation(CamelModelMixin):
     id: int
     name: str
     name_en: Optional[str]
@@ -70,8 +81,11 @@ class LocationReadWithRoom(LocationRead):
     rooms: List[RoomRead] = []
 
 
-class RoomPresetBase(SQLModel, CamelCaseMixin):
+class RoomPresetBase(CamelModelMixin):
     name: str
+
+    class Config:
+        orm_mode = True
 
 
 class RoomPresetCreate(RoomPresetBase):
@@ -83,6 +97,9 @@ class RoomPresetRead(RoomPresetBase):
     rooms: Optional[List[RoomRead]]
 
 
-class RoomPresetUpdate(SQLModel, CamelCaseMixin):
+class RoomPresetUpdate(CamelModelMixin):
     name: Optional[str]
+
+    class Config:
+        orm_mode = True
 

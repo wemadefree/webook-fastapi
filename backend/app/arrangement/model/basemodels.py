@@ -1,20 +1,14 @@
-import datetime, enum
-from pydantic import EmailStr, root_validator
-from sqlalchemy import UniqueConstraint
-from sqlalchemy.dialects.postgresql import ENUM
-from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlmodel import Column, Field, Relationship, SQLModel, VARCHAR
 from slugify import slugify
 from typing import List, Optional
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime, Date
+from sqlalchemy.orm import relationship, validates
 
-
-from app.core.mixins import CamelCaseMixin, TimeStampMixin, SlugifyMixin
+from app.core.session import Base
+from app.core.mixins import CamelModelMixin, TimeStampMixin, SlugifyMixin
 from app.arrangement.model.linkmodels import (
-    ArrangementNotesLink, ArrangementDisplayLayout, ArrangementTimelineEventsLink, ArrangementOwnersLink,
-    ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,EventArticlesLink,
-    EventDisplayLayout, CalendarPeopleLink, CalendarRoomLink, OrganizationMembersLink, OrganizationNotesLink,
-    PersonNotesLink, EventRoomLink, EventNotesLink ,EventServiceNotesLink, EventServicePeopleLink,
-    EventLooseServiceRequisitionLink, EventPeopleLink, RoomPresetLink
+    ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,
+    ArrangementDisplayLayout, DisplayLayoutResource, DisplayLayoutGroup, EventArticlesLink, EventRoomLink,
+    EventPeopleLink, EventDisplayLayout, OrganizationMembersLink, ScreenResourceGroup, RoomPresetLink
     )
 
 
@@ -25,543 +19,222 @@ class StageChoices():
     IN_PRODUCTION = 'in_production'
 
 
-class Audience(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class Audience(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_audience"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(..., max_length=255)
-    name_en: str = Field(max_length=255, nullable=True)
-    icon_class: Optional[str] = Field(default='', max_length=255)
-    slug: Optional[str]
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    name_en = Column(String, nullable=True)
+    icon_class = Column(String, nullable=True)
 
-    arrangements: List["Arrangement"] = Relationship(back_populates="audience")
-
-"""
-class BusinessHour(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    start_of_business_hours: datetime.time
-    end_of_business_hours: datetime.time
-
-    persons: List["Person"] = Relationship(back_populates="businesshours", link_model=PersonBusinessHoursLink)
-"""
+    arrangements = relationship("Arrangement", back_populates="audience")
 
 
-class Person(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class Person(SlugifyMixin, Base, TimeStampMixin ):
     __tablename__ = "arrangement_person"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    personal_email: Optional[EmailStr] = Field(default=None)
-    first_name: str = Field(max_length=255)
-    middle_name: str = Field(max_length=255)
-    last_name: str = Field(max_length=255)
-    birth_date: datetime.date = Field(nullable=True)
+    id = Column(Integer, primary_key=True, index=True)
+    personal_email = Column(String, nullable=True)
+    first_name = Column(String)
+    middle_name = Column(String)
+    last_name = Column(String)
+    birth_date = Column(Date, nullable=True)
 
-    @root_validator
-    def create_slug(cls, values):
-        name = ' '.join(name for name in (values.get("first_name"), values.get("middle_name"), values.get("last_name")) if name)
-        slugify_name = slugify(name)
-        values["slug"] = slugify_name
-        return values
-
-    confirmationreceipts: List["ConfirmationReceipt"] = Relationship(back_populates="requested_by")
-    calendar_owners: List["Calendar"] = Relationship(back_populates="owner")
-    arrangements: List["Arrangement"] = Relationship(back_populates="responsible")
-
-    author_notes: List["Note"] = Relationship(back_populates="author")
-
-    arrangement_planners: List["Arrangement"] = Relationship(
-        back_populates="planners",
-        link_model=ArrangementOwnersLink,
-    )
-    arrangement_participants: List["Arrangement"] = Relationship(
-        back_populates="people_participants",
-        link_model=ArrangementPeopleParticipantsLink,
-    )
-    organization_members: List["Organization"] = Relationship(
-        back_populates="members",
-        link_model=OrganizationMembersLink,
-    )
-    calendars: List["Calendar"] = Relationship(
-        back_populates="people_resources",
-        link_model=CalendarPeopleLink,
-    )
-    #businesshours: List["BusinessHour"] = Relationship(back_populates="persons", link_model=PersonBusinessHoursLink)
-
-    person_notes: List["Note"] = Relationship(
-        link_model=PersonNotesLink,
-    )
-    events: List["Event"] = Relationship(
-        back_populates="people",
-        link_model=EventPeopleLink,
-    )
-    eventservices: List["EventService"] = Relationship(
-        back_populates="associated_people",
-        link_model=EventServicePeopleLink,
-    )
+    organizations = relationship('Organization', secondary='arrangement_organization_members',
+                                 back_populates='members')
+    arrangement_participants = relationship('Arrangement', secondary='arrangement_arrangement_people_participants',
+                                       back_populates='people_participants')
+    arrangement_planners = relationship('Arrangement', secondary='arrangement_arrangement_planners',
+                                        back_populates='planners')
+    arrangement_responsibles = relationship("Arrangement", back_populates="responsible")
+    events = relationship("Event", secondary='arrangement_event_people', back_populates="people")
 
 
-class ArrangementType(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class ArrangementType(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_arrangementtype"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-    name_en: str = Field(max_length=255, nullable=True, default="")
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    name_en = Column(String, nullable=True)
 
-    arrangements: List["Arrangement"] = Relationship(back_populates="arrangement_type")
+    arrangements = relationship("Arrangement", back_populates="arrangement_type")
 
 
-
-class Arrangement(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class Arrangement(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_arrangement"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-    name_en: str = Field(max_length=255, nullable=True, default="")
-    stages: str = Field(default=StageChoices.PLANNING)
-    starts: datetime.date
-    ends: datetime.date
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+    name_en = Column(String, nullable=True)
+    stages = Column(String, index=True, nullable=False, default=StageChoices.PLANNING)
+    starts = Column(DateTime, nullable=True)
+    ends = Column(DateTime, nullable=True)
 
-    arrangement_type_id: Optional[int] = Field(default=None, foreign_key="arrangement_arrangementtype.id")
-    audience_id: Optional[int] = Field(default=None, foreign_key="arrangement_audience.id")
-    responsible_id: Optional[int] = Field(default=None, foreign_key="arrangement_person.id")
+    audience_id = Column(Integer, ForeignKey("arrangement_audience.id"), nullable=False)
+    audience = relationship("Audience", back_populates="arrangements")
 
-    arrangement_type: Optional[ArrangementType] = Relationship(back_populates="arrangements")
-    audience: Optional[Audience] = Relationship(back_populates="arrangements")
-    responsible: Optional[Person] = Relationship(back_populates="arrangements")
-    looseservicerequisitions: List["LooseServiceRequisition"] = Relationship(back_populates="arrangement")
-    eventseries: List["EventSerie"] = Relationship(back_populates="arrangement")
-    events: List["Event"] = Relationship(back_populates="arrangement")
+    arrangement_type_id = Column(Integer, ForeignKey("arrangement_arrangementtype.id"), nullable=False)
+    arrangement_type = relationship("ArrangementType", back_populates="arrangements")
 
-    timeline_events: List["TimeLineEvent"] = Relationship(
-        back_populates="arrangements",
-        link_model=ArrangementTimelineEventsLink,
-    )
-    notes: List["Note"] = Relationship(
-        back_populates="arrangement_notes",
-        link_model=ArrangementNotesLink,
-    )
-    planners: List["Person"] = Relationship(
-        back_populates="arrangement_planners",
-        link_model=ArrangementOwnersLink,
-    )
-    people_participants: List["Person"] = Relationship(
-        back_populates="arrangement_participants",
-        link_model=ArrangementPeopleParticipantsLink,
-    )
-    organization_participants: List["Organization"] = Relationship(
-        back_populates="arrangement_participants",
-        link_model=ArrangementOrganizationParticipantsLink,
-    )
+    responsible_id = Column(Integer, ForeignKey("arrangement_person.id"), nullable=False)
+    responsible = relationship("Person", back_populates="arrangement_responsibles")
 
-    display_layouts: List["DisplayLayout"] = Relationship(
-        link_model=ArrangementDisplayLayout,
-    )
+    events = relationship('Event', back_populates='arrangement')
+    organization_participants = relationship('Organization',
+                                             secondary='arrangement_arrangement_organization_participants',
+                                             back_populates='arrangements')
+    people_participants = relationship('Person', secondary='arrangement_arrangement_people_participants',
+                                       back_populates='arrangement_participants')
+    planners = relationship('Person', secondary='arrangement_arrangement_planners',
+                                       back_populates='arrangement_planners')
+    display_layouts = relationship('DisplayLayout', secondary='arrangement_arrangement_display_layouts',
+                                   back_populates='arrangements')
 
 
-
-class Location(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class Location(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_location"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    rooms: List["Room"] = Relationship(back_populates="location")
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
 
-    #screen_resources: List["ScreenResource"] = Relationship(back_populates="location")
+    rooms = relationship("Room", back_populates="location")
 
 
-class Room(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class Room(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_room"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    name_en: Optional[str]
-    max_capacity: int = Field(alias="maxCapacity")
-    has_screen: bool = Field(default=True)
-    is_exclusive: bool = Field(default=False)
-    slug: Optional[str]
-    location_id: Optional[int] = Field(foreign_key="arrangement_location.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+    max_capacity = Column(Integer, default=10, nullable=False)
+    has_screen = Column(Boolean, default=True)
+    is_exclusive = Column(Boolean, default=False)
 
-    location: Optional[Location] = Relationship(back_populates="rooms")
+    location_id = Column(Integer, ForeignKey("arrangement_location.id"), nullable=False)
+    location = relationship("Location", back_populates="rooms")
 
-    calendars: List["Calendar"] = Relationship(
-        back_populates="room_resources",
-        link_model=CalendarRoomLink,
-    )
-    events: List["Event"] = Relationship(
-        back_populates="rooms",
-        link_model=EventRoomLink,
-    )
+    events = relationship('Event', secondary='arrangement_event_rooms', back_populates='rooms')
 
 
-class RoomPreset(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class RoomPreset(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_roompreset"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
 
-    rooms: List["Room"] = Relationship(
-        link_model=RoomPresetLink,
-    )
+    rooms = relationship('Room', secondary='arrangement_roompreset_rooms')
 
 
-class Article(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class Article(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_article"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-
-    events: List["Event"] = Relationship(
-        back_populates="articles",
-        link_model=EventArticlesLink,
-    )
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
 
 
-class OrganizationType(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class OrganizationType(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_organizationtype"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-    slug: Optional[str]
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
 
-    organizations: List["Organization"] = Relationship(back_populates="organization_type")
-
-
-class TimeLineEvent(SQLModel, TimeStampMixin, CamelCaseMixin,  table=True):
-    __tablename__ = "arrangement_timelineevent"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    content: str = Field(max_length=1024)
-    stamp: datetime.datetime = Field(nullable=False)
-
-    arrangements: List["Arrangement"] = Relationship(
-        back_populates="timeline_events",
-        link_model=ArrangementTimelineEventsLink,
-    )
+    organizations = relationship("Organization", back_populates="organization_type")
 
 
-class ServiceType(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
-    __tablename__ = "arrangement_servicetype"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-
-    serviceproviders: List["ServiceProvider"] = Relationship(back_populates="service_type")
-    looseservicerequisitions: List["LooseServiceRequisition"] = Relationship(back_populates="type_to_order")
-
-
-class ConfirmationReceipt(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __tablename__ = "arrangement_confirmationreceipt"
-    __table_args__ = (UniqueConstraint("guid"),)
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    guid: str = Field(max_length=68, index=True)
-    sent_to: str = Field(max_length=255)
-    confirmed: bool = Field(default=False)
-    sent_when: datetime.datetime = Field(default=None, nullable=True)
-    confirmed_when: datetime.datetime = Field(default=None, nullable=True)
-    requested_by_id: Optional[int] = Field(default=None, foreign_key="arrangement_person.id")
-    note_id: Optional[int] = Field(foreign_key="arrangement_note.id", nullable=False)
-
-    requested_by: Optional[Person] = Relationship(back_populates="confirmationreceipts")
-    note: Optional["Note"] = Relationship(back_populates="reciept_notes")
-    eventservices: List["EventService"] = Relationship(back_populates="receipt")
-
-
-class Note(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __tablename__ = "arrangement_note"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    content: str = Field(max_length=1024)
-    author_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
-
-    author: Optional[Person] = Relationship(back_populates="author_notes")
-
-    reciept_notes: List["ConfirmationReceipt"] = Relationship(back_populates="note")
-
-    persons: List["Person"] = Relationship(
-        link_model=PersonNotesLink,
-    ),
-
-    arrangement_notes: List["Arrangement"] = Relationship(
-        back_populates="notes",
-        link_model=ArrangementNotesLink,
-    )
-
-    organization_notes: List["Organization"] = Relationship(
-        back_populates="notes",
-        link_model=OrganizationNotesLink,
-    )
-
-    events: List["Event"] = Relationship(
-        back_populates="notes",
-        link_model=EventNotesLink,
-    )
-    eventservices: List["EventService"] = Relationship(
-        back_populates="notes",
-        link_model=EventServiceNotesLink,
-    )
-
-
-class Organization(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class Organization(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "arrangement_organization"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    organization_number: int = Field(default=None, nullable=True)
-    name: str = Field(max_length=255)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=False)
+    organization_number = Column(Integer, default=None, nullable=True)
 
-    organization_type_id: Optional[int] = Field(foreign_key="arrangement_organizationtype.id")
-    organization_type: Optional[OrganizationType] = Relationship(back_populates="organizations")
+    organization_type_id = Column(Integer, ForeignKey("arrangement_organizationtype.id"), nullable=False)
+    organization_type = relationship("OrganizationType", back_populates="organizations")
 
-    serviceproviders: List["ServiceProvider"] = Relationship(back_populates="organization")
-
-    arrangement_participants: List["Arrangement"] = Relationship(
-        back_populates="organization_participants",
-        link_model=ArrangementOrganizationParticipantsLink,
-    )
-
-    members: List["Person"] = Relationship(
-        back_populates="organization_members",
-        link_model=OrganizationMembersLink,
-    )
-
-    notes: List["Note"] = Relationship(
-        back_populates="organization_notes",
-        link_model=OrganizationNotesLink,
-    )
+    arrangements = relationship('Arrangement', secondary='arrangement_arrangement_organization_participants',
+                                back_populates='organization_participants')
+    members = relationship('Person', secondary='arrangement_organization_members', back_populates='organizations')
 
 
-class Calendar(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
-    __tablename__ = "arrangement_calendar"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-    is_personal: bool = Field(default=True)
-    slug: Optional[str]
-
-    owner_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
-    owner: Optional[Person] = Relationship(back_populates="calendar_owners")
-
-    people_resources: List["Person"] = Relationship(
-        back_populates="calendars",
-        link_model=CalendarPeopleLink,
-    )
-
-    room_resources: List["Room"] = Relationship(
-        back_populates="calendars",
-        link_model=CalendarRoomLink,
-    )
-
-
-class ServiceProvider(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __tablename__ = "arrangement_serviceprovider"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    service_name: str = Field(max_length=255)
-
-    service_type_id: Optional[int] = Field(foreign_key="arrangement_servicetype.id")
-    organization_id: Optional[int] = Field(foreign_key="arrangement_organization.id")
-
-    service_type: Optional[ServiceType] = Relationship(back_populates="serviceproviders")
-    organization: Optional[Organization] = Relationship(back_populates="serviceproviders")
-    eventservices: List["EventService"] = Relationship(back_populates="service_provider")
-
-
-class EventSerie(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __tablename__ = "arrangement_eventserie"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id")
-
-    arrangement: Optional[Arrangement] = Relationship(back_populates="eventseries")
-
-    events: List["Event"] = Relationship(back_populates="serie")
-
-
-class Event(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
+class Event(Base, TimeStampMixin):
     __tablename__ = "arrangement_event"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    title: str = Field(max_length=255)
-    start: datetime.datetime = Field(nullable=False)
-    end: datetime.datetime = Field(nullable=False)
-    all_day: bool = Field(default=False)
-    sequence_guid: str = Field(max_length=40, nullable=True)
-    color: str = Field(max_length=40, nullable=True)
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=True)
+    start = Column(DateTime, nullable=True)
+    end = Column(DateTime, nullable=True)
+    all_day = Column(Boolean, default=False)
+    sequence_guid = Column(String, nullable=True)
+    color = Column(String, nullable=True)
 
-    serie_id: Optional[int] = Field(foreign_key="arrangement_eventserie.id", nullable=True, default=None)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id")
+    arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"),)
+    arrangement = relationship("Arrangement", back_populates="events")
 
-    serie: Optional[EventSerie] = Relationship(back_populates="events")
-    arrangement: Optional[Arrangement] = Relationship(back_populates="events")
-    eventservices: List["EventService"] = Relationship(back_populates="event")
+    display_layouts = relationship('DisplayLayout', secondary='arrangement_event_display_layouts',
+                                   back_populates='events')
 
-    people: List["Person"] = Relationship(
-        back_populates="events",
-        link_model=EventPeopleLink,
-    )
-    rooms: List["Room"] = Relationship(
-        back_populates="events",
-        link_model=EventRoomLink,
-    )
-    loose_requisitions: List["LooseServiceRequisition"] = Relationship(
-        back_populates="events",
-        link_model=EventLooseServiceRequisitionLink,
-    )
-
-    articles: List["Article"] = Relationship(
-        back_populates="events",
-        link_model=EventArticlesLink,
-    )
-    """
-    
-    articles = relationship('Article', secondary=EventArticlesLink)
-    """
-   
-    notes: List["Note"] = Relationship(
-        back_populates="events",
-        link_model=EventNotesLink,
-    )
-
-    display_layouts: List["DisplayLayout"] = Relationship(link_model=EventDisplayLayout)
+    articles = relationship('Article', secondary='arrangement_event_articles')
+    rooms = relationship('Room', secondary='arrangement_event_rooms', back_populates='events')
+    people = relationship('Person', secondary='arrangement_event_people', back_populates="events")
 
 
-class ScreenResourceGroup(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __tablename__ = "screenshow_screengroup_screens"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    screengroup_id: Optional[int] = Field(foreign_key="screenshow_screengroup.id", nullable=False)
-    screenresource_id: Optional[int] = Field(foreign_key="screenshow_screenresource.id", nullable=False)
-
-
-class ScreenResource(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class ScreenResource(Base):
     __tablename__ = "screenshow_screenresource"
-    #__table_args__ = (UniqueConstraint("location_id", "name", name="uniq_name_loc_1"),)
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    screen_model: str = Field(max_length=255)
-    items_shown: int = Field(default=10, nullable=False, description="Number of items to list on screen")
-    room_id: Optional[int] = Field(foreign_key="arrangement_room.id", nullable=True)
-    room: Optional["Room"] = Relationship()
+    id = Column(Integer, primary_key=True, index=True)
+    screen_model = Column(String, nullable=False)
+    items_shown = Column(Integer, default=10, nullable=False)
 
-    groups: List["ScreenGroup"] = Relationship(
-        link_model=ScreenResourceGroup,
-    )
+    room_id = Column(Integer, ForeignKey("arrangement_room.id"),)
+    room = relationship("Room")
 
-    @root_validator
-    def create_slug(cls, values):
-        name = values.get("screen_model")
-        slugify_name = slugify(name)
-        values["slug"] = slugify_name
-        return values
+    display_layouts = relationship('DisplayLayout', secondary='screenshow_displaylayout_screens',
+                                   back_populates='screens')
 
 
-class ScreenGroup(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class ScreenGroup(Base):
     __tablename__ = "screenshow_screengroup"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    group_name: str = Field(max_length=255)
-    group_name_en: str = Field(max_length=255, nullable=True)
-    quantity: int = Field(default=10, nullable=False, description="Number of items to list on screen")
-    #roompreset_id = Optional[int] = Field(foreign_key="arrangement_roompreset.id", nullable=True)
+    id = Column(Integer, primary_key=True, index=True)
+    group_name = Column(String, nullable=False)
+    group_name_en = Column(String, nullable=True)
+    quantity = Column(Integer, default=10, nullable=False)
 
-    #roompreset: Optional["RoomPreset"] = Relationship()
-
-    screens: List["ScreenResource"] = Relationship(
-        link_model=ScreenResourceGroup,
-    )
-
-    @root_validator
-    def create_slug(cls, values):
-        name = values.get("group_name")
-        slugify_name = slugify(name)
-        values["slug"] = slugify_name
-        return values
+    display_layouts = relationship('DisplayLayout', secondary='screenshow_displaylayout_groups',
+                                   back_populates='groups')
+    screens = relationship('ScreenResource', secondary='screenshow_screengroup_screens',)
 
 
-class DisplayLayoutResource(SQLModel, table=True):
-    __tablename__ = "screenshow_displaylayout_screens"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    displaylayout_id: Optional[int] = Field(foreign_key="screenshow_displaylayout.id", nullable=False)
-    screenresource_id: Optional[int] = Field(foreign_key="screenshow_screenresource.id", nullable=True)
-
-
-class DisplayLayoutGroup(SQLModel, table=True):
-    __tablename__ = "screenshow_displaylayout_groups"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    displaylayout_id: Optional[int] = Field(foreign_key="screenshow_displaylayout.id", nullable=False)
-    screengroup_id: Optional[int] = Field(foreign_key="screenshow_screengroup.id", nullable=True)
-
-
-class DisplayLayout(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class DisplayLayout(Base):
     __tablename__ = "screenshow_displaylayout"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-    description: str = Field(max_length=1024)
-    items_shown: int = Field(default=10, nullable=False, description="Number of items to list on screen")
-    is_room_based: bool = Field(default=True, nullable=False, description="If true app will create events per room")
-    all_events: bool = Field(default=True, nullable=False, description="Showing all events")
-    is_active: bool = Field(default=True, description="Is Layout Active")
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    items_shown = Column(Integer, default=10, nullable=False)
+    is_room_based = Column(Boolean, default=True)
+    all_events = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=True)
 
-    setting_id: Optional[int] = Field(foreign_key="screenshow_displaylayoutsetting.id", nullable=True)
-    setting: Optional["DisplayLayoutSetting"] = Relationship(back_populates="layouts")
+    setting_id = Column(Integer, ForeignKey("screenshow_displaylayoutsetting.id"), )
+    setting = relationship("DisplayLayoutSetting", back_populates="layouts")
 
-    screens: List["ScreenResource"] = Relationship(
-        link_model=DisplayLayoutResource,
-    )
-    groups: List["ScreenGroup"] = Relationship(
-        link_model=DisplayLayoutGroup,
-    )
+    arrangements = relationship('Arrangement', secondary='arrangement_arrangement_display_layouts',
+                                back_populates='display_layouts')
+    events = relationship('Event', secondary='arrangement_event_display_layouts',
+                          back_populates='display_layouts')
+    screens = relationship('ScreenResource', secondary='screenshow_displaylayout_screens',
+                           back_populates='display_layouts')
+    groups = relationship('ScreenGroup', secondary='screenshow_displaylayout_groups',
+                          back_populates='display_layouts')
 
 
-class DisplayLayoutSetting(SQLModel, TimeStampMixin, CamelCaseMixin, SlugifyMixin, table=True):
+class DisplayLayoutSetting(Base):
     __tablename__ = "screenshow_displaylayoutsetting"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(max_length=255)
-    html_template: Optional[str]
-    css_template: Optional[str]
-    file_output_path: str
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    html_template = Column(String, nullable=True)
+    css_template = Column(String, nullable=True)
+    file_output_path = Column(String, nullable=True)
 
-    layouts: List["DisplayLayout"] = Relationship(back_populates="setting")
-
-
-class EventService(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __tablename__ = "arrangement_eventservice"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-
-    receipt_id: Optional[int] = Field(foreign_key="arrangement_confirmationreceipt.id")
-    event_id: Optional[int] = Field(foreign_key="arrangement_event.id")
-    service_provider_id: Optional[int] = Field(foreign_key="arrangement_serviceprovider.id")
-
-    receipt: Optional[ConfirmationReceipt] = Relationship(back_populates="eventservices")
-    event: Optional[Event] = Relationship(back_populates="eventservices")
-    service_provider: Optional[ServiceProvider] = Relationship(back_populates="eventservices")
-
-    notes: List["Note"] = Relationship(
-        back_populates="eventservices",
-        link_model=EventServiceNotesLink,
-    )
-    associated_people: List["Person"] = Relationship(
-        back_populates="eventservices",
-        link_model=EventServicePeopleLink,
-    )
-
-
-class LooseServiceRequisition(SQLModel, TimeStampMixin, CamelCaseMixin, table=True):
-    __tablename__ = "arrangement_looseservicerequisition"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    comment: str = Field(default='')
-
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id")
-    type_to_order_id: Optional[int] = Field(foreign_key="arrangement_servicetype.id")
-
-    arrangement: Optional[Arrangement] = Relationship(back_populates="looseservicerequisitions")
-    type_to_order: Optional[ServiceType] = Relationship(back_populates="looseservicerequisitions")
-
-    events: List["Event"] = Relationship(back_populates="loose_requisitions",
-                                                                       link_model=EventLooseServiceRequisitionLink)
+    layouts = relationship("DisplayLayout", back_populates="setting")

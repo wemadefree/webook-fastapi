@@ -1,17 +1,18 @@
 import datetime
 from typing import List, Optional
-from sqlmodel import SQLModel
 
 from app.arrangement.schema.arrangements import ArrangementRead, ArrangementDisplayRead
 from app.arrangement.schema.html_generator import DisplayLayoutSimple
-from app.arrangement.schema.persons import PersonRead, NoteRead, ConfirmationRecieptRead
-from app.arrangement.schema.services import LooseServiceRequisitionRead, ServiceProviderRead
+from app.arrangement.schema.persons import PersonRead
 from app.arrangement.schema.rooms import RoomRead, RoomWithLocation
-from app.core.mixins import CamelCaseMixin
+from app.core.mixins import CamelModelMixin
 
 
-class ArticleBase(SQLModel, CamelCaseMixin):
+class ArticleBase(CamelModelMixin):
     name: str
+
+    class Config:
+        orm_mode = True
 
 
 class ArticleRead(ArticleBase):
@@ -22,35 +23,18 @@ class ArticleCreate(ArticleBase):
     pass
 
 
-class ArticleUpdate(SQLModel, CamelCaseMixin):
+class ArticleUpdate(CamelModelMixin):
     name: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 
 class ArticleAddOrUpdate(ArticleUpdate):
     id: int
 
 
-class EventSerieBase(SQLModel, CamelCaseMixin):
-    arrangement_id: Optional[int]
-
-
-class EventSerieCreate(EventSerieBase):
-    pass
-
-
-class EventSerieRead(EventSerieBase):
-    id: int
-
-
-class EventSerieUpdate(SQLModel):
-    arrangement_id: Optional[int]
-
-
-class EventSerieReadExtra(EventSerieRead):
-    arrangement: Optional[ArrangementRead]
-
-
-class EventBase(SQLModel, CamelCaseMixin):
+class EventBase(CamelModelMixin):
     title: str
     start: datetime.datetime
     end: datetime.datetime
@@ -59,6 +43,9 @@ class EventBase(SQLModel, CamelCaseMixin):
     color: str
     serie_id: Optional[int]
     arrangement_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 class EventCreate(EventBase):
@@ -70,7 +57,7 @@ class EventRead(EventBase):
     display_layouts: List[DisplayLayoutSimple]
 
 
-class EventUpdate(SQLModel, CamelCaseMixin):
+class EventUpdate(CamelModelMixin):
     title: Optional[str]
     start: Optional[datetime.datetime]
     end: Optional[datetime.datetime]
@@ -80,18 +67,18 @@ class EventUpdate(SQLModel, CamelCaseMixin):
     serie_id: Optional[int]
     arrangement_id: Optional[int]
 
+    class Config:
+        orm_mode = True
+
 
 class EventReadExtra(EventRead):
     arrangement: Optional[ArrangementRead]
-    serie: Optional[EventSerieRead]
     people: List[PersonRead]
     rooms: List[RoomRead]
-    loose_requisitions: List[LooseServiceRequisitionRead]
     articles: List[ArticleRead]
-    #notes: List[NoteRead]
 
 
-class EventDisplayRead(SQLModel, CamelCaseMixin):
+class EventDisplayRead(CamelModelMixin):
     id: int
     title: str
     start: datetime.datetime
@@ -101,32 +88,12 @@ class EventDisplayRead(SQLModel, CamelCaseMixin):
     rooms: List[RoomWithLocation]
     display_layouts: List[DisplayLayoutSimple]
 
-
-class EventServiceBase(SQLModel, CamelCaseMixin):
-    receipt_id: Optional[int]
-    event_id: Optional[int]
-    service_provider_id: Optional[int]
+    class Config:
+        orm_mode = True
 
 
-class EventServiceRead(EventServiceBase):
-    id: int
 
 
-class EventServiceCreate(EventServiceBase):
-    pass
 
-
-class EventServiceUpdate(SQLModel, CamelCaseMixin):
-    receipt_id: Optional[int]
-    event_id: Optional[int]
-    service_provider_id: Optional[int]
-
-
-class EventServiceReadExtra(EventServiceRead):
-    receipt:  Optional[ConfirmationRecieptRead]
-    event:  Optional[EventRead]
-    service_provider: Optional[ServiceProviderRead]
-    notes: Optional[List[NoteRead]]
-    associated_people: Optional[List[PersonRead]]
 
 

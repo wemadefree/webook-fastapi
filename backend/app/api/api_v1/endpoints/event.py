@@ -3,12 +3,10 @@ from datetime import timedelta
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session, select
-from app.core.session import get_sqlmodel_sesion as get_session
-from app.arrangement.model.basemodels import Article, DisplayLayout, EventSerie, Event, Arrangement, EventService, LooseServiceRequisition, Note, Person, Room
-from app.arrangement.schema.events import EventSerieRead, EventSerieReadExtra, EventSerieCreate, EventSerieUpdate
+from sqlalchemy.orm import Session
+from app.core.session import  get_session
+from app.arrangement.model.basemodels import Article, Event, Arrangement, Person, Room
 from app.arrangement.schema.events import EventRead, EventReadExtra, EventDisplayRead, EventCreate, EventUpdate
-from app.arrangement.schema.events import EventServiceRead, EventServiceReadExtra, EventServiceCreate, EventServiceUpdate
 from app.arrangement.schema.events import ArticleRead, ArticleAddOrUpdate, ArticleCreate, ArticleUpdate
 
 from app.arrangement.factory import CrudManager
@@ -104,7 +102,7 @@ def update_event(*, session: Session = Depends(get_session), event_id: int, even
 def delete_event(*, session: Session = Depends(get_session), event_id: int):
     return CrudManager(Event).delete_item(session, event_id)
 
-
+"""
 @evt.post("/event/{event_id}/display_layout/{layout_id}", response_model=EventReadExtra)
 def add_event_display_configuration(*, session: Session = Depends(get_session), event_id: int, layout_id: int):
     db_event = CrudManager(Event).read_item(session, event_id)
@@ -114,7 +112,7 @@ def add_event_display_configuration(*, session: Session = Depends(get_session), 
             db_event.display_layouts.append(db_conf)
         db_event = CrudManager(Event).edit_item(session, event_id, db_event)
     return db_event
-
+"""
 
 @evt.delete("/event/{event_id}/display_layout/{layout_id}", response_model=EventReadExtra)
 def remove_event_display_configuration(*, session: Session = Depends(get_session), event_id: int, layout_id: int):
@@ -242,106 +240,3 @@ def delete_note_from_event(*, session: Session = Depends(get_session), event_id:
         db_event = CrudManager(Event).edit_item(session, note_id, db_event)
     return db_event
 """
-
-@evt.post("/eventseries", response_model=EventSerieReadExtra)
-def create_eventserie(*, session: Session = Depends(get_session), eventserie: EventSerieCreate):
-    eventserie_item = CrudManager(EventSerie).create_item(session, eventserie)
-    return eventserie_item
-
-
-@evt.get("/eventseries", response_model=List[EventSerieRead])
-def read_eventseries(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
-    eventseries = CrudManager(EventSerie).read_items(session, offset, limit)
-    return eventseries
-
-
-@evt.get("/eventserie/{eventserie_id}", response_model=EventSerieReadExtra)
-def read_eventserie(*, session: Session = Depends(get_session), eventserie_id: int):
-    eventserie_item = CrudManager(EventSerie).read_item(session, eventserie_id)
-    return eventserie_item
-
-
-@evt.patch("/eventserie/{eventserie_id}", response_model=EventSerieReadExtra)
-def update_eventserie(*, session: Session = Depends(get_session), eventserie_id: int, eventserie: EventSerieUpdate):
-    eventserie_item = CrudManager(EventSerie).edit_item(session, eventserie_id, eventserie)
-    return eventserie_item
-
-
-@evt.delete("/eventserie/{eventserie_id}")
-def delete_eventserie(*, session: Session = Depends(get_session), eventserie_id: int):
-    return CrudManager(EventSerie).delete_item(session, eventserie_id)
-
-
-@srv.post("/eventservices", response_model=EventServiceReadExtra)
-def create_eventservice(*, session: Session = Depends(get_session), eventservice: EventServiceCreate):
-    eventservice_item = CrudManager(EventService).create_item(session, eventservice)
-    return eventservice_item
-
-
-@srv.get("/eventservices", response_model=List[EventServiceRead])
-def read_eventservices(*, session: Session = Depends(get_session), offset: int = 0, limit: int = Query(default=100, lte=100)):
-    eventservice = CrudManager(EventService).read_items(session, offset, limit)
-    return eventservice
-
-
-@srv.get("/eventservice/{eventservice_id}", response_model=EventServiceReadExtra)
-def read_eventservice(*, session: Session = Depends(get_session), eventservice_id: int):
-    eventservice_item = CrudManager(EventService).read_item(session, eventservice_id)
-    return eventservice_item
-
-
-@srv.patch("/eventservice/{eventservice_id}", response_model=EventServiceReadExtra)
-def update_eventservice(*, session: Session = Depends(get_session), eventservice_id: int, eventservice: EventServiceUpdate):
-    eventservice_item = CrudManager(EventService).edit_item(session, eventservice_id, eventservice)
-    return eventservice_item
-
-
-@srv.delete("/eventservice/{eventservice_id}")
-def delete_eventservice(*, session: Session = Depends(get_session), eventservice_id: int):
-    return CrudManager(EventService).delete_item(session, eventservice_id)
-
-
-@srv.post("/eventservice/{eventservice_id}/note/{note_id}", response_model=EventServiceReadExtra)
-def add_event_service_note(*, session: Session = Depends(get_session), eventservice_id: int, note_id: int):
-    db_evt = CrudManager(EventService).read_item(session, eventservice_id)
-    if db_evt:
-        db_note = CrudManager(Note).read_item(session, note_id)
-        if db_note:
-            db_evt.notes.append(db_note)
-        db_evt = CrudManager(EventService).edit_item(session, eventservice_id, db_evt)
-    return db_evt
-
-
-@srv.delete("/eventservice/{eventservice_id}/note/{note_id}", response_model=EventServiceReadExtra)
-def remove_note_from_event_service(*, session: Session = Depends(get_session), eventservice_id: int, note_id: int):
-    db_evt = CrudManager(EventService).read_item(session, eventservice_id)
-    if db_evt:
-        for per in db_evt.notes:
-            if per.id == note_id:
-                db_evt.notes.remove(per)
-                break
-        db_evt = CrudManager(Event).edit_item(session, eventservice_id, db_evt)
-    return db_evt
-
-
-@srv.post("/eventservice/{eventservice_id}/person/{person_id}", response_model=EventServiceReadExtra)
-def add_associated_person_to_event_service(*, session: Session = Depends(get_session), eventservice_id: int, person_id: int):
-    db_evt = CrudManager(EventService).read_item(session, eventservice_id)
-    if db_evt:
-        db_person = CrudManager(Person).read_item(session, person_id)
-        if db_person:
-            db_evt.associated_people.append(db_person)
-        db_evt = CrudManager(EventService).edit_item(session, eventservice_id, db_evt)
-    return db_evt
-
-
-@srv.delete("/eventservice/{eventservice_id}/person/{person_id}", response_model=EventServiceReadExtra)
-def remove_associated_person_from_event_service(*, session: Session = Depends(get_session), eventservice_id: int, person_id: int):
-    db_evt = CrudManager(EventService).read_item(session, eventservice_id)
-    if db_evt:
-        for per in db_evt.associated_people:
-            if per.id == person_id:
-                db_evt.associated_people.remove(per)
-                break
-        db_evt = CrudManager(Event).edit_item(session, eventservice_id, db_evt)
-    return db_evt

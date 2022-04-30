@@ -8,7 +8,7 @@ from app.core import security, session
 
 
 async def get_current_user(
-    db=Depends(session.get_db), token: str = Depends(security.oauth2_scheme)
+    db=Depends(session.get_session), token: str = Depends(security.oauth2_scheme)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

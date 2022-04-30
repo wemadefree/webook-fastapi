@@ -1,19 +1,18 @@
 from typing import List
 from fastapi import APIRouter, Depends, Query
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
-from app.core.session import get_sqlmodel_sesion as get_session
-from app.arrangement.model.basemodels import Person, Note, ConfirmationReceipt, OrganizationType, Organization
+from app.core.session import get_session
+from app.arrangement.model.basemodels import Person, OrganizationType, Organization
 from app.arrangement.schema.organizations import OrganizationTypeRead, OrganizationTypeCreate, OrganizationTypeUpdate
 from app.arrangement.schema.organizations import OrganizationRead, OrganizationReadExtra, OrganizationCreate, OrganizationUpdate, OrganizationAddOrUpdate
-from sqlmodel.sql.expression import Select, SelectOfScalar
 from app.arrangement.factory import CrudManager
 
 organization_router = org = APIRouter()
 hour_router = hour = APIRouter()
 
-SelectOfScalar.inherit_cache = True  # type: ignore
-Select.inherit_cache = True  # type: ignore
+#SelectOfScalar.inherit_cache = True  # type: ignore
+#Select.inherit_cache = True  # type: ignore
 
 
 @org.post("/orgtypes", response_model=OrganizationTypeRead)

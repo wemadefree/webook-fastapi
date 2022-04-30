@@ -1,8 +1,8 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, Query
-from sqlmodel import Session
-from app.core.session import get_sqlmodel_sesion as get_session
+from sqlalchemy.orm import Session
+from app.core.session import get_session
 from app.arrangement.model.basemodels import Room, Location, ScreenResource, ScreenGroup, \
     DisplayLayout, DisplayLayoutSetting
 from app.arrangement.schema.html_generator import DisplayLayoutSettingRead, DisplayLayoutSettingCreate, \

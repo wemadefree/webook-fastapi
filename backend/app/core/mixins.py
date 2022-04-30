@@ -1,45 +1,31 @@
-from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel, root_validator
-from sqlalchemy import Column, DateTime
-from sqlmodel import Field
+from pydantic import BaseModel
+from sqlalchemy import Column, DateTime, String
+from sqlalchemy.orm import validates
 from slugify import slugify
+
 from app.core.utils import to_camel
+from app.core.session import Base
 
 
-class TimeStampMixin(BaseModel):
+class TimeStampMixin:
     """Provides last created/modified timestamps"""
 
-    created: Optional[datetime] = Field(
-        sa_column=Column(
-            DateTime,
-            default=datetime.utcnow,
-            nullable=False,
-        )
-    )
-
-    modified: Optional[datetime] = Field(
-        sa_column=Column(
-            DateTime,
-            default=datetime.utcnow,
-            onupdate=datetime.utcnow,
-        )
-    )
+    created = Column(DateTime, default=datetime.utcnow, nullable=False)
+    modified = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-class SlugifyMixin(BaseModel):
-    """Provides slugs for model"""
-    slug: Optional[str]
+class SlugifyMixin:
+    """Provides slugs for model. By default it expect to slugify it by name"""
+    slug = Column(String(100), nullable=False)
 
-    @root_validator
-    def create_slug(cls, values):
-        name = values.get("name")
-        slugify_name = slugify(name)
-        values["slug"] = slugify_name
-        return values
+    @validates('name')
+    def update_slug(self, key, name):
+        self.slug = slugify(name)
+        return self.slug
 
 
-class CamelCaseMixin(BaseModel):
+class CamelModelMixin(BaseModel):
 
     class Config:
         alias_generator = to_camel

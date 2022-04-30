@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, Response, encoders
 from typing import List
 
-from app.core.session import get_db
+from app.core.session import get_session
 from app.users.crud import (
     get_users,
     get_user,
@@ -18,7 +18,7 @@ users_router = r = APIRouter()
 @r.get("/users", response_model=List[User], response_model_exclude_none=True)
 async def users_list(
     response: Response,
-    db=Depends(get_db),
+    db=Depends(get_session),
     current_user=Depends(get_current_active_superuser),
 ):
     """
@@ -46,7 +46,7 @@ async def user_me(current_user=Depends(get_current_active_user)):
 async def user_details(
     request: Request,
     user_id: int,
-    db=Depends(get_db),
+    db=Depends(get_session),
     current_user=Depends(get_current_active_superuser),
 ):
     """
@@ -63,7 +63,7 @@ async def user_details(
 async def user_create(
     request: Request,
     user: UserCreate,
-    db=Depends(get_db),
+    db=Depends(get_session),
     current_user=Depends(get_current_active_superuser),
 ):
     """
@@ -79,7 +79,7 @@ async def user_edit(
     request: Request,
     user_id: int,
     user: UserEdit,
-    db=Depends(get_db),
+    db=Depends(get_session),
     current_user=Depends(get_current_active_superuser),
 ):
     """
@@ -94,7 +94,7 @@ async def user_edit(
 async def user_delete(
     request: Request,
     user_id: int,
-    db=Depends(get_db),
+    db=Depends(get_session),
     current_user=Depends(get_current_active_superuser),
 ):
     """

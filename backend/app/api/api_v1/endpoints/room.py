@@ -1,8 +1,8 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session
-from app.core.session import get_sqlmodel_sesion as get_session
+from sqlalchemy.orm import Session
+from app.core.session import get_session
 from app.arrangement.model.basemodels import Location, Room
 from app.arrangement.schema.rooms import LocationRead, LocationCreate, LocationUpdate, LocationReadWithRoom
 from app.arrangement.schema.rooms import RoomRead, RoomCreate, RoomWithLocation, RoomUpdate

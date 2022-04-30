@@ -1,169 +1,110 @@
+from sqlalchemy import Column, Integer, ForeignKey
 from typing import Optional
-from sqlmodel import Field, SQLModel
+
+from app.core.session import Base
 
 
-class ArrangementOwnersLink(SQLModel, table=True):
+class ArrangementOwnersLink(Base):
     __tablename__ = "arrangement_arrangement_planners"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"))
+    person_id = Column(Integer, ForeignKey("arrangement_person.id"))
 
 
-class ArrangementDisplayLayout(SQLModel, table=True):
+class ArrangementDisplayLayout(Base):
     __tablename__ = "arrangement_arrangement_display_layouts"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    displaylayout_id: Optional[int] = Field(foreign_key="screenshow_displaylayout.id", nullable=False)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"))
+    displaylayout_id = Column(Integer, ForeignKey("screenshow_displaylayout.id"))
 
 
-class ArrangementPeopleParticipantsLink(SQLModel, table=True):
-    __tablename__ = "arrangement_arrangement_people_participants"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
-
-
-class ArrangementOrganizationParticipantsLink(SQLModel, table=True):
+class ArrangementOrganizationParticipantsLink(Base):
     __tablename__ = "arrangement_arrangement_organization_participants"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id", nullable=False)
-    organization_id: Optional[int] = Field(foreign_key="arrangement_organization.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"))
+    organization_id = Column(Integer, ForeignKey("arrangement_organization.id"))
 
 
-class ArrangementTimelineEventsLink(SQLModel, table=True):
-    __tablename__ = "arrangement_arrangement_timeline_events"
+class ArrangementPeopleParticipantsLink(Base):
+    __tablename__ = "arrangement_arrangement_people_participants"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id", nullable=False)
-    timelineevent_id: Optional[int] = Field(foreign_key="arrangement_timelineevent.id", nullable=False)
-
-
-class CalendarPeopleLink(SQLModel, table=True):
-    __tablename__ = "arrangement_calendar_people_resources"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    calendar_id: Optional[int] = Field(foreign_key="arrangement_calendar.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"))
+    person_id = Column(Integer, ForeignKey("arrangement_person.id"))
 
 
-class CalendarRoomLink(SQLModel, table=True):
-    __tablename__ = "arrangement_calendar_room_resources"
+class DisplayLayoutResource(Base):
+    __tablename__ = "screenshow_displaylayout_screens"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    calendar_id: Optional[int] = Field(foreign_key="arrangement_calendar.id", nullable=False)
-    room_id: Optional[int] = Field(foreign_key="arrangement_room.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    displaylayout_id = Column(Integer, ForeignKey("screenshow_displaylayout.id"))
+    screenresource_id = Column(Integer, ForeignKey("screenshow_screenresource.id"))
 
 
-class EventDisplayLayout(SQLModel, table=True):
+class DisplayLayoutGroup(Base):
+    __tablename__ = "screenshow_displaylayout_groups"
+
+    id = Column(Integer, primary_key=True, index=True)
+    displaylayout_id = Column(Integer, ForeignKey("screenshow_displaylayout.id"))
+    screengroup_id = Column(Integer, ForeignKey("screenshow_screengroup.id"))
+
+
+class EventDisplayLayout(Base):
     __tablename__ = "arrangement_event_display_layouts"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    displaylayout_id: Optional[int] = Field(foreign_key="screenshow_displaylayout.id", nullable=False)
-    event_id: Optional[int] = Field(foreign_key="arrangement_event.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("arrangement_event.id"))
+    displaylayout_id = Column(Integer, ForeignKey("screenshow_displaylayout.id"))
 
 
-class EventArticlesLink(SQLModel, table=True):
+class EventArticlesLink(Base):
     __tablename__ = "arrangement_event_articles"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    event_id: Optional[int] = Field(foreign_key="arrangement_event.id", nullable=False)
-    article_id: Optional[int] = Field(foreign_key="arrangement_article.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("arrangement_event.id"))
+    article_id = Column(Integer, ForeignKey("arrangement_article.id"))
 
 
-class EventNotesLink(SQLModel, table=True):
-    __tablename__ = "arrangement_event_notes"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    event_id: Optional[int] = Field(foreign_key="arrangement_event.id", nullable=False)
-    note_id: Optional[int] = Field(foreign_key="arrangement_note.id", nullable=False)
-
-
-class EventPeopleLink(SQLModel, table=True):
+class EventPeopleLink(Base):
     __tablename__ = "arrangement_event_people"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    event_id: Optional[int] = Field(foreign_key="arrangement_event.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("arrangement_event.id"))
+    person_id = Column(Integer, ForeignKey("arrangement_person.id"))
 
 
-class EventRoomLink(SQLModel, table=True):
+class EventRoomLink(Base):
     __tablename__ = "arrangement_event_rooms"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    event_id: Optional[int] = Field(foreign_key="arrangement_event.id", nullable=False)
-    room_id: Optional[int] = Field(foreign_key="arrangement_room.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("arrangement_event.id"))
+    room_id = Column(Integer, ForeignKey("arrangement_room.id"))
 
 
-class EventServicePeopleLink(SQLModel, table=True):
-    __tablename__ = "arrangement_eventservice_associated_people"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    eventservice_id: Optional[int] = Field(foreign_key="arrangement_eventservice.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
-
-
-class EventServiceNotesLink(SQLModel, table=True):
-    __tablename__ = "arrangement_eventservice_notes"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    eventservice_id: Optional[int] = Field(foreign_key="arrangement_eventservice.id", nullable=False)
-    note_id: Optional[int] = Field(foreign_key="arrangement_note.id", nullable=False)
-
-
-class OrganizationMembersLink(SQLModel, table=True):
+class OrganizationMembersLink(Base):
     __tablename__ = "arrangement_organization_members"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    organization_id: Optional[int] = Field(foreign_key="arrangement_organization.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(Integer, ForeignKey("arrangement_organization.id"))
+    person_id = Column(Integer, ForeignKey("arrangement_person.id"))
 
 
-class OrganizationNotesLink(SQLModel, table=True):
-    __tablename__ = "arrangement_organization_notes"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    organization_id: Optional[int] = Field(foreign_key="arrangement_organization.id", nullable=False)
-    note_id: Optional[int] = Field(foreign_key="arrangement_note.id", nullable=False)
-
-
-class EventLooseServiceRequisitionLink(SQLModel, table=True):
-    __tablename__ = "arrangement_event_loose_requisitions"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    event_id: Optional[int] = Field(foreign_key="arrangement_event.id", nullable=False)
-    looseservicerequisition_id: Optional[int] = Field(foreign_key="arrangement_looseservicerequisition.id", nullable=False)
-
-
-class ArrangementNotesLink(SQLModel, table=True):
-    __tablename__ = "arrangement_arrangement_notes"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    note_id: Optional[int] = Field(foreign_key="arrangement_note.id", nullable=False)
-    arrangement_id: Optional[int] = Field(foreign_key="arrangement_arrangement.id", nullable=False)
-
-"""
-class PersonBusinessHoursLink(SQLModel, table=True):
-    __tablename__ = "arrangement_person_business_hour"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    businesshour_id: Optional[int] = Field(foreign_key="arrangement_businesshour.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
-"""
-
-class PersonNotesLink(SQLModel, table=True):
-    __tablename__ = "arrangement_person_notes"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    note_id: Optional[int] = Field(foreign_key="arrangement_note.id", nullable=False)
-    person_id: Optional[int] = Field(foreign_key="arrangement_person.id", nullable=False)
-
-class RoomPresetLink(SQLModel, table=True):
+class RoomPresetLink(Base):
     __tablename__ = "arrangement_roompreset_rooms"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    roompreset_id: Optional[int] = Field(foreign_key="arrangement_roompreset.id", nullable=False)
-    room_id: Optional[int] = Field(foreign_key="arrangement_room.id", nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    roompreset_id = Column(Integer, ForeignKey("arrangement_roompreset.id"))
+    room_id = Column(Integer, ForeignKey("arrangement_room.id"))
+
+
+class ScreenResourceGroup(Base):
+    __tablename__ = "screenshow_screengroup_screens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    screenresource_id = Column(Integer, ForeignKey("screenshow_screenresource.id"))
+    screengroup_id = Column(Integer, ForeignKey("screenshow_screengroup.id"))
+
+

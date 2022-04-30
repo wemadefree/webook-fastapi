@@ -1,18 +1,23 @@
 import datetime
 from typing import List, Optional
-from sqlmodel import SQLModel
+from pydantic import BaseModel
 
 from app.arrangement.model.basemodels import StageChoices
-from app.arrangement.schema.persons import PersonRead, NoteRead, NoteUpdate
+from app.arrangement.schema.persons import PersonRead
 from app.arrangement.schema.organizations import OrganizationRead
 from app.arrangement.schema.html_generator import DisplayLayoutSimple
-from app.core.mixins import CamelCaseMixin
+from app.core.mixins import CamelModelMixin
+from app.core.session import Base
+from app.core.utils import to_camel
 
 
-class AudienceBase(SQLModel, CamelCaseMixin):
+class AudienceBase(CamelModelMixin):
     name: str
     name_en: Optional[str]
-    icon_class: str
+    icon_class: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 
 class AudienceRead(AudienceBase):
@@ -23,15 +28,18 @@ class AudienceCreate(AudienceBase):
     pass
 
 
-class AudienceUpdate(SQLModel, CamelCaseMixin):
+class AudienceUpdate(CamelModelMixin):
     name: Optional[str]
     name_en: Optional[str]
     icon_class: Optional[str]
 
 
-class TimeLineEventBase(SQLModel, CamelCaseMixin):
+class TimeLineEventBase(CamelModelMixin):
     content: str
     stamp: datetime.datetime
+
+    class Config:
+        orm_mode = True
 
 
 class TimeLineEventCreate(TimeLineEventBase):
@@ -42,30 +50,32 @@ class TimeLineEventRead(TimeLineEventBase):
     id: int
 
 
-class TimeLineEventUpdate(SQLModel, CamelCaseMixin):
+class TimeLineEventUpdate(CamelModelMixin):
     content: Optional[str]
     stamp: Optional[datetime.datetime]
 
 
-class TimeLineEventAddOrUpdate(SQLModel, CamelCaseMixin):
+class TimeLineEventAddOrUpdate(CamelModelMixin):
     id: int
     content: Optional[str]
     stamp: Optional[datetime.datetime]
 
 
-class ArrangementTypeBase(SQLModel, CamelCaseMixin):
+class ArrangementTypeBase(CamelModelMixin):
     id: Optional[int]
     name: str
     name_en: Optional[str]
-    slug: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 
-class ArrangementTypeCreate(SQLModel, CamelCaseMixin):
+class ArrangementTypeCreate(CamelModelMixin):
     name: str
     name_en: Optional[str]
 
 
-class ArrangementBase(SQLModel, CamelCaseMixin):
+class ArrangementBase(CamelModelMixin):
     name: str
     name_en: Optional[str]
     stages: str
@@ -74,6 +84,9 @@ class ArrangementBase(SQLModel, CamelCaseMixin):
     audience_id: Optional[int]
     responsible_id: Optional[int]
     arrangement_type_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 class ArrangementCreate(ArrangementBase):
@@ -88,7 +101,7 @@ class ArrangementRead(ArrangementBase):
     display_layouts: List[DisplayLayoutSimple]
 
 
-class ArrangementDisplayRead(SQLModel, CamelCaseMixin):
+class ArrangementDisplayRead(CamelModelMixin):
     id: int
     name: str
     name_en: Optional[str]
@@ -97,6 +110,9 @@ class ArrangementDisplayRead(SQLModel, CamelCaseMixin):
     audience: Optional[AudienceRead]
     arrangement_type: Optional[ArrangementTypeBase]
     display_layouts: List[DisplayLayoutSimple]
+
+    class Config:
+        orm_mode = True
 
 
 class ArrangementReadExtra(ArrangementRead):
@@ -107,7 +123,7 @@ class ArrangementReadExtra(ArrangementRead):
     #notes: List[NoteRead]
 
 
-class ArrangementUpdate(SQLModel, CamelCaseMixin):
+class ArrangementUpdate(CamelModelMixin):
     name: Optional[str]
     stages: Optional[str]
     starts: Optional[datetime.date]
@@ -115,6 +131,9 @@ class ArrangementUpdate(SQLModel, CamelCaseMixin):
     audience_id: Optional[int]
     responsible_id: Optional[int]
     arrangement_type_id: Optional[int]
+
+    class Config:
+        orm_mode = True
 
 
 
