@@ -13,6 +13,8 @@ from app.api.api_v1.endpoints.event import event_router
 from app.api.api_v1.endpoints.event import article_router
 from app.api.api_v1.endpoints.html_generator import html_router
 
+from app.webapp.login_route import login_router
+
 
 def include_routes(app: FastAPI):
 
@@ -77,9 +79,12 @@ def include_routes(app: FastAPI):
         users_router,
         prefix="/api/v1",
         tags=["user"],
-        dependencies=[Depends(get_current_active_user)],
+        #dependencies=[Depends(get_current_active_user)],
     )
     app.include_router(auth_router, prefix="/api", tags=["auth"])
+
+    app.include_router(login_router, prefix="/api", tags=["auth-webapp"])  # new
+
     """
     app.include_router(
         base_router,

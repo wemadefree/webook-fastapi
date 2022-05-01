@@ -51,10 +51,11 @@ async def get_current_active_superuser(
 
 
 def authenticate_user(db, email: str, password: str):
+    print("Email:" + email)
     user = get_user_by_email(db, email)
     if not user:
         return False
-    if not security.verify_password(password, user.hashed_password):
+    if not security.verify_password(password, user.password):
         return False
     return user
 
