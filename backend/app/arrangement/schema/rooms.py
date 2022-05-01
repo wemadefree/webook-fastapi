@@ -76,6 +76,9 @@ class RoomWithLocation(CamelModelMixin):
     has_screen: bool
     location: Optional[LocationRead]
 
+    class Config:
+        orm_mode = True
+
 
 class LocationReadWithRoom(LocationRead):
     rooms: List[RoomRead] = []
