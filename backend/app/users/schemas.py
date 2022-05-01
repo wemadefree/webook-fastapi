@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-import typing as t
+from typing import List, Optional
 
 
 class UserBase(BaseModel):
@@ -22,7 +22,7 @@ class UserCreate(UserBase):
 
 
 class UserEdit(UserBase):
-    password: t.Optional[str] = None
+    password: Optional[str] = None
 
     class Config:
         orm_mode = True

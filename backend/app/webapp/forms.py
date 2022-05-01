@@ -1,6 +1,5 @@
 from typing import List
 from typing import Optional
-
 from fastapi import Request
 
 
@@ -10,11 +9,9 @@ class LoginForm:
         self.errors: List = []
         self.username: Optional[str] = None
         self.password: Optional[str] = None
-        print("vcvcvvccv2")
 
     async def load_data(self):
         form = await self.request.form()
-        print("vcvcvvccv1")
         self.username = form.get(
             "email"
         )  # since outh works on username field we are considering email as username
