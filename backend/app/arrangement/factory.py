@@ -46,7 +46,7 @@ class CrudManager:
         return item
 
     def _prepare_for_update(self, updater: Any, db_item: Any) -> Any:
-        model_data = updater.dict(exclude_unset=True)
+        model_data = updater.__dict__
         for key, value in model_data.items():
             print(key, value)
             if key in db_item.__dict__:

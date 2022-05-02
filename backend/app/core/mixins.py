@@ -22,7 +22,7 @@ class SlugifyMixin:
     @validates('name')
     def update_slug(self, key, name):
         self.slug = slugify(name)
-        return self.slug
+        return name
 
 
 class CamelModelMixin(BaseModel):

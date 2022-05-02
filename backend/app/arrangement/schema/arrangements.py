@@ -118,7 +118,6 @@ class ArrangementDisplayRead(CamelModelMixin):
 
 
 class ArrangementReadExtra(ArrangementRead):
-    timeline_events: List[TimeLineEventRead]
     planners: List[PersonRead]
     people_participants: List[PersonRead]
     organization_participants: List[OrganizationRead]

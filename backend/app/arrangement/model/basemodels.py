@@ -209,7 +209,7 @@ class ScreenGroup(Base):
     screens = relationship('ScreenResource', secondary='screenshow_screengroup_screens',)
 
 
-class DisplayLayout(Base):
+class DisplayLayout(Base, TimeStampMixin, SlugifyMixin):
     __tablename__ = "screenshow_displaylayout"
 
     id = Column(Integer, primary_key=True, index=True)

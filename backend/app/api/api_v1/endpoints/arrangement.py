@@ -5,7 +5,7 @@ from sqlmodel.sql.expression import Select, SelectOfScalar
 
 from app.core.session import get_session
 from app.arrangement.model.basemodels import (Person, Audience, OrganizationType,
-                                              Organization, Arrangement,  ArrangementType
+                                              Organization, Arrangement,  ArrangementType, DisplayLayout
                                               )
 from app.arrangement.schema.arrangements import (ArrangementRead, ArrangementReadExtra, ArrangementUpdate,
                                                  ArrangementCreate, ArrangementTypeCreate, ArrangementTypeBase

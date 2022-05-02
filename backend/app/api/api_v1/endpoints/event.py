@@ -5,10 +5,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.core.session import  get_session
-from app.arrangement.model.basemodels import Article, Event, Arrangement, Person, Room
+from app.arrangement.model.basemodels import Article, Event, Arrangement, Person, Room, DisplayLayout
 from app.arrangement.schema.events import EventRead, EventReadExtra, EventDisplayRead, EventCreate, EventUpdate
 from app.arrangement.schema.events import ArticleRead, ArticleAddOrUpdate, ArticleCreate, ArticleUpdate
-
 from app.arrangement.factory import CrudManager
 
 event_router = evt = APIRouter()
@@ -102,7 +101,7 @@ def update_event(*, session: Session = Depends(get_session), event_id: int, even
 def delete_event(*, session: Session = Depends(get_session), event_id: int):
     return CrudManager(Event).delete_item(session, event_id)
 
-"""
+
 @evt.post("/event/{event_id}/display_layout/{layout_id}", response_model=EventReadExtra)
 def add_event_display_configuration(*, session: Session = Depends(get_session), event_id: int, layout_id: int):
     db_event = CrudManager(Event).read_item(session, event_id)
@@ -112,7 +111,7 @@ def add_event_display_configuration(*, session: Session = Depends(get_session), 
             db_event.display_layouts.append(db_conf)
         db_event = CrudManager(Event).edit_item(session, event_id, db_event)
     return db_event
-"""
+
 
 @evt.delete("/event/{event_id}/display_layout/{layout_id}", response_model=EventReadExtra)
 def remove_event_display_configuration(*, session: Session = Depends(get_session), event_id: int, layout_id: int):
