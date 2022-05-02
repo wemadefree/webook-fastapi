@@ -69,6 +69,10 @@ class Arrangement(Base, TimeStampMixin, SlugifyMixin):
     stages = Column(String, index=True, nullable=False, default=StageChoices.PLANNING)
     starts = Column(DateTime, nullable=True)
     ends = Column(DateTime, nullable=True)
+    meeting_place = Column(String, nullable=True)
+
+    location_id = Column(Integer, ForeignKey("arrangement_location.id"), nullable=False)
+    location = relationship("Location", back_populates="arrangements")
 
     audience_id = Column(Integer, ForeignKey("arrangement_audience.id"), nullable=False)
     audience = relationship("Audience", back_populates="arrangements")
@@ -98,6 +102,7 @@ class Location(Base, TimeStampMixin, SlugifyMixin):
     name = Column(String, index=True, nullable=False)
 
     rooms = relationship("Room", back_populates="location")
+    arrangements = relationship("Arrangement", back_populates="location")
 
 
 class Room(Base, TimeStampMixin, SlugifyMixin):

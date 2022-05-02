@@ -1,14 +1,11 @@
 import datetime
 from typing import List, Optional
-from pydantic import BaseModel
 
-from app.arrangement.model.basemodels import StageChoices
 from app.arrangement.schema.persons import PersonRead
 from app.arrangement.schema.organizations import OrganizationRead
+from app.arrangement.schema.rooms import LocationRead
 from app.arrangement.schema.html_generator import DisplayLayoutSimple
 from app.core.mixins import CamelModelMixin
-from app.core.session import Base
-from app.core.utils import to_camel
 
 
 class AudienceBase(CamelModelMixin):
@@ -79,9 +76,11 @@ class ArrangementBase(CamelModelMixin):
     name: str
     name_en: Optional[str]
     stages: str
+    meeting_place: Optional[str]
     starts: Optional[datetime.date]
     ends: Optional[datetime.date]
     audience_id: Optional[int]
+    location_id: Optional[int]
     responsible_id: Optional[int]
     arrangement_type_id: Optional[int]
 
@@ -98,6 +97,7 @@ class ArrangementRead(ArrangementBase):
     audience: Optional[AudienceRead]
     arrangement_type: Optional[ArrangementTypeBase]
     responsible: Optional[PersonRead]
+    location: Optional[LocationRead]
     display_layouts: List[DisplayLayoutSimple]
 
 
@@ -106,8 +106,10 @@ class ArrangementDisplayRead(CamelModelMixin):
     name: str
     name_en: Optional[str]
     starts: Optional[datetime.date]
+    meeting_place: Optional[str]
     ends: Optional[datetime.date]
     audience: Optional[AudienceRead]
+    location: Optional[LocationRead]
     arrangement_type: Optional[ArrangementTypeBase]
     display_layouts: List[DisplayLayoutSimple]
 
@@ -128,7 +130,9 @@ class ArrangementUpdate(CamelModelMixin):
     stages: Optional[str]
     starts: Optional[datetime.date]
     ends: Optional[datetime.date]
+    meeting_place: Optional[str]
     audience_id: Optional[int]
+    location_id: Optional[int]
     responsible_id: Optional[int]
     arrangement_type_id: Optional[int]
 
