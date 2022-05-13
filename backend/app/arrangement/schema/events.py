@@ -40,7 +40,6 @@ class EventBase(CamelModelMixin):
     end: datetime.datetime
     all_day: bool
     sequence_guid: Optional[str]
-    color: str
     serie_id: Optional[int]
     arrangement_id: Optional[int]
 
@@ -63,7 +62,6 @@ class EventUpdate(CamelModelMixin):
     end: Optional[datetime.datetime]
     all_day: Optional[bool]
     sequence_guid: Optional[str]
-    color: Optional[str]
     serie_id: Optional[int]
     arrangement_id: Optional[int]
 

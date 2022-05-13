@@ -169,7 +169,6 @@ class Event(Base, TimeStampMixin):
     end = Column(DateTime, nullable=True)
     all_day = Column(Boolean, default=False)
     sequence_guid = Column(String, nullable=True)
-    color = Column(String, nullable=True)
 
     arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"),)
     arrangement = relationship("Arrangement", back_populates="events")
