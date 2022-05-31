@@ -56,7 +56,7 @@ def read_event(*, session: Session = Depends(get_session), offset: int = 0, limi
     return events
 
 
-@evt.get("/events/current", response_model=List[EventRead])
+@evt.get("/events/current", response_model=List[EventDisplayRead])
 def get_current_events(*, session: Session = Depends(get_session)):
     now = datetime.now()
     events = session.query(Event).where(now > Event.start).where(now < Event.end).order_by(Event.start).all()
