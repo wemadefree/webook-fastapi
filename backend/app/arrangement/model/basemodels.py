@@ -70,6 +70,8 @@ class Arrangement(Base, TimeStampMixin, SlugifyMixin):
     starts = Column(DateTime, nullable=True)
     ends = Column(DateTime, nullable=True)
     meeting_place = Column(String, nullable=True)
+    display_text = Column(String, nullable=True)
+    display_text_en = Column(String, nullable=True)
 
     location_id = Column(Integer, ForeignKey("arrangement_location.id"), nullable=False)
     location = relationship("Location", back_populates="arrangements")
