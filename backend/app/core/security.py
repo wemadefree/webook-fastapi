@@ -13,7 +13,7 @@ from typing import Optional, Dict
 
 SECRET_KEY = "1v9wY[N9FBwTtTRTR"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 class OAuth2PasswordBearerWithCookie(OAuth2):

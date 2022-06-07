@@ -4,7 +4,7 @@ from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime, D
 from sqlalchemy.orm import relationship, validates
 
 from app.core.session import Base
-from app.core.mixins import CamelModelMixin, TimeStampMixin, SlugifyMixin
+from app.core.mixins import CamelModelMixin, TimeStampMixin, SlugifyNameMixin
 from app.arrangement.model.linkmodels import (
     ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,
     ArrangementDisplayLayout, DisplayLayoutResource, DisplayLayoutGroup, EventArticlesLink, EventRoomLink,
@@ -19,7 +19,7 @@ class StageChoices():
     IN_PRODUCTION = 'in_production'
 
 
-class Audience(Base, TimeStampMixin, SlugifyMixin):
+class Audience(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_audience"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -30,7 +30,7 @@ class Audience(Base, TimeStampMixin, SlugifyMixin):
     arrangements = relationship("Arrangement", back_populates="audience")
 
 
-class Person(SlugifyMixin, Base, TimeStampMixin ):
+class Person(SlugifyNameMixin, Base, TimeStampMixin ):
     __tablename__ = "arrangement_person"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -50,7 +50,7 @@ class Person(SlugifyMixin, Base, TimeStampMixin ):
     events = relationship("Event", secondary='arrangement_event_people', back_populates="people")
 
 
-class ArrangementType(Base, TimeStampMixin, SlugifyMixin):
+class ArrangementType(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_arrangementtype"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -60,7 +60,7 @@ class ArrangementType(Base, TimeStampMixin, SlugifyMixin):
     arrangements = relationship("Arrangement", back_populates="arrangement_type")
 
 
-class Arrangement(Base, TimeStampMixin, SlugifyMixin):
+class Arrangement(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_arrangement"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -97,7 +97,7 @@ class Arrangement(Base, TimeStampMixin, SlugifyMixin):
                                    back_populates='arrangements')
 
 
-class Location(Base, TimeStampMixin, SlugifyMixin):
+class Location(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_location"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -106,8 +106,10 @@ class Location(Base, TimeStampMixin, SlugifyMixin):
     rooms = relationship("Room", back_populates="location")
     arrangements = relationship("Arrangement", back_populates="location")
 
+    is_archived = Column(Boolean,  default=False)
 
-class Room(Base, TimeStampMixin, SlugifyMixin):
+
+class Room(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_room"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -122,7 +124,7 @@ class Room(Base, TimeStampMixin, SlugifyMixin):
     events = relationship('Event', secondary='arrangement_event_rooms', back_populates='rooms')
 
 
-class RoomPreset(Base, TimeStampMixin, SlugifyMixin):
+class RoomPreset(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_roompreset"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -131,14 +133,14 @@ class RoomPreset(Base, TimeStampMixin, SlugifyMixin):
     rooms = relationship('Room', secondary='arrangement_roompreset_rooms')
 
 
-class Article(Base, TimeStampMixin, SlugifyMixin):
+class Article(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_article"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
 
 
-class OrganizationType(Base, TimeStampMixin, SlugifyMixin):
+class OrganizationType(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_organizationtype"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -147,7 +149,7 @@ class OrganizationType(Base, TimeStampMixin, SlugifyMixin):
     organizations = relationship("Organization", back_populates="organization_type")
 
 
-class Organization(Base, TimeStampMixin, SlugifyMixin):
+class Organization(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "arrangement_organization"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -210,7 +212,7 @@ class ScreenGroup(Base):
     screens = relationship('ScreenResource', secondary='screenshow_screengroup_screens',)
 
 
-class DisplayLayout(Base, TimeStampMixin, SlugifyMixin):
+class DisplayLayout(Base, TimeStampMixin, SlugifyNameMixin):
     __tablename__ = "screenshow_displaylayout"
 
     id = Column(Integer, primary_key=True, index=True)

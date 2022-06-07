@@ -1,6 +1,9 @@
 from fastapi import HTTPException
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import Any, List
+from app.core.mixins import SlugifyNameMixin
+
 
 
 class CrudManager:
@@ -12,7 +15,7 @@ class CrudManager:
         """
     def create_item(self, session: Session, item: Any) -> Any:
         db_item = self.class_model(**item.dict())
-        #print(**item.dict())
+        self._check_slug_constraints(session, db_item)
         session.add(db_item)
         session.commit()
         session.refresh(db_item)
@@ -45,6 +48,19 @@ class CrudManager:
             raise HTTPException(status_code=404, detail=f"{self.class_model.__name__} not found")
         return item
 
+    def _get_last_item_by_name(self, db: Session, new_item) -> Any:
+        print(new_item.slug)
+        print(new_item.get_stripped_slug())
+        print(self.class_model.name)
+        item = db.query(self.class_model).filter(or_((self.class_model.name == new_item.name),
+                                                self.class_model.slug.contains(new_item.get_stripped_slug())))\
+                                        .order_by(self.class_model.id.desc()).first()
+        item = db.query(self.class_model).filter(self.class_model.slug.contains(new_item.get_stripped_slug())) \
+            .order_by(self.class_model.id.desc()).first()
+        if item:
+            print(item.name, item.id)
+        return item
+
     def _prepare_for_update(self, updater: Any, db_item: Any) -> Any:
         model_data = updater.__dict__
         for key, value in model_data.items():
@@ -52,6 +68,13 @@ class CrudManager:
             if key in db_item.__dict__:
                 setattr(db_item, key, value)
         return db_item
+
+    def _check_slug_constraints(self, db: Session, new_item: Any) -> Any:
+        if isinstance(new_item, SlugifyNameMixin):
+            last_item = self._get_last_item_by_name(db, new_item)
+            if last_item:
+                slug_ordinal_number: int = last_item.get_slug_suffix()
+                new_item.update_slug(slug_ordinal_number+1)
 
     def _commit_transaction(self, session: Session, db_item: Any):
         """When adding or updating record in database (POST, PATCH, PUT)"""
