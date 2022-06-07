@@ -49,12 +49,6 @@ class CrudManager:
         return item
 
     def _get_last_item_by_name(self, db: Session, new_item) -> Any:
-        print(new_item.slug)
-        print(new_item.get_stripped_slug())
-        print(self.class_model.name)
-        item = db.query(self.class_model).filter(or_((self.class_model.name == new_item.name),
-                                                self.class_model.slug.contains(new_item.get_stripped_slug())))\
-                                        .order_by(self.class_model.id.desc()).first()
         item = db.query(self.class_model).filter(self.class_model.slug.contains(new_item.get_stripped_slug())) \
             .order_by(self.class_model.id.desc()).first()
         if item:
