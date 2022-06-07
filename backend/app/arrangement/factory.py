@@ -51,8 +51,6 @@ class CrudManager:
     def _get_last_item_by_name(self, db: Session, new_item) -> Any:
         item = db.query(self.class_model).filter(self.class_model.slug.contains(new_item.get_stripped_slug())) \
             .order_by(self.class_model.id.desc()).first()
-        if item:
-            print(item.name, item.id)
         return item
 
     def _prepare_for_update(self, updater: Any, db_item: Any) -> Any:

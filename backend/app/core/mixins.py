@@ -48,7 +48,6 @@ class SlugifyNameMixin:
         """
         try:
             prefix, delim, last = self.slug.rpartition(delimiter)
-            print(prefix, delim, last, self.slug)
             if delim and last:
                 return int(last)
             else:
