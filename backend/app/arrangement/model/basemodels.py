@@ -70,6 +70,7 @@ class Arrangement(Base, TimeStampMixin, SlugifyNameMixin):
     starts = Column(DateTime, nullable=True)
     ends = Column(DateTime, nullable=True)
     meeting_place = Column(String, nullable=True)
+    meeting_place_en = Column(String, nullable=True)
     display_text = Column(String, nullable=True)
     display_text_en = Column(String, nullable=True)
 
@@ -114,6 +115,7 @@ class Room(Base, TimeStampMixin, SlugifyNameMixin):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
+    name_en = Column(String, nullable=True)
     max_capacity = Column(Integer, default=10, nullable=False)
     has_screen = Column(Boolean, default=True)
     is_exclusive = Column(Boolean, default=False)
@@ -169,6 +171,7 @@ class Event(Base, TimeStampMixin):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=True)
+    title_en = Column(String, nullable=True)
     start = Column(DateTime, nullable=True)
     end = Column(DateTime, nullable=True)
     all_day = Column(Boolean, default=False)
