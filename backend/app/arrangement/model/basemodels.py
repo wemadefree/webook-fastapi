@@ -3,20 +3,15 @@ from typing import List, Optional
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime, Date
 from sqlalchemy.orm import relationship, validates
 
+from app.arrangement.model.choicemodels import AssociationTypeChoice, EventTypeChoice, StageChoices
 from app.core.session import Base
 from app.core.mixins import CamelModelMixin, TimeStampMixin, SlugifyNameMixin
+
 from app.arrangement.model.linkmodels import (
     ArrangementOwnersLink, ArrangementPeopleParticipantsLink, ArrangementOrganizationParticipantsLink,
     ArrangementDisplayLayout, DisplayLayoutResource, DisplayLayoutGroup, EventArticlesLink, EventRoomLink,
     EventPeopleLink, EventDisplayLayout, OrganizationMembersLink, ScreenResourceGroup, RoomPresetLink
     )
-
-
-class StageChoices():
-    PLANNING = 'planning'
-    REQUISITIONING = 'requisitioning'
-    READY_TO_LAUNCH = 'ready_to_launch'
-    IN_PRODUCTION = 'in_production'
 
 
 class Audience(Base, TimeStampMixin, SlugifyNameMixin):
@@ -169,10 +164,16 @@ class Event(Base, TimeStampMixin):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=True)
+    title_en = Column(String, nullable=True)
     start = Column(DateTime, nullable=True)
     end = Column(DateTime, nullable=True)
     all_day = Column(Boolean, default=False)
-    sequence_guid = Column(String, nullable=True)
+    sequence_guid = Column(String(40), nullable=True)
+    color = Column(String(40), nullable=True)
+    is_locked = Column(Boolean, default=False)
+    is_requisitionally_complete = Column(Boolean, default=False)
+    event_type = Column(String, nullable=False, default=EventTypeChoice.ARRANGEMENT_EVENT)
+    association_type = Column(String, nullable=False, default=AssociationTypeChoice.NO_ASSOCIATION)
 
     arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"),)
     arrangement = relationship("Arrangement", back_populates="events")

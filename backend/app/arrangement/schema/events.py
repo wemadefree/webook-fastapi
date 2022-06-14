@@ -1,11 +1,13 @@
 import datetime
-from typing import List, Optional
+from typing import List, Literal, Optional
 
+from app.arrangement.model.choicemodels import AssociationTypeChoice, EventTypeChoice
 from app.arrangement.schema.arrangements import ArrangementRead, ArrangementDisplayRead
 from app.arrangement.schema.html_generator import DisplayLayoutSimple
 from app.arrangement.schema.persons import PersonRead
 from app.arrangement.schema.rooms import RoomRead, RoomWithLocation
 from app.core.mixins import CamelModelMixin
+from sqlalchemy_utils import ChoiceType
 
 
 class ArticleBase(CamelModelMixin):
@@ -42,6 +44,8 @@ class EventBase(CamelModelMixin):
     sequence_guid: Optional[str]
     serie_id: Optional[int]
     arrangement_id: Optional[int]
+    event_type: Optional[Literal[EventTypeChoice.CHOICES]]
+    association_type: Optional[Literal[AssociationTypeChoice.CHOICES]]
 
     class Config:
         orm_mode = True
@@ -64,8 +68,11 @@ class EventUpdate(CamelModelMixin):
     sequence_guid: Optional[str]
     serie_id: Optional[int]
     arrangement_id: Optional[int]
+    event_type: Optional[Literal[EventTypeChoice.CHOICES]]
+    association_type: Optional[Literal[AssociationTypeChoice.CHOICES]]
 
-    class Config:
+
+class Config:
         orm_mode = True
 
 
