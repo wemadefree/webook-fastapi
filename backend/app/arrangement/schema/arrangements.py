@@ -77,6 +77,7 @@ class ArrangementBase(CamelModelMixin):
     name_en: Optional[str]
     stages: str
     meeting_place: Optional[str]
+    meeting_place_en: Optional[str]
     display_text: Optional[str]
     display_text_en: Optional[str]
     starts: Optional[datetime.date]
@@ -110,6 +111,7 @@ class ArrangementDisplayRead(CamelModelMixin):
     starts: Optional[datetime.date]
     ends: Optional[datetime.date]
     meeting_place: Optional[str]
+    meeting_place_en: Optional[str]
     display_text: Optional[str]
     display_text_en: Optional[str]
     audience: Optional[AudienceRead]
@@ -134,6 +136,7 @@ class ArrangementUpdate(CamelModelMixin):
     starts: Optional[datetime.date]
     ends: Optional[datetime.date]
     meeting_place: Optional[str]
+    meeting_place_en: Optional[str]
     display_text: Optional[str]
     display_text_en: Optional[str]
     audience_id: Optional[int]

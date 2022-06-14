@@ -36,6 +36,7 @@ class ArticleAddOrUpdate(ArticleUpdate):
 
 class EventBase(CamelModelMixin):
     title: str
+    title_en: Optional[str]
     start: datetime.datetime
     end: datetime.datetime
     all_day: bool
@@ -58,6 +59,7 @@ class EventRead(EventBase):
 
 class EventUpdate(CamelModelMixin):
     title: Optional[str]
+    title_en: Optional[str]
     start: Optional[datetime.datetime]
     end: Optional[datetime.datetime]
     all_day: Optional[bool]
@@ -79,6 +81,7 @@ class EventReadExtra(EventRead):
 class EventDisplayRead(CamelModelMixin):
     id: int
     title: str
+    title_en: Optional[str]
     start: datetime.datetime
     end: datetime.datetime
     all_day: bool
