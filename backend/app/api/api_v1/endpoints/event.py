@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -67,7 +66,7 @@ def get_current_events(*, session: Session = Depends(get_session)):
 def get_events_next_on_schedule(*, session: Session = Depends(get_session), days_ahead: int = Query(default=5), limit: int = Query(default=30, lte=30)):
     '''Add filter by location'''
     now = datetime.now()
-    end_datetime = now + timedelta(days=days_ahead)
+    end_datetime = datetime.combine(now, time.max) + timedelta(days=days_ahead)
     events = session.query(Event).where(Event.start >= now).where(Event.start < end_datetime).order_by(Event.start).limit(limit).all()
     return events
 
