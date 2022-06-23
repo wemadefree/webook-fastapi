@@ -63,11 +63,14 @@ def get_current_events(*, session: Session = Depends(get_session)):
 
 
 @evt.get("/events/next_on_schedule", response_model=List[EventDisplayRead])
-def get_events_next_on_schedule(*, session: Session = Depends(get_session), days_ahead: int = Query(default=5), limit: int = Query(default=30, lte=30)):
+def get_events_next_on_schedule(*, session: Session = Depends(get_session), days_ahead: int = Query(default=5),
+                                limit: int = Query(default=30, lte=30),
+                                is_archived: bool = Query(default=False)):
     '''Add filter by location'''
     now = datetime.now()
     end_datetime = datetime.combine(now, time.max) + timedelta(days=days_ahead)
-    events = session.query(Event).where(Event.start >= now).where(Event.start < end_datetime).order_by(Event.start).limit(limit).all()
+    events = session.query(Event).where(Event.start >= now).where(Event.start < end_datetime).\
+        where(Event.is_archived == is_archived).order_by(Event.start).limit(limit).all()
     return events
 
 """
