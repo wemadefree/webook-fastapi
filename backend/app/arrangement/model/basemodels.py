@@ -71,8 +71,6 @@ class Arrangement(Base, TimeStampMixin, SlugifyNameMixin):
     ends = Column(DateTime, nullable=True)
     meeting_place = Column(String, nullable=True)
     meeting_place_en = Column(String, nullable=True)
-    display_text = Column(String, nullable=True)
-    display_text_en = Column(String, nullable=True)
 
     location_id = Column(Integer, ForeignKey("arrangement_location.id"), nullable=False)
     location = relationship("Location", back_populates="arrangements")
@@ -177,6 +175,8 @@ class Event(Base, TimeStampMixin):
     all_day = Column(Boolean, default=False)
     sequence_guid = Column(String, nullable=True)
     is_archived = Column(Boolean, default=False)
+    display_text = Column(String, nullable=True)
+    display_text_en = Column(String, nullable=True)
 
     arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"),)
     arrangement = relationship("Arrangement", back_populates="events")

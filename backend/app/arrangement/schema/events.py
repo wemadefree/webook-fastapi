@@ -41,6 +41,8 @@ class EventBase(CamelModelMixin):
     end: datetime.datetime
     all_day: bool
     sequence_guid: Optional[str]
+    display_text: Optional[str]
+    display_text_en: Optional[str]
     serie_id: Optional[int]
     arrangement_id: Optional[int]
 
@@ -64,6 +66,8 @@ class EventUpdate(CamelModelMixin):
     end: Optional[datetime.datetime]
     all_day: Optional[bool]
     sequence_guid: Optional[str]
+    display_text: Optional[str]
+    display_text_en: Optional[str]
     serie_id: Optional[int]
     arrangement_id: Optional[int]
 
@@ -86,6 +90,8 @@ class EventDisplayRead(CamelModelMixin):
     end: datetime.datetime
     all_day: bool
     arrangement: ArrangementDisplayRead
+    display_text: Optional[str]
+    display_text_en: Optional[str]
     rooms: List[RoomWithLocation]
     display_layouts: List[DisplayLayoutSimple]
 
