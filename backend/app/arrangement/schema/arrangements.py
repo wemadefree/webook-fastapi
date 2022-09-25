@@ -72,6 +72,7 @@ class ArrangementTypeBase(CamelModelMixin):
 class ArrangementTypeCreate(CamelModelMixin):
     name: str
     name_en: Optional[str]
+    parent_id: Optional[int]
 
 
 class ArrangementBase(CamelModelMixin):

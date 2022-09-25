@@ -4,9 +4,12 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.core.session import  get_session
-from app.arrangement.model.basemodels import Article, Event, Arrangement, Person, Room, DisplayLayout
+from app.arrangement.model.basemodels import (
+    Audience, Article, Event, Arrangement, Person, Room, DisplayLayout, ArrangementType
+)
 from app.arrangement.schema.events import EventRead, EventReadExtra, EventDisplayRead, EventCreate, EventUpdate
 from app.arrangement.schema.events import ArticleRead, ArticleAddOrUpdate, ArticleCreate, ArticleUpdate
+from app.arrangement.schema.arrangements import ArrangementTypeBase, AudienceRead
 from app.arrangement.factory import CrudManager
 
 event_router = evt = APIRouter()
@@ -71,7 +74,35 @@ def get_events_next_on_schedule(*, session: Session = Depends(get_session), days
     end_datetime = datetime.combine(now, time.max) + timedelta(days=days_ahead)
     events = session.query(Event).where(Event.start >= now).where(Event.start < end_datetime).\
         where(Event.is_archived == False).order_by(Event.start).limit(limit).all()
-    return events
+
+    events_dis = []
+    for event in events:
+        evt_dsp = EventDisplayRead.from_orm(event)
+        if evt_dsp.arrangement_type:
+            while evt_dsp.arrangement_type.parent_id:
+                type_item = CrudManager(ArrangementType).read_item(session, evt_dsp.arrangement_type.parent_id)
+                arg_type = ArrangementTypeBase.from_orm(type_item)
+                evt_dsp.arrangement_type = arg_type
+        if evt_dsp.audience:
+            while evt_dsp.audience.parent_id:
+                aud_item = CrudManager(Audience).read_item(session, evt_dsp.audience.parent_id)
+                aud = AudienceRead.from_orm(aud_item)
+                evt_dsp.audience = aud
+
+        if evt_dsp.arrangement_type is None:
+            arg = evt_dsp.arrangement
+            while arg.arrangement_type.parent_id:
+                type_item = CrudManager(ArrangementType).read_item(session, arg.arrangement_type.parent_id)
+                arg_type = ArrangementTypeBase.from_orm(type_item)
+                evt_dsp.arrangement.arrangement_type = arg_type
+        if evt_dsp.audience is None:
+            arg = evt_dsp.arrangement
+            while arg.audience.parent_id:
+                aud_item = CrudManager(Audience).read_item(session, arg.audience.parent_id)
+                aud = AudienceRead.from_orm(aud_item)
+                evt_dsp.arrangement.audience = aud
+        events_dis.append(evt_dsp)
+    return events_dis
 
 """
 @evt.get("/events/starting_next", response_model=List[EventDisplayRead])
