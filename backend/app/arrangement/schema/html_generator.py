@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from app.arrangement.model.basemodels import ScreenStatus
 from app.arrangement.schema.rooms import RoomRead
 from app.core.mixins import CamelModelMixin
 
@@ -8,6 +9,7 @@ class ScreenResourceBase(CamelModelMixin):
     screen_model: str
     items_shown: int
     room_id: Optional[int]
+    status: Optional[int] = ScreenStatus.UNAVAILABLE
 
     class Config:
         orm_mode = True
@@ -26,6 +28,7 @@ class ScreenResourceUpdate(CamelModelMixin):
     screen_model: Optional[str]
     items_shown: Optional[int]
     room_id: Optional[int]
+    status: Optional[int]
 
     class Config:
         orm_mode = True

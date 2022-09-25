@@ -12,6 +12,7 @@ class AudienceBase(CamelModelMixin):
     name: str
     name_en: Optional[str]
     icon_class: Optional[str]
+    parent_id: Optional[int]
 
     class Config:
         orm_mode = True
@@ -62,6 +63,7 @@ class ArrangementTypeBase(CamelModelMixin):
     id: Optional[int]
     name: str
     name_en: Optional[str]
+    parent_id: Optional[int]
 
     class Config:
         orm_mode = True

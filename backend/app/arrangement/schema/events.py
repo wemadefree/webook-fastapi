@@ -1,7 +1,9 @@
 import datetime
 from typing import List, Optional
 
-from app.arrangement.schema.arrangements import ArrangementRead, ArrangementDisplayRead
+from app.arrangement.schema.arrangements import (
+    ArrangementRead, ArrangementDisplayRead, ArrangementTypeBase, AudienceRead
+)
 from app.arrangement.schema.html_generator import DisplayLayoutSimple
 from app.arrangement.schema.persons import PersonRead
 from app.arrangement.schema.rooms import RoomRead, RoomWithLocation
@@ -45,6 +47,8 @@ class EventBase(CamelModelMixin):
     display_text_en: Optional[str]
     serie_id: Optional[int]
     arrangement_id: Optional[int]
+    arrangement_type_id: Optional[int]
+    audience_id: Optional[int]
 
     class Config:
         orm_mode = True
@@ -70,6 +74,8 @@ class EventUpdate(CamelModelMixin):
     display_text_en: Optional[str]
     serie_id: Optional[int]
     arrangement_id: Optional[int]
+    arrangement_type_id: Optional[int]
+    audience_id: Optional[int]
 
     class Config:
         orm_mode = True
@@ -80,6 +86,8 @@ class EventReadExtra(EventRead):
     people: List[PersonRead]
     rooms: List[RoomRead]
     articles: List[ArticleRead]
+    arrangement_type: Optional[ArrangementTypeBase]
+    audience:  Optional[AudienceRead]
 
 
 class EventDisplayRead(CamelModelMixin):
@@ -90,6 +98,8 @@ class EventDisplayRead(CamelModelMixin):
     end: datetime.datetime
     all_day: bool
     arrangement: ArrangementDisplayRead
+    arrangement_type: Optional[ArrangementTypeBase]
+    audience: Optional[AudienceRead]
     display_text: Optional[str]
     display_text_en: Optional[str]
     rooms: List[RoomWithLocation]

@@ -12,11 +12,16 @@ from app.arrangement.model.linkmodels import (
     )
 
 
-class StageChoices():
+class StageChoices:
     PLANNING = 'planning'
     REQUISITIONING = 'requisitioning'
     READY_TO_LAUNCH = 'ready_to_launch'
     IN_PRODUCTION = 'in_production'
+
+
+class ScreenStatus:
+    AVAILABLE = 0
+    UNAVAILABLE = 1
 
 
 class Audience(Base, TimeStampMixin, SlugifyNameMixin):
@@ -26,6 +31,9 @@ class Audience(Base, TimeStampMixin, SlugifyNameMixin):
     name = Column(String, unique=True, index=True, nullable=False)
     name_en = Column(String, nullable=True)
     icon_class = Column(String, nullable=True)
+
+    parent_id = Column(Integer, ForeignKey('arrangement_audience.id'))
+    parent = relationship("Audience", remote_side=[id])
 
     arrangements = relationship("Arrangement", back_populates="audience")
 
@@ -56,6 +64,9 @@ class ArrangementType(Base, TimeStampMixin, SlugifyNameMixin):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     name_en = Column(String, nullable=True)
+
+    parent_id = Column(Integer, ForeignKey('arrangement_arrangementtype.id'))
+    parent = relationship("ArrangementType", remote_side=[id])
 
     arrangements = relationship("Arrangement", back_populates="arrangement_type")
 
@@ -178,6 +189,12 @@ class Event(Base, TimeStampMixin):
     display_text = Column(String, nullable=True)
     display_text_en = Column(String, nullable=True)
 
+    arrangement_type_id = Column(Integer, ForeignKey("arrangement_arrangementtype.id"))
+    arrangement_type = relationship("ArrangementType")
+
+    audience_id = Column(Integer, ForeignKey("arrangement_audience.id"))
+    audience = relationship("Audience")
+
     arrangement_id = Column(Integer, ForeignKey("arrangement_arrangement.id"),)
     arrangement = relationship("Arrangement", back_populates="events")
 
@@ -189,21 +206,28 @@ class Event(Base, TimeStampMixin):
     people = relationship('Person', secondary='arrangement_event_people', back_populates="events")
 
 
-class ScreenResource(Base):
+class ScreenResource(Base, TimeStampMixin):
     __tablename__ = "screenshow_screenresource"
 
     id = Column(Integer, primary_key=True, index=True)
     screen_model = Column(String, nullable=False)
     items_shown = Column(Integer, default=10, nullable=False)
+    status = Column(Integer, default=ScreenStatus.UNAVAILABLE)
 
     room_id = Column(Integer, ForeignKey("arrangement_room.id"),)
     room = relationship("Room")
 
     display_layouts = relationship('DisplayLayout', secondary='screenshow_displaylayout_screens',
                                    back_populates='screens')
+    slug = Column(String(100), nullable=False)
+
+    @validates('screen_model')
+    def create_slug_by_name(self, key, value):
+        self.slug = slugify(value)
+        return value
 
 
-class ScreenGroup(Base):
+class ScreenGroup(Base, TimeStampMixin):
     __tablename__ = "screenshow_screengroup"
 
     id = Column(Integer, primary_key=True, index=True)
