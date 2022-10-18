@@ -15,9 +15,13 @@ from app.arrangement.model.linkmodels import (
     RoomPresetLink,
     ScreenResourceGroup,
 )
-from app.core.mixins import CamelModelMixin, SlugifyNameMixin, TimeStampMixin
+from app.core.mixins import (
+    ArchivedMixin,
+    CamelModelMixin,
+    SlugifyNameMixin,
+    TimeStampMixin,
+)
 from app.core.session import Base
-from backend.app.core.mixins import ArchivedMixin
 from slugify import slugify
 from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, validates
