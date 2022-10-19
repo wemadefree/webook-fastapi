@@ -1,11 +1,13 @@
 import datetime
 from typing import List, Optional
-from pydantic import EmailStr
 
 from app.core.mixins import CamelModelMixin
+from pydantic import EmailStr
 
 
 class PersonBase(CamelModelMixin):
+    social_provider_id: Optional[str]
+    social_provider_email: Optional[EmailStr]
     personal_email: Optional[str]
     first_name: str
     middle_name: Optional[str]
@@ -38,6 +40,8 @@ class PersonCreateWithNotes(PersonBase):
 
 
 class PersonUpdate(CamelModelMixin):
+    social_provider_id: Optional[str]
+    social_provider_email: Optional[EmailStr]
     personal_email: Optional[EmailStr]
     first_name: Optional[str]
     middle_name: Optional[str]

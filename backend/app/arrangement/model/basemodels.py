@@ -57,6 +57,10 @@ class Person(SlugifyNameMixin, Base, TimeStampMixin, ArchivedMixin):
     __tablename__ = "arrangement_person"
 
     id = Column(Integer, primary_key=True, index=True)
+
+    social_provider_id = Column(String, nullable=True)
+    social_provider_email = Column(String, nullable=True)
+
     personal_email = Column(String, nullable=True)
     first_name = Column(String)
     middle_name = Column(String)
