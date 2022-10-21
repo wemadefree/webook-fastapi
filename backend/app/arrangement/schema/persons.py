@@ -11,6 +11,7 @@ class PersonBase(CamelModelMixin):
     personal_email: Optional[str]
     first_name: str
     middle_name: Optional[str]
+    is_archived: Optional[bool]
     last_name: str
     birth_date: Optional[datetime.date]
     slug: Optional[str]
@@ -44,6 +45,7 @@ class PersonUpdate(CamelModelMixin):
     social_provider_email: Optional[EmailStr]
     personal_email: Optional[EmailStr]
     first_name: Optional[str]
+    is_archived: Optional[bool]
     middle_name: Optional[str]
     last_name: Optional[str]
     birth_date: Optional[datetime.date]
