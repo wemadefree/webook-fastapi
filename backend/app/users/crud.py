@@ -1,9 +1,10 @@
-from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from app.users import models, schemas
 from app.core.security import get_password_hash
+from app.users import models, schemas
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 
 def get_user(db: Session, user_id: int):
@@ -42,6 +43,17 @@ def delete_user(db: Session, user_id: int):
     user = get_user(db, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # also remove the email addresses associated with this user, if any
+    db.execute(
+        text("DELETE FROM account_emailaddress WHERE user_id = :uid"),
+        params={"uid": user_id},
+    )
+    db.execute(
+        text("DELETE FROM socialaccount_socialaccount WHERE user_id = :uid"),
+        params={"uid": user_id},
+    )
+
     db.delete(user)
     db.commit()
     return user
