@@ -53,6 +53,10 @@ def delete_user(db: Session, user_id: int):
         text("DELETE FROM socialaccount_socialaccount WHERE user_id = :uid"),
         params={"uid": user_id},
     )
+    db.execute(
+        text("DELETE FROM users_user_groups WHERE user_id = :uid"),
+        params={"uid": user_id},
+    )
 
     db.delete(user)
     db.commit()
