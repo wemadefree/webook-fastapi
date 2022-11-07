@@ -44,21 +44,8 @@ def delete_user(db: Session, user_id: int):
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    # also remove the email addresses associated with this user, if any
-    db.execute(
-        text("DELETE FROM account_emailaddress WHERE user_id = :uid"),
-        params={"uid": user_id},
-    )
-    db.execute(
-        text("DELETE FROM socialaccount_socialaccount WHERE user_id = :uid"),
-        params={"uid": user_id},
-    )
-    db.execute(
-        text("DELETE FROM users_user_groups WHERE user_id = :uid"),
-        params={"uid": user_id},
-    )
+    user.is_active = False
 
-    db.delete(user)
     db.commit()
     return user
 
