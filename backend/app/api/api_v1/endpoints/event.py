@@ -78,6 +78,11 @@ def get_events_next_on_schedule(*, session: Session = Depends(get_session), days
     events_dis = []
     for event in events:
         evt_dsp = EventDisplayRead.from_orm(event)
+        if evt_dsp.arrangement:
+            if event.meeting_place:
+                evt_dsp.arrangement.meeting_place = event.meeting_place
+            if event.meeting_place_en:
+                evt_dsp.arrangement.meeting_place_en = event.meeting_place_en
         if evt_dsp.arrangement_type:
             while evt_dsp.arrangement_type.parent_id:
                 type_item = CrudManager(ArrangementType).read_item(session, evt_dsp.arrangement_type.parent_id)

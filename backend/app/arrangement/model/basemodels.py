@@ -244,6 +244,8 @@ class Event(Base, TimeStampMixin):
     is_archived = Column(Boolean, default=False)
     display_text = Column(String, nullable=True)
     display_text_en = Column(String, nullable=True)
+    meeting_place = Column(String)
+    meeting_place_en = Column(String)
 
     arrangement_type_id = Column(Integer, ForeignKey("arrangement_arrangementtype.id"))
     arrangement_type = relationship("ArrangementType")
