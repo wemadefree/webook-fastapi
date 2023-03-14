@@ -84,7 +84,7 @@ def include_routes(app: FastAPI):
     app.include_router(
         outlook_router,
         prefix="/api/v1",
-        tags=["user"],
+        tags=["external"],
         dependencies=[Depends(get_current_active_user)],
     )
 
