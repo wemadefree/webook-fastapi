@@ -11,7 +11,7 @@ services:
       - ./backend/app/webapp/static:/www/static:rw
     tty: true
     ports:
-      - 8440:80
+      - ${PORT}:80
     depends_on:
       - backend
 
