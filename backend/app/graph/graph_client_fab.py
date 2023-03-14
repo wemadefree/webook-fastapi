@@ -5,10 +5,6 @@ from app.graph.client.graph import GraphClient
 
 
 def create_graph_client() -> None:
-    print(GRAPH_CLIENT_ID)
-    print(GRAPH_CLIENT_SECRET)
-    print(GRAPH_AUTHORITY)
-
     if not all([GRAPH_CLIENT_ID, GRAPH_CLIENT_SECRET, GRAPH_AUTHORITY]):
         return None
 
