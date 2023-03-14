@@ -5,6 +5,7 @@ import httpx
 from app.core.session import get_session
 from app.graph.client.graph import GraphClient
 from app.graph.graph_client_fab import create_graph_client
+from app.users.auth import get_current_active_superuser, get_current_active_user
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
@@ -16,7 +17,7 @@ def get_outlook_events_for_user(
     user_object_id: str,
     start_datetime_iso_8691: str,
     end_datetime_iso_8601: str,
-    session: Session = Depends(get_session),
+    current_user=Depends(get_current_active_superuser),
 ):
     graph_client: GraphClient = create_graph_client()
 
