@@ -2,16 +2,21 @@ from datetime import datetime
 from typing import List
 
 import httpx
+from app.core.session import get_session
 from app.graph.client.graph import GraphClient
 from app.graph.graph_client_fab import create_graph_client
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
 outlook_router = outlook = APIRouter()
 
 
 @outlook.get("/outlook/{user_object_id}")
 def get_outlook_events_for_user(
-    user_object_id: str, start_datetime_iso_8691: str, end_datetime_iso_8601: str
+    user_object_id: str,
+    start_datetime_iso_8691: str,
+    end_datetime_iso_8601: str,
+    session: Session = Depends(get_session),
 ):
     graph_client: GraphClient = create_graph_client()
 
