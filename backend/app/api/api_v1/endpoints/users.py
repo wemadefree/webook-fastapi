@@ -1,18 +1,20 @@
-from fastapi import APIRouter, Request, Depends, Response
 from typing import List
 
 from app.core.session import get_session
-from app.users.crud import get_users,get_user,create_user,delete_user,edit_user
-from app.users.schemas import UserCreate, UserEdit, User, UserOut
-from app.users.auth import get_current_active_user, get_current_active_superuser
+from app.users.auth import get_current_active_superuser, get_current_active_user
+from app.users.crud import create_user, delete_user, edit_user, get_user, get_users
+from app.users.schemas import User, UserCreate, UserEdit, UserOut
+from fastapi import APIRouter, Depends, Request, Response
 
 users_router = r = APIRouter()
 
 
 @r.get("/users", response_model=List[User], response_model_exclude_none=True)
-async def users_list(response: Response, db=Depends(get_session),
-                     current_user=Depends(get_current_active_superuser),
-                     ):
+async def users_list(
+    response: Response,
+    db=Depends(get_session),
+    current_user=Depends(get_current_active_superuser),
+):
     """
     Get all users
     """
@@ -30,10 +32,17 @@ async def user_me(current_user=Depends(get_current_active_user)):
     return current_user
 
 
-@r.get("/users/{user_id}", response_model=User, response_model_exclude_none=True,)
-async def user_details(request: Request, user_id: int,
-                       db=Depends(get_session), current_user=Depends(get_current_active_superuser),
-                       ):
+@r.get(
+    "/users/{user_id}",
+    response_model=User,
+    response_model_exclude_none=True,
+)
+async def user_details(
+    request: Request,
+    user_id: int,
+    db=Depends(get_session),
+    current_user=Depends(get_current_active_superuser),
+):
     """
     Get any user details
     """
@@ -42,9 +51,12 @@ async def user_details(request: Request, user_id: int,
 
 
 @r.post("/users", response_model=User, response_model_exclude_none=True)
-async def user_create(request: Request, user: UserCreate,
-                      db=Depends(get_session),
-                      current_user=Depends(get_current_active_superuser),):
+async def user_create(
+    request: Request,
+    user: UserCreate,
+    db=Depends(get_session),
+    current_user=Depends(get_current_active_superuser),
+):
     """
     Create a new user
     """
@@ -52,10 +64,13 @@ async def user_create(request: Request, user: UserCreate,
 
 
 @r.put("/users/{user_id}", response_model=User, response_model_exclude_none=True)
-async def user_edit(request: Request, user_id: int, user: UserEdit,
-                    db=Depends(get_session),
-                    current_user=Depends(get_current_active_superuser),
-                    ):
+async def user_edit(
+    request: Request,
+    user_id: int,
+    user: UserEdit,
+    db=Depends(get_session),
+    current_user=Depends(get_current_active_superuser),
+):
     """
     Update existing user
     """
@@ -63,10 +78,12 @@ async def user_edit(request: Request, user_id: int, user: UserEdit,
 
 
 @r.delete("/users/{user_id}", response_model=User, response_model_exclude_none=True)
-async def user_delete(request: Request, user_id: int,
-                      db=Depends(get_session),
-                      current_user=Depends(get_current_active_superuser),
-                      ):
+async def user_delete(
+    request: Request,
+    user_id: int,
+    db=Depends(get_session),
+    current_user=Depends(get_current_active_superuser),
+):
     """
     Delete existing user
     """
