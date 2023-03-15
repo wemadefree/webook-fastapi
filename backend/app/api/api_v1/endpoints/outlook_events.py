@@ -24,7 +24,7 @@ def get_outlook_events_for_user(
     if graph_client is None:
         return None
 
-    response: httpx.Response = graph_client.httpx_client.get(
+    response: httpx.Response = graph_client.exhaust(
         url=f"https://graph.microsoft.com/v1.0/users/{user_object_id}/calendar/calendarView?StartDateTime={start_datetime_iso_8601}&EndDateTime={end_datetime_iso_8601}"
     )
 
