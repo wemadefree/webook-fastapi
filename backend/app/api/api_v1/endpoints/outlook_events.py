@@ -15,7 +15,7 @@ outlook_router = outlook = APIRouter()
 @outlook.get("/outlook/{user_object_id}")
 def get_outlook_events_for_user(
     user_object_id: str,
-    start_datetime_iso_8691: str,
+    start_datetime_iso_8601: str,
     end_datetime_iso_8601: str,
     current_user=Depends(get_current_active_superuser),
 ):
@@ -25,7 +25,7 @@ def get_outlook_events_for_user(
         return None
 
     response: httpx.Response = graph_client.httpx_client.get(
-        url=f"https://graph.microsoft.com/v1.0/users/{user_object_id}/calendar/calendarView?StartDateTime={start_datetime_iso_8691}&EndDateTime={end_datetime_iso_8601}"
+        url=f"https://graph.microsoft.com/v1.0/users/{user_object_id}/calendar/calendarView?StartDateTime={start_datetime_iso_8601}&EndDateTime={end_datetime_iso_8601}"
     )
 
     return response.json()
