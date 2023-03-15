@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Generator, Optional
+from typing import Generator, Optional, Union
 
 import httpx
 import msal
@@ -19,32 +19,27 @@ class GraphClient:
     client_credential: Optional[str] = None
     scope: Optional[str] = "https://graph.microsoft.com/.default"
 
-    def list(self, response: httpx.Response) -> Generator:
-        """Helper method generator intended to aid in reading a list of data from the Graph API.
-        Takes an initial response, and continues chasing nextLinks until Graph API has been exhausted.
-        You might want to set the ?$top query variable depending on your use case -- by default we get 100 per request/page, and the maximum is 999.
-        This $top query variable (and all other variables in the OG request for that matter) will be carried into the subsequent paginated queries/requests.
-        """
-
-        response = response
-        params = {}
+    def exhaust(self, response_or_url: Union[httpx.Response, str]) -> Generator:
+        next_link: Optional[str] = None
+        if isinstance(response_or_url, str):
+            next_link = response_or_url
 
         while True:
-            if "@odata.nextLink" in params:
-                response = self.httpx_client.get(params["@odata.nextLink"])
+            if next_link:
+                response = self.httpx_client.get(next_link)
 
-            response_values = GraphResponseParser.response_parse(response)
+            data: dict = response.json()
 
-            if not response_values["value"]:
+            if "value" not in data:
                 break
 
-            for item in response_values["value"]:
+            for item in data["value"]:
                 yield item
 
-            if not response_values.get("@odata.nextLink"):
+            if not data.get("@odata.nextLink"):
                 break
 
-            params["@odata.nextLink"] = response_values.get("@odata.nextLink")
+            next_link = data["@odata.nextLink"]
 
     def __resource_fab(self, type):
         return type(self)
