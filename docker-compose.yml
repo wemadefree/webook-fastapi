@@ -30,7 +30,7 @@ services:
       GRAPH_CLIENT_ID: '${GRAPH_CLIENT_ID}'
       GRAPH_CLIENT_SECRET: '${GRAPH_CLIENT_SECRET}'
       GRAPH_AUTHORITY: '${GRAPH_AUTHORITY}'
-      SECRET_KEY: '${GRAPH_AUTHORITY}'
+      SECRET_KEY: '${SECRET_KEY}'
 
 volumes:
   db-data:
