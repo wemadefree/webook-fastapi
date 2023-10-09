@@ -27,6 +27,7 @@ python-slugify = "^6.1.2"
 argon2-cffi = "^21.3.0"
 httpx = {extras = ["http2"], version = "^0.23.3"}
 msal = "^1.21.0"
+icalendar = "^5.0.10"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1"
