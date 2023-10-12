@@ -83,6 +83,8 @@ class Person(SlugifyNameMixin, Base, TimeStampMixin, ArchivedMixin):
         back_populates="planners",
     )
     arrangement_responsibles = relationship("Arrangement", back_populates="responsible")
+    responsible_for_events = relationship("Event", back_populates="responsible")
+
     events = relationship(
         "Event", secondary="arrangement_event_people", back_populates="people"
     )
@@ -246,6 +248,10 @@ class Event(Base, TimeStampMixin):
     display_text_en = Column(String, nullable=True)
     meeting_place = Column(String)
     meeting_place_en = Column(String)
+
+    # Responsible / main planner
+    responsible_id = Column(Integer, ForeignKey("arrangement_person.id"))
+    responsible = relationship("Person", back_populates="responsible_for_events")
 
     arrangement_type_id = Column(Integer, ForeignKey("arrangement_arrangementtype.id"))
     arrangement_type = relationship("ArrangementType")
