@@ -50,6 +50,17 @@ def delete_user(db: Session, user_id: int):
     return user
 
 
+def reactivate_user(db: Session, user_id: int):
+    user = get_user(db, user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    user.is_active = True
+
+    db.commit()
+    return user
+
+
 def edit_user(db: Session, user_id: int, user: schemas.UserEdit) -> schemas.User:
     db_user = get_user(db, user_id)
     if not db_user:

@@ -2,7 +2,14 @@ from typing import List
 
 from app.core.session import get_session
 from app.users.auth import get_current_active_superuser, get_current_active_user
-from app.users.crud import create_user, delete_user, edit_user, get_user, get_users
+from app.users.crud import (
+    create_user,
+    delete_user,
+    edit_user,
+    get_user,
+    get_users,
+    reactivate_user,
+)
 from app.users.schemas import User, UserCreate, UserEdit, UserOut
 from fastapi import APIRouter, Depends, Request, Response
 
@@ -88,3 +95,16 @@ async def user_delete(
     Delete existing user
     """
     return delete_user(db, user_id)
+
+
+@r.patch("/users/{user_id}", response_model=User, response_model_exclude_none=True)
+async def user_reactivate(
+    request: Request,
+    user_id: int,
+    db=Depends(get_session),
+    current_user=Depends(get_current_active_superuser),
+):
+    """
+    Reactivate a deactivated user
+    """
+    return reactivate_user(db, user_id)
