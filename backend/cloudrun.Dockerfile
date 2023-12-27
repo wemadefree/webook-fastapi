@@ -21,4 +21,7 @@ RUN poetry install --no-root
 
 COPY backend/ /app
 
+ENV PORT 80
+EXPOSE 80
+
 CMD ["python", "app/main.py"]
