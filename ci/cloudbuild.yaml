@@ -11,8 +11,6 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/$_IMAGE_BASENAME-cr-$BRANCH_NAME']
     id: Push image
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    secretEnv:
-      - 'DATABASE_URL'
     args: ['run', 'deploy', '$_CLOUDRUN_RESOURCE_NAME', '--image', 'gcr.io/$PROJECT_ID/$_IMAGE_BASENAME-cr-$BRANCH_NAME', '--region', 'europe-west1', '--platform', 'managed']
     id: Deploy
     entrypoint: gcloud
@@ -30,9 +28,3 @@ substitutions:
   _IMAGE_BASENAME: 'webook-api'
   _CLOUDRUN_RESOURCE_NAME: 'webook-api-dev' # resultant resource name of cloud run service
   _ENV_IDENTIFIER: 'dev'                    # dev, staging, prod - use this to switch between secrets
-
-
-availableSecrets:
-  secretManager:
-  - versionName: projects/$PROJECT_ID/secrets/webook-django-${_ENV_IDENTIFIER}-database-url/versions/latest
-    env: 'DATABASE_URL'
