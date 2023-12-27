@@ -20,3 +20,5 @@ COPY ./backend/pyproject.toml ./poetry.lock* /app/
 RUN poetry install --no-root
 
 COPY backend/ /app
+
+CMD ["python", "app/main.py"]
