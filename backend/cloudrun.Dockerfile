@@ -21,6 +21,7 @@ RUN poetry install --no-root
 
 COPY backend/ /app
 
+ENV PYTHONPATH .
 ENV PORT 80
 EXPOSE 80
 
